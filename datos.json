@@ -1,0 +1,34 @@
+[ 
+    {
+        "id": "1",
+        "nombre": "Gabi",
+        "edad": "27",
+        "ciudad": "CABA",
+        "cp": "1243",
+        "email": "gabidlc@gmail.com"
+    },   
+    {
+        "id": "2",
+        "nombre": "Santi",
+        "edad": "24",
+        "ciudad": "La Plata",
+        "cp": "1900",
+        "email": "santic@gmail.com"
+    },   
+    {
+        "id": "3",
+        "nombre": "Fer",
+        "edad": "43",
+        "ciudad": "CABA",
+        "cp": "1200",
+        "email": "ferleban@gmail.com"
+    },   
+    {
+        "id": "4",
+        "nombre": "Ale",
+        "edad": "43",
+        "ciudad": "CABA",
+        "cp": "1200",
+        "email": "alearco@gmail.com"
+    }   
+]
