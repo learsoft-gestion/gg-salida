@@ -268,7 +268,7 @@ func leerCrearExcel(proceso Proceso, datos DTOdatos, nombreSalida string) error 
 	}
 	columnasNum := len(columnas)
 
-	registros := make(map[string]Registro)
+	var registros []Registro
 
 	valores := make([]interface{}, columnasNum)
 	for i := range valores {
@@ -293,9 +293,9 @@ func leerCrearExcel(proceso Proceso, datos DTOdatos, nombreSalida string) error 
 			Ids:     idString,
 			Valores: registroMapa,
 		}
-		registros[idString] = registro
-		fmt.Println("Registro: ", registro)
+		registros = append(registros, registro)
 	}
+	fmt.Println("Registro: ", registros[0])
 
 	// // Construir path
 	// path := fmt.Sprintf("../templates/%s.xlsx", proceso.Nombre)
