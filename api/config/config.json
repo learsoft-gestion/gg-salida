@@ -1,0 +1,32 @@
+{
+  "databases": {  
+    "postgres_prod": {
+      "name": "dw",
+      "host": "192.168.10.162",
+      "port": "54162",
+      "username": "learnsoft",
+      "password": "6533ae8f5bd7c619c3305ff02429d17900a3bb2bb7524d976f1b032f01929038a435a5c76713ae2105d02a"
+    },
+    "postgres_test": {
+      "name": "dw",
+      "host": "192.168.10.161",
+      "port": "54162",
+      "username": "learnsoft",
+      "password": "5246382ecc7a864d5fd9ad207f490494dd5717ffbfc61ddf2939ece4bf4b6733b576cf702d33a8d3332f03"
+    },
+    "recibos_prod": {
+      "name": "dbGestion",
+      "host": "40.85.191.116",
+      "port": "1433",
+      "username": "etltableau",
+      "password": "cd0a6ca5f3f541648d059564f62ded333a6534c3d8003058503304a4720c2fc947d0073770d3e9a555fefe9732"
+    },
+    "recibos_test": {
+      "name": "dbTesting3",
+      "host": "192.168.10.204",
+      "port": "1433",
+      "username": "learnsoft",
+      "password": "e38f1a8be3860c68ba6cc96bb7dc7e8e1ad6398bac30a9dabc00b07531f2ec8f55fb1ace5348bd13e74f8b68993def86"
+    }
+  }
+}

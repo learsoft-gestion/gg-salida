@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 20px;  
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    select, input {
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+    } 
+    
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+    }
+    
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+<label for="proceso">Seleccione el proceso:</label>
+
+<select id="select" >
+  <option value = "" disabled selected>Selecciona una opción</option>
+</select>
+
+<label id="label1" for="fecha1">Fecha desde:</label>
+<input type="date" id="fecha1">   
+
+<label id="label2" for="fecha2">Fecha hasta:</label>  
+<input type="date" id="fecha2">
+
+<button id="btnEnviar">Enviar</button>
+
+</div>
+
+<script id="datos">
+  document.addEventListener("DOMContentLoaded", function () {
+  const select = document.getElementById("select");
+
+  // Realizar la solicitud de red (fetch) al servidor
+  fetch("/procesos")
+      .then(response => {
+        // response.json().then(console.log(...data))
+          if (!response.ok) {
+              throw new Error('La solicitud falló: ' + response.status);
+          }
+          return response.json();
+      })
+      .then(data => {
+          // Limpiar opciones existentes
+          // select.innerHTML = "";
+
+          // Agregar nuevas opciones al select
+          data.forEach(proceso => {
+              const option = document.createElement("option");
+              option.value = proceso.id; // Asegúrate de que proceso tenga una propiedad "id"
+              option.textContent = proceso.nombre; // Asegúrate de que proceso tenga una propiedad "nombre"
+              option.dataset.cantFechas = proceso.cant_fechas
+              select.appendChild(option);
+          });
+      })
+      .catch(error => {
+          console.error("Error al obtener los procesos:", error);
+      });
+});
+</script>
+<script id="fechas">
+  // Ocultar inputs inicialmente
+  label1.style.display = "none"; 
+  fecha1.style.display = "none";
+  label2.style.display = "none";
+  fecha2.style.display = "none";
+  
+  select.addEventListener("change", () => {
+    
+    if(select.value === "") {
+      // Ocultar si no hay proceso seleccionado
+
+      label1.style.display = "none"; 
+      fecha1.style.display = "none"; 
+      label2.style.display = "none";
+      fecha2.style.display = "none";
+  
+    } else {
+      // Mostrar fecha 1
+      fecha1.style.display = "block";
+      label1.style.display = "block";
+      
+      const selected = document.getElementById("select").selectedIndex
+      const optionElement = document.getElementById("select").options[selected]
+      const cant_fechas = optionElement.dataset.cantFechas
+
+      // Mostrar/ocultar fecha 2 según proceso 
+      if(cant_fechas == 2) {
+        label2.style.display = "block";
+        fecha2.style.display = "block";
+      } else {
+        label2.style.display = "none";
+        fecha2.style.display = "none";
+      }
+  
+    }
+  
+  })
+</script>
+<script>
+  const btnEnviar = document.getElementById("btnEnviar")
+
+  btnEnviar.addEventListener("click", () => {
+    const selectValue = document.getElementById("select").value
+    // console.log(typeof selectValue)
+    const fechaDesde = document.getElementById("fecha1").value
+    const fechaDesdeFormat = fechaDesde.replaceAll("-", "")
+    console.log(fechaDesdeFormat)
+    const fechaHastaFormat = ""
+
+    if(document.getElementById("fecha2").value) {
+      const fechaHasta = document.getElementById("fecha2").value
+      fechaHastaFormat = fechaHasta.replaceAll("-", "")
+    }
+
+    console.log("FECHAS: ", fechaDesdeFormat, fechaHastaFormat)
+
+    fetch("/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application-json"
+      },
+      body: JSON.stringify({
+        id: Number(selectValue),
+        fechaDesde: fechaDesdeFormat,
+        fechaHasta: fechaHastaFormat 
+      })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      console.log(data)
+    })
+  })
+</script>
+
+</body>
+</html>

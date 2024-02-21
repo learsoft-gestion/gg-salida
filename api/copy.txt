@@ -1,12 +1,14 @@
 package main
 
 import (
+	"Nueva/conexiones"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -17,6 +19,14 @@ type Persona struct {
 }
 
 func main() {
+
+	db, err := conexiones.ConectarBase()
+	if err != nil {
+		fmt.Println("Error: ", err.Error())
+	}
+
+	r := mux.NewRouter()
+	r.HandleFunc("/procesos", getProcesos(db))
 
 	// Leer archivo json
 	var personas []map[string]interface{}
