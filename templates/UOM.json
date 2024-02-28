@@ -1,0 +1,39 @@
+{
+    "campo": [
+        {
+            "nombre": "cuil",
+            "inicio": 0,
+            "fin": 11,
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "nombre": "apellidoynombre",
+            "inicio": 11,
+            "fin": 41,
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "",
+            "inicio": 41,
+            "fin": 43,
+            "tipo": "fijo",
+            "formato": "00N"
+        },
+        {
+            "nombre": "bruto_imp",
+            "inicio": 44,
+            "fin": 51,
+            "tipo": "float",
+            "formato": "coma"
+        },
+        {
+            "nombre": "nrodoc",
+            "inicio": 52,
+            "fin": 60,
+            "tipo": "string",
+            "formato": ""
+        }
+    ]
+}

@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -44,37 +46,44 @@ var procesos []modelos.Proceso
 func getProcesos(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		rows, err := db.Query("SELECT ID_PROCESO, NOMBRE, QUERY, ARCHIVO_MODELO, CANT_FECHAS FROM EXTRACTOR.EXT_PROCESOS")
+		rows, err := db.Query("SELECT id_modelo, nombre, filtro_personas, filtro_recibos, formato_salida FROM extractor.ext_modelos")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer db.Close()
-		defer rows.Close()
+		// defer db.Close()
+		// defer rows.Close()
 
 		var dtoProcesos []modelos.DTOproceso
 		for rows.Next() {
 			var id int
 			var nombre string
-			var query string
-			var modelo string
-			var cant_fechas int
-			if err := rows.Scan(&id, &nombre, &query, &modelo, &cant_fechas); err != nil {
+			var filtro_personas sql.NullString
+			var filtroPersonas string
+			var filtro_recibos sql.NullString
+			var filtroRecibos string
+			var formato_salida string
+			if err := rows.Scan(&id, &nombre, &filtro_personas, &filtro_recibos, &formato_salida); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			dtoProceso := modelos.DTOproceso{
-				Id:          id,
-				Nombre:      nombre,
-				Cant_fechas: cant_fechas,
+				Id:     id,
+				Nombre: nombre,
 			}
 			dtoProcesos = append(dtoProcesos, dtoProceso)
+			if filtro_personas.Valid {
+				filtroPersonas = filtro_personas.String
+			}
+			if filtro_recibos.Valid {
+				filtroRecibos = filtro_recibos.String
+			}
 			proceso := modelos.Proceso{
-				Id:          id,
-				Nombre:      nombre,
-				Query:       query,
-				Modelo:      modelo,
-				Cant_fechas: cant_fechas,
+				Id:              id,
+				Nombre:          nombre,
+				Filtro_personas: filtroPersonas,
+				Filtro_recibos:  filtroRecibos,
+				Formato_salida:  formato_salida,
 			}
 			procesos = append(procesos, proceso)
 		}
@@ -98,7 +107,7 @@ func sender(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
 			return
 		}
-		fmt.Println("Datos recibidos: ", datos)
+		// fmt.Println("Datos recibidos: ", datos)
 
 		// var nombre string
 		// var query string
@@ -111,7 +120,7 @@ func sender(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err = leerCrearExcel(proc, datos, "./salida/salida2.xlsx")
+		err = procesador(proc, datos)
 		if err != nil {
 			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
 			fmt.Println(err)
@@ -157,26 +166,9 @@ func main() {
 
 	fmt.Println("Listening...")
 	srv.ListenAndServe()
-	// Leer archivo json
-	// var personas []map[string]interface{}
-	// contenido, err := os.ReadFile("./datos.json")
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	// err = json.Unmarshal(contenido, &personas)
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-
-	// err = leerCrearExcel("./templates/camioneros.xlsx", personas, "./salida/salida2.xlsx")
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-
-	// fmt.Println("Datos insertados en salida2.xlsx")
 }
 
-func leerCrearExcel(proceso modelos.Proceso, datos modelos.DTOdatos, nombreSalida string) error {
+func procesador(proceso modelos.Proceso, datos modelos.DTOdatos) error {
 
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
@@ -184,7 +176,7 @@ func leerCrearExcel(proceso modelos.Proceso, datos modelos.DTOdatos, nombreSalid
 	}
 	defer db.Close()
 
-	sql, err := conexiones.ConectarBase("recibos", "test", "sqlserver")
+	sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
 	if err != nil {
 		return err
 	}
@@ -195,18 +187,50 @@ func leerCrearExcel(proceso modelos.Proceso, datos modelos.DTOdatos, nombreSalid
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 	}
 
-	_, err = src.Extractor(db, sql, proceso, datos, idLogDetalle)
+	query := ""
+	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
+	proceso.Query = query
+
+	registros, err := src.Extractor(db, sql, proceso, datos, idLogDetalle)
 	if err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return err
+	}
+
+	// Fecha para el nombre de salida
+	fecha := time.Now()
+	fechaFormateada := fecha.Format("20060102")
+	var nombreSalida string
+
+	// Formato del archivo de salida
+	formato := strings.ToLower(proceso.Formato_salida)
+
+	if formato == "xls" {
+		nombreSalida = fmt.Sprintf("../salida/%s_%s.xlsx", proceso.Nombre, fechaFormateada)
+		err = src.CargarExcel(db, idLogDetalle, proceso, registros, nombreSalida)
+		if err != nil {
+			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return err
+		}
+	} else if formato == "txt" {
+		nombreSalida = fmt.Sprintf("../salida/%s_%s.txt", proceso.Nombre, fechaFormateada)
+		// Utilizar funcion para txt
+		err = src.CargarTxt(db, idLogDetalle, proceso, registros, nombreSalida)
+		if err != nil {
+			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return err
+		}
 	}
 
 	_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, fmt.Sprintf("Archivo guardado en: \"%s\"", nombreSalida))
 	if err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return err
 	}
 	_, err = db.Exec("CALL extractor.etl_ending($1)", id_log)
 	if err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return err
 	}
 
 	return nil

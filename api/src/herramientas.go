@@ -10,24 +10,38 @@ import (
 func Extractor(db, sql *sql.DB, proceso modelos.Proceso, datos modelos.DTOdatos, idLogDetalle int) ([]modelos.Registro, error) {
 
 	// Reemplazo de fecha en query
-	var queryFinal string
-	if proceso.Cant_fechas > 1 {
-		query := strings.Replace(proceso.Query, "$1", datos.FechaDesde, 1)
-		queryFinal = strings.Replace(query, "$2", datos.FechaHasta, 1)
+	queryFinal := strings.Replace(proceso.Query, "$PERIODO$", datos.Fecha, 1)
+
+	if proceso.Filtro_personas != "" {
+		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$", proceso.Filtro_personas, 1)
 	} else {
-		queryFinal = strings.Replace(proceso.Query, "$1", datos.FechaDesde, 1)
+		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$\n", "", -1)
 	}
+	if proceso.Filtro_recibos != "" {
+		queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", proceso.Filtro_recibos, 1)
+	} else {
+		parts := strings.Split(queryFinal, "$FILTRO_RECIBOS$")
+		queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
+		// queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", "", -1)
+	}
+
+	// queryFinal = strings.TrimFunc()
+	// fmt.Println("Query: \n", queryFinal)
 
 	// Ejecucion de query y lectura de resultados
 	rows, err := sql.Query(queryFinal)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		fmt.Println("Error al hacer la query del extractor")
+		return nil, err
 	}
 	defer rows.Close()
 
 	columnas, err := rows.Columns()
 	if err != nil {
+		fmt.Println("Error al hacer la query del extractor")
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return nil, err
 	}
 	columnasNum := len(columnas)
 
@@ -42,11 +56,13 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, datos modelos.DTOdatos,
 
 		if err := rows.Scan(valores...); err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return nil, err
 		}
 
 		registroMapa := make(map[string]interface{})
 		for i, colNombre := range columnas {
-			registroMapa[colNombre] = *(valores[i].(*interface{}))
+			colName := strings.ToUpper(colNombre)
+			registroMapa[colName] = *(valores[i].(*interface{}))
 		}
 
 		id := *valores[0].(*interface{})
@@ -58,6 +74,6 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, datos modelos.DTOdatos,
 		}
 		registros = append(registros, registro)
 	}
-	fmt.Println("Registro: ", registros[0])
+	// fmt.Println("Registro: ", registros[0])
 	return registros, nil
 }
