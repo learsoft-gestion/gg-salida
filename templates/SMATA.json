@@ -1,0 +1,116 @@
+{
+    "campo": [
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "Apellido",
+            "nombre": "apellidos",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Nombre",
+            "nombre": "nombre",
+            "columna": "C",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Afil",
+            "nombre": "afiliado",
+            "columna": "D",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Vit",
+            "nombre": "vit",
+            "columna": "E",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "titulo": "Rem",
+            "nombre": "bruto_imp",
+            "columna": "F",
+            "tipo": "float",
+            "formato": "millares con coma"
+        },
+        {
+            "titulo": "Apo",
+            "nombre": "total_870",
+            "columna": "G",
+            "tipo": "float",
+            "formato": "millares con coma"
+        },
+        {
+            "titulo": "Prov",
+            "nombre": "Prov",
+            "columna": "H",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "loc",
+            "nombre": "loc",
+            "columna": "I",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "dom",
+            "nombre": "dom",
+            "columna": "J",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "Fecing",
+            "nombre": "ingreso",
+            "columna": "K",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "OtrosAportes",
+            "nombre": "OtrosAportes",
+            "columna": "L",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "titulo": "CC_Codigo",
+            "nombre": "CC_Codigo",
+            "columna": "M",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "titulo": "SAC",
+            "nombre": "TOTAL_SAC",
+            "columna": "N",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Estado",
+            "nombre": "estado",
+            "columna": "O",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NoRem",
+            "nombre": "total_norem",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        }
+    ]
+}

@@ -1,4 +1,0 @@
-##cuil##0:19
-##apellidoynombre##20:50
-##bruto_imp##51:65
-##nrodoc##66:86

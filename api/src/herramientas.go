@@ -7,11 +7,16 @@ import (
 	"strings"
 )
 
-func Extractor(db, sql *sql.DB, proceso modelos.Proceso, datos modelos.DTOdatos, idLogDetalle int) ([]modelos.Registro, error) {
+func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, idLogDetalle int) ([]modelos.Registro, error) {
 
 	// Reemplazo de fecha en query
-	queryFinal := strings.Replace(proceso.Query, "$PERIODO$", datos.Fecha, 1)
-
+	queryFinal := strings.Replace(proceso.Query, "$PERIODO$", fecha, -1)
+	if fecha2 == "" {
+		fechaStr := "= " + fecha
+		queryFinal = strings.Replace(proceso.Query, "between '$PERIODO$' and isnull('$PERIODO2$','$PERIODO$')", fechaStr, -1)
+	} else {
+		queryFinal = strings.Replace(queryFinal, "$PERIODO2$", fecha2, -1)
+	}
 	if proceso.Filtro_personas != "" {
 		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$", proceso.Filtro_personas, 1)
 	} else {
@@ -74,6 +79,25 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, datos modelos.DTOdatos,
 		}
 		registros = append(registros, registro)
 	}
+
+	if len(registros) == 0 {
+		if err = Procesados(db, proceso.Id, fecha, fecha2, 0, 0, ""); err != nil {
+			fmt.Println(err.Error())
+			return nil, fmt.Errorf("error al loguear en procesados")
+		}
+		return nil, fmt.Errorf("no se han encontrado registros")
+	} else {
+		fmt.Println("Cantidad de registros: ", len(registros))
+	}
 	// fmt.Println("Registro: ", registros[0])
 	return registros, nil
+}
+
+func AddToSet(slice []modelos.Option, element modelos.Option) []modelos.Option {
+	for _, el := range slice {
+		if el.Id == element.Id && el.Nombre == element.Nombre {
+			return slice
+		}
+	}
+	return append(slice, modelos.Option{Id: element.Id, Nombre: element.Nombre})
 }
