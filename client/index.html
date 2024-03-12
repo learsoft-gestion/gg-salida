@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xml:lang="es" lang="es">
+
 <head>
+  <title>Generador de Informes</title>
   <style>
     body {
       font-family: Arial, sans-serif;
     }
-    
+
     .mainContainer {
       margin-top: -2rem;
     }
@@ -17,7 +19,7 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      align-items: center; 
+      align-items: center;
     }
 
     .title {
@@ -27,7 +29,7 @@
 
     h1 {
       font-size: 4rem;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3), -1px -1px 2px rgba(255,255,255,0.8);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.8);
       color: #333;
     }
 
@@ -42,16 +44,17 @@
       width: 60%;
       margin: 0 1.5%;
     }
-    
+
     label {
       display: inline-block;
       margin-bottom: 10px;
       font-size: 1.4rem;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3), -1px -1px 2px rgba(255,255,255,0.8);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.8);
       color: royalblue;
     }
-    
-    select, input {
+
+    select,
+    input {
       padding: 12px 20px;
       width: 100%;
       box-sizing: border-box;
@@ -59,17 +62,19 @@
       border: 1px solid #ccc;
       border-radius: 16px;
     }
+
     select {
       cursor: pointer;
     }
+
     input {
       font-family: Arial, sans-serif;
     }
-    
-    body{
-	    display: flex;
-	    justify-content: center;
-	    align-items: center;
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .btnParent {
@@ -79,6 +84,7 @@
       width: 40%;
       justify-items: end;
     }
+
     .btnEnviar {
       font-family: inherit;
       font-size: 20px;
@@ -95,31 +101,31 @@
       cursor: pointer;
       width: 60%;
     }
-    
+
     .btnEnviar span {
       display: block;
       margin-left: 0.3em;
       transition: all 0.3s ease-in-out;
     }
-    
+
     .btnEnviar svg {
       display: block;
       transform-origin: center center;
       transition: transform 0.3s ease-in-out;
     }
-    
+
     .btnEnviar:hover .svg-wrapper {
       animation: fly-1 0.6s ease-in-out infinite alternate;
     }
-    
+
     .btnEnviar:hover svg {
       transform: translateX(1.2em) rotate(45deg) scale(1.1);
     }
-    
+
     .btnEnviar:hover span {
       transform: translateX(5em);
     }
-    
+
     .btnEnviar:active {
       transform: scale(0.95);
     }
@@ -136,12 +142,12 @@
     .mensaje {
       color: #9f9f9f
     }
-    
+
     @keyframes fly-1 {
       from {
         transform: translateY(0.1em);
       }
-    
+
       to {
         transform: translateY(-0.1em);
       }
@@ -164,7 +170,7 @@
       top: 30%;
       opacity: 0;
       border-radius: 50px;
-      box-shadow: 0 0 3px rgba(0,0,0,0.2);
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
       animation: fade458 1s linear infinite;
     }
 
@@ -172,7 +178,7 @@
       from {
         opacity: 1;
       }
-    
+
       to {
         opacity: 0.25;
       }
@@ -258,9 +264,9 @@
       margin-bottom: 10px;
       font-size: 14px;
       color: black;
-    }  
+    }
 
-    .field { 
+    .field {
       margin-bottom: 10px;
     }
 
@@ -270,7 +276,7 @@
     }
 
     .return-date {
-      opacity: 0.7;  
+      opacity: 0.7;
     }
 
     .listado {
@@ -278,7 +284,7 @@
       gap: 5px;
     }
 
-    .listado > li {
+    .listado>li {
       display: flex;
       font-size: 0.7rem;
       background-color: royalblue;
@@ -288,302 +294,424 @@
       align-items: center;
     }
 
-    .listado > li > button {
+    .listado>li>button {
       background-color: royalblue;
       font-size: 0.7rem;
       height: auto;
       width: auto;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       margin-left: 4px;
       cursor: pointer;
       border: 0px solid transparent;
     }
-    .listado > li > button:hover {
+
+    .listado>li>button:hover {
       text-shadow: 2px 2px 4px rgba(23, 23, 23, 0.724);
       color: white
     }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .custom-table th,
+    .custom-table td {
+      padding: 8px;
+      border: 1px solid #dddddd;
+      text-align: left;
+    }
+
+    .custom-table th {
+      background-color: #f2f2f2;
+    }
+
+    .custom-table tbody tr:nth-of-type(odd) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .custom-table tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   </style>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
 
-<div class="mainContainer">
-  <div class="title">
-    <h1>Generador de informes</h1>
-  </div>
+  <div class="mainContainer">
 
-  <div class="container">
 
-  <div class="inputs">
-    <div>
-      <label for="convenio">Convenio</label>
-        <select id="conv" >
-          <option value = "" disabled selected>Selecciona una opción</option>
-        </select>
-    </div>
-    <div>
-      <label for="empresa">Empresa</label>
-      <select id="emp" >
-        <option value = "" disabled selected>Selecciona una opción</option>
-      </select>
-    </div>
-    <div>
-      <label for="proceso">Proceso</label>
-        <select id="select" >
-          <option value = "" disabled selected>Selecciona una opción</option>
-        </select>
-    </div>
-  </div>
-
-  <div id="listado-container">
-    <ul id="listado" class="listado"></ul>
-  </div>
-
-  <div class="datepicker">
-
-    <div class="options">
-      <label>
-        Fecha
-        <input id="fechaCheck" type="radio" name="trip" value="oneway" checked>
-      </label>
-  
-      <label>
-        Periodo
-        <input id="periodoCheck" type="radio" name="trip" value="return">
-      </label>
-    </div>
-  
-    <div class="date-fields">
-      <div class="field">
-        <label id="inicial" style="display: none;">Fecha inicial</label>    
-        <label id="fechaUnica">Fecha </label>    
-        <input type="month" lang="es" id="fecha" > 
+    <div class="container">
+      <div class="title">
+        <h1>Generador de informes</h1>
       </div>
-  
-      <div id="fecha2" class="field return-date" style="display: none;">
-        <label>Fecha final </label>
-        <input type="month" lang="es" id="fecha1" > 
+
+      <div class="inputs">
+        <div>
+          <label for="convenio">Convenio</label>
+          <select id="conv">
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+        </div>
+        <div>
+          <label for="empresa">Empresa</label>
+          <select id="emp">
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+        </div>
+        <div>
+          <label for="concepto">Concepto</label>
+          <select id="conc">
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+        </div>
+        <div>
+          <label for="tipo">Tipo</label>
+          <select id="tipo">
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+        </div>
       </div>
-    </div>
-  
-  </div>
 
-  <div id="contenedor-tabla" style="display: none;"></div>
-
-  <div class="btnParent">
-  <button id="btnEnviar" class="btnEnviar">
-    <div class="svg-wrapper-1">
-      <div class="svg-wrapper">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-        >
-          <path fill="none" d="M0 0h24v24H0z"></path>
-          <path
-            fill="currentColor"
-            d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-          ></path>
-        </svg>
+      <div id="listado-container">
+        <ul id="listado" class="listado"></ul>
       </div>
+
+      <div class="datepicker">
+
+        <div class="options">
+          <label>
+            Fecha
+            <input id="fechaCheck" type="radio" name="trip" value="oneway" checked>
+          </label>
+
+          <label>
+            Periodo
+            <input id="periodoCheck" type="radio" name="trip" value="return">
+          </label>
+        </div>
+
+        <div class="date-fields">
+          <div class="field">
+            <label id="inicial" style="display: none;">Fecha inicial</label>
+            <label id="fechaUnica">Fecha </label>
+            <input type="month" lang="es" id="fecha">
+          </div>
+
+          <div id="fecha2" class="field return-date" style="display: none;">
+            <label>Fecha final </label>
+            <input type="month" lang="es" id="fecha1">
+          </div>
+        </div>
+
+      </div>
+
+      <div id="contenedor-tabla" style="display: none;"></div>
+
+      <div class="btnParent">
+        <button id="btnEnviar" class="btnEnviar">
+          <div class="svg-wrapper-1">
+            <div class="svg-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path fill="none" d="M0 0h24v24H0z"></path>
+                <path fill="currentColor"
+                  d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z">
+                </path>
+              </svg>
+            </div>
+          </div>
+          <span>Enviar</span>
+        </button>
+        <div class="loader" style="display: none;" id="loader">
+          <div class="bar1"></div>
+          <div class="bar2"></div>
+          <div class="bar3"></div>
+          <div class="bar4"></div>
+          <div class="bar5"></div>
+          <div class="bar6"></div>
+          <div class="bar7"></div>
+          <div class="bar8"></div>
+          <div class="bar9"></div>
+          <div class="bar10"></div>
+          <div class="bar11"></div>
+          <div class="bar12"></div>
+        </div>
+      </div>
+
+      <div class="mensaje" id="mensaje" style="display: none;"></div>
+
     </div>
-    <span>Send</span>
-  </button>
-  <div class="loader" style="display: none;" id="loader">
-    <div class="bar1"></div>
-    <div class="bar2"></div>
-    <div class="bar3"></div>
-    <div class="bar4"></div>
-    <div class="bar5"></div>
-    <div class="bar6"></div>
-    <div class="bar7"></div>
-    <div class="bar8"></div>
-    <div class="bar9"></div>
-    <div class="bar10"></div>
-    <div class="bar11"></div>
-    <div class="bar12"></div>
-</div>
+    <table class="custom-table" id="tablaDatos">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Fecha Desde</th>
+          <th>Fecha Hasta</th>
+          <th>Nombre de Salida</th>
+          <th>Última ejecución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ejemplo 1</td>
+          <td>01-03-2024</td>
+          <td>05-03-2024</td>
+          <td>Salida 1</td>
+          <td>10-03-2024</td>
+        </tr>
+        <tr>
+          <td>Ejemplo 2</td>
+          <td>05-03-2024</td>
+          <td>10-03-2024</td>
+          <td>Salida 2</td>
+          <td>15-03-2024</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="mensaje" id="mensaje" style="display: none;"></div>
+  <script id="datos">
+    // var fetchedData;
+    const selectConv = document.getElementById("conv");
+    const selectEmp = document.getElementById("emp");
+    const selectProc = document.getElementById("select");
 
-  </div>
-</div>
-
-<script id="datos">
-  // var fetchedData;
-  const selectConv = document.getElementById("conv");
-  const selectEmp = document.getElementById("emp");
-  const selectProc = document.getElementById("select");
-
-  document.addEventListener("DOMContentLoaded", function () {
-    // Realizar la solicitud de red (fetch) al servidor
-    fetch("/convenios")
-      .then(response => {
-        // response.json().then(console.log(...data))
+    document.addEventListener("DOMContentLoaded", function () {
+      // Realizar la solicitud de red (fetch) al servidor
+      fetch("/convenios")
+        .then(response => {
+          // response.json().then(console.log(...data))
           if (!response.ok) {
-              throw new Error('La solicitud falló: ' + response.status);
+            throw new Error('La solicitud falló: ' + response.status);
           }
           return response.json();
-      })
-      .then(data => {
+        })
+        .then(data => {
           // fetchedData = data
           // Agregar nuevas opciones al select
           data.forEach(convenio => {
             const option = document.createElement("option");
             option.value = convenio.id; // Asegúrate de que proceso tenga una propiedad "id"
             option.textContent = convenio.nombre; // Asegúrate de que proceso tenga una propiedad "nombre"
-            selectConv.appendChild(option); 
+            selectConv.appendChild(option);
           });
-      })
-      .catch(error => {
+        })
+        .catch(error => {
           console.error("Error al obtener los procesos:", error);
-      });
+        });
     });
 
-  var selectedConv
-  document.getElementById("conv").addEventListener("change", function() {
-    selectedConv = this.options[this.selectedIndex];
-    // console.log("Opción seleccionada:", selectedOption.textContent);
-  
-    // Limpiar opciones existentes
-    const hijos = selectEmp.querySelectorAll(":not(:first-child)");
-    hijos.forEach(hijo => {
+    var selectedConv
+    document.getElementById("conv").addEventListener("change", function () {
+      selectedConv = this.options[this.selectedIndex];
+      // console.log("Opción seleccionada:", selectedOption.textContent);
+
+      // Limpiar opciones existentes
+      const hijos = selectEmp.querySelectorAll(":not(:first-child)");
+      hijos.forEach(hijo => {
         hijo.remove();
-    });
-  
-    // Realizar la solicitud de red (fetch) al servidor
-    fetch(`/empresas/${selectConv.value}`)
-      .then(response => {
-        // response.json().then(console.log(...data))
+      });
+
+      // Realizar la solicitud de red (fetch) al servidor
+      fetch(`/empresas/${selectConv.value}`)
+        .then(response => {
+          // response.json().then(console.log(...data))
           if (!response.ok) {
-              throw new Error('La solicitud falló: ' + response.status);
+            throw new Error('La solicitud falló: ' + response.status);
           }
           return response.json();
-      })
-      .then(data => {
+        })
+        .then(data => {
           // fetchedData = data
           // Agregar nuevas opciones al select
           data.forEach(empresa => {
             const option = document.createElement("option");
             option.value = empresa.id; // Asegúrate de que proceso tenga una propiedad "id"
             option.textContent = empresa.nombre; // Asegúrate de que proceso tenga una propiedad "nombre"
-            selectEmp.appendChild(option); 
+            selectEmp.appendChild(option);
           });
-      })
-      .catch(error => {
+        })
+        .catch(error => {
           console.error("Error al obtener los procesos:", error);
-      });
-  });
-
-  var selectedEmp
-  document.getElementById("emp").addEventListener("change", function() {
-    selectedEmp = this.options[this.selectedIndex];
-    // console.log("Opción seleccionada:", selectedEmp.value);
-  
-    // Limpiar opciones existentes
-    const hijos = selectProc.querySelectorAll(":not(:first-child)");
-    hijos.forEach(hijo => {
-        hijo.remove();
+        });
     });
-  
-    // Realizar la solicitud de red (fetch) al servidor
-    fetch(`/procesos/${selectConv.value}/${selectEmp.value}`)
-      .then(response => {
-        // response.json().then(console.log(...data))
+
+    var selectedEmp
+    document.getElementById("emp").addEventListener("change", function () {
+      selectedEmp = this.options[this.selectedIndex];
+      // console.log("Opción seleccionada:", selectedEmp.value);
+
+      // Limpiar opciones existentes
+      const hijos = selectProc.querySelectorAll(":not(:first-child)");
+      hijos.forEach(hijo => {
+        hijo.remove();
+      });
+
+      // Realizar la solicitud de red (fetch) al servidor
+      fetch(`/procesos/${selectConv.value}/${selectEmp.value}`)
+        .then(response => {
+          // response.json().then(console.log(...data))
           if (!response.ok) {
-              throw new Error('La solicitud falló: ' + response.status);
+            throw new Error('La solicitud falló: ' + response.status);
           }
           return response.json();
-      })
-      .then(data => {
+        })
+        .then(data => {
           // Agregar nuevas opciones al select
           data.forEach(proceso => {
             const option = document.createElement("option");
             option.value = proceso.id; // Asegúrate de que proceso tenga una propiedad "id"
             option.textContent = proceso.nombre; // Asegúrate de que proceso tenga una propiedad "nombre"
-            selectProc.appendChild(option); 
+            selectProc.appendChild(option);
           });
-      })
-      .catch(error => {
+        })
+        .catch(error => {
           console.error("Error al obtener los procesos:", error);
-      });
-  });
-
-  var selectedProc
-  selectProc.addEventListener("change", function() {
-    selectedProc = this.options[this.selectedIndex];
-    var li = document.createElement("li");
-    li.appendChild(document.createTextNode(selectedProc.textContent))
-    li.id = selectedProc.value
-
-    var btnEliminar = document.createElement("button")
-    btnEliminar.appendChild(document.createTextNode("X"))
-    btnEliminar.addEventListener("click", function() {
-      li.remove()
+        });
     });
 
-    li.appendChild(btnEliminar)
+    var selectedProc
+    selectProc.addEventListener("change", function () {
+      selectedProc = this.options[this.selectedIndex];
+      var li = document.createElement("li");
+      li.appendChild(document.createTextNode(selectedProc.textContent))
+      li.id = selectedProc.value
 
-    document.getElementById("listado").appendChild(li)
-  });
+      var btnEliminar = document.createElement("button")
+      btnEliminar.appendChild(document.createTextNode("X"))
+      btnEliminar.addEventListener("click", function () {
+        li.remove()
+      });
 
-  periodoCheck.addEventListener("click", () => {
-    fecha2.style.display = 'block'
-    inicial.style.display = 'block'
-    fechaUnica.style.display = 'none'
-  });
-  fechaCheck.addEventListener("click", () => {
-    fecha2.style.display = 'none'
-    inicial.style.display = 'none'
-    fechaUnica.style.display = 'block'
-  });
-</script>
+      li.appendChild(btnEliminar)
 
-<script>
+      document.getElementById("listado").appendChild(li)
+    });
 
-  // Función para mostrar la confirmación
-  function mostrarConfirmacion() {
-    const selectValue = document.getElementById("select").value
-    const fecha = document.getElementById("fecha").value
-    const fechaFormat = fecha.replaceAll("-", "")
-    const fecha1 = document.getElementById("fecha1").value
-    const fechaFormat2 = fecha1.replaceAll("-", "")
-    Swal.fire({
-      title: 'El modelo fue procesado anteriormente, desea continuar?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: 'Si',
-      denyButtonText: 'No',
-      customClass: {
-        actions: 'my-actions',
-        cancelButton: 'order-1 right-gap',
-        confirmButton: 'order-2',
-        denyButton: 'order-3',
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Swal.fire('Saved!', '', 'success')
-        fetch("/force", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application-json"
-          },
-          body: JSON.stringify({
-            id: Number(selectValue),
-            fecha: fechaFormat,
-            fecha2: fechaFormat2,
-            forzado: true
+    periodoCheck.addEventListener("click", () => {
+      fecha2.style.display = 'block'
+      inicial.style.display = 'block'
+      fechaUnica.style.display = 'none'
+    });
+    fechaCheck.addEventListener("click", () => {
+      fecha2.style.display = 'none'
+      inicial.style.display = 'none'
+      fechaUnica.style.display = 'block'
+    });
+  </script>
+
+  <script>
+
+    // Función para mostrar la confirmación
+    function mostrarConfirmacion() {
+      const selectValue = document.getElementById("select").value
+      const fecha = document.getElementById("fecha").value
+      const fechaFormat = fecha.replaceAll("-", "")
+      const fecha1 = document.getElementById("fecha1").value
+      const fechaFormat2 = fecha1.replaceAll("-", "")
+      Swal.fire({
+        title: 'El modelo fue procesado anteriormente, desea continuar?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Si',
+        denyButtonText: 'No',
+        customClass: {
+          actions: 'my-actions',
+          cancelButton: 'order-1 right-gap',
+          confirmButton: 'order-2',
+          denyButton: 'order-3',
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Swal.fire('Saved!', '', 'success')
+          fetch("/force", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application-json"
+            },
+            body: JSON.stringify({
+              id: Number(selectValue),
+              fecha: fechaFormat,
+              fecha2: fechaFormat2,
+              forzado: true
+            })
           })
+            .then(resp => resp.json())
+            .then(data => {
+
+              if (data.archivos_salida == null) {
+                mensaje.textContent = data.mensaje
+                mensaje.style.display = 'block'
+                btnEnviar.disabled = false
+                loader.style.display = 'none'
+              } else {
+                data.archivos_salida.forEach(archivo => {
+                  var span = document.createElement("span")
+                  span.textContent = "Archivo guardado en: " + archivo
+                  mensaje.appendChild(span)
+                })
+                // mensaje.textContent = "El archivo se guardó en: " + data["archivo_salida"]
+                ensaje.style.display = 'block'
+                tnEnviar.disabled = false              // Habilito el boton
+                oader.style.display = 'none'           // Saco loader
+              }
+
+            })
+        } else if (result.isDenied) {
+          // Swal.fire('Selecciona el proceso que desee ejecutar', '', 'info')
+          mensaje.style.display = 'block'
+          btnEnviar.disabled = false
+          loader.style.display = 'none'
+        }
+      })
+    }
+
+    var seleccionados = []
+    const ul = document.getElementById("listado")
+    const btnEnviar = document.getElementById("btnEnviar")
+
+    btnEnviar.addEventListener("click", () => {
+      var elementos = ul.getElementsByTagName("li")
+      for (var i = 0; i < elementos.length; i++) {
+        var texto = elementos[i].id
+        seleccionados.push(Number(texto))
+      }
+
+      btnEnviar.disabled = true
+      loader.style.display = 'block'
+
+      // const selectValue = document.getElementById("select").value
+      const fecha = document.getElementById("fecha").value
+      const fechaFormat = fecha.replaceAll("-", "")
+      const fecha1 = document.getElementById("fecha1").value
+      const fechaFormat2 = fecha1.replaceAll("-", "")
+
+      fetch("/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application-json"
+        },
+        body: JSON.stringify({
+          ids: seleccionados,
+          fecha: fechaFormat,
+          fecha2: fechaFormat2,
         })
+      })
         .then(resp => resp.json())
         .then(data => {
 
+          // if (data.procesado) {
+          //   mostrarConfirmacion()
+          // } else 
           if (data.archivos_salida == null) {
-            mensaje.textContent = data.mensaje
-            mensaje.style.display = 'block' 
-            btnEnviar.disabled = false
-            loader.style.display = 'none'
+            if (!data.procesado) {
+              mensaje.textContent = data.mensaje
+              mensaje.style.display = 'block'
+              btnEnviar.disabled = false
+              loader.style.display = 'none'
+            }
           } else {
             data.archivos_salida.forEach(archivo => {
               var span = document.createElement("span")
@@ -591,81 +719,16 @@
               mensaje.appendChild(span)
             })
             // mensaje.textContent = "El archivo se guardó en: " + data["archivo_salida"]
-            ensaje.style.display = 'block' 
-            tnEnviar.disabled = false              // Habilito el boton
-            oader.style.display = 'none'           // Saco loader
+            mensaje.style.display = 'block'
+            btnEnviar.disabled = false              // Habilito el boton
+            loader.style.display = 'none'           // Saco loader
           }
-        
+
         })
-      } else if (result.isDenied) {
-        // Swal.fire('Selecciona el proceso que desee ejecutar', '', 'info')
-        mensaje.style.display = 'block' 
-        btnEnviar.disabled = false
-        loader.style.display = 'none'
-      }
     })
-  }
+  </script>
 
-  var seleccionados = []
-  const ul = document.getElementById("listado")
-  const btnEnviar = document.getElementById("btnEnviar")
-
-  btnEnviar.addEventListener("click", () => {
-    var elementos = ul.getElementsByTagName("li")
-    for (var i = 0; i < elementos.length; i++) {
-      var texto = elementos[i].id
-      seleccionados.push(Number(texto))
-    }
-
-    btnEnviar.disabled = true
-    loader.style.display = 'block'
-
-    // const selectValue = document.getElementById("select").value
-    const fecha = document.getElementById("fecha").value
-    const fechaFormat = fecha.replaceAll("-", "")
-    const fecha1 = document.getElementById("fecha1").value
-    const fechaFormat2 = fecha1.replaceAll("-", "")
-
-    fetch("/send", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application-json"
-      },
-      body: JSON.stringify({
-        ids: seleccionados,
-        fecha: fechaFormat,
-        fecha2: fechaFormat2,
-      })
-    })
-    .then(resp => resp.json())
-    .then(data => {
-
-      // if (data.procesado) {
-      //   mostrarConfirmacion()
-      // } else 
-      if (data.archivos_salida == null) {
-        if (!data.procesado) {
-          mensaje.textContent = data.mensaje
-          mensaje.style.display = 'block' 
-          btnEnviar.disabled = false
-          loader.style.display = 'none'
-        }
-      } else {
-        data.archivos_salida.forEach(archivo => {
-          var span = document.createElement("span")
-          span.textContent = "Archivo guardado en: " + archivo
-          mensaje.appendChild(span)
-        })
-        // mensaje.textContent = "El archivo se guardó en: " + data["archivo_salida"]
-        mensaje.style.display = 'block' 
-        btnEnviar.disabled = false              // Habilito el boton
-        loader.style.display = 'none'           // Saco loader
-      }
-
-    })
-  })
-</script>
-  
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
+
 </html>
