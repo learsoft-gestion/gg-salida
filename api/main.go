@@ -453,7 +453,7 @@ func main() {
 	router.HandleFunc("/force", force).Methods("POST")
 
 	srv := &http.Server{
-		Addr:    ":8081",
+		Addr:    ":8080",
 		Handler: router,
 	}
 
