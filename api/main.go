@@ -180,7 +180,7 @@ func getEmpresas(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-var DTOprocesos []modelos.Option
+var DTOprocesos []modelos.DTOproceso
 var procesos []modelos.Proceso
 
 func getProcesos(db *sql.DB) http.HandlerFunc {
@@ -189,6 +189,56 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		DTOprocesos = nil
 		procesos = nil
 
+		// Extraigo IDs de la request
+		vars := mux.Vars(r)
+		id_convenio, err := strconv.Atoi(vars["id_convenio"])
+		if err != nil {
+			http.Error(w, "id_convenio invalido", http.StatusBadRequest)
+			return
+		}
+		id_empresa, err := strconv.Atoi(vars["id_empresa"])
+		if err != nil {
+			http.Error(w, "id_empresa invalido", http.StatusBadRequest)
+			return
+		}
+		id_concepto := vars["id_concepto"]
+		id_tipo := vars["id_tipo"]
+		fecha1 := vars["fecha1"]
+		fecha2 := vars["fecha2"]
+		query := "select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.fecha_ejecucion from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = $1 and em.id_empresa_adm = $2 and em.id_concepto = $3 and em.id_tipo = $4 and ((ep.fecha_desde = $5 and ep.fecha_hasta = $6) or ep.fecha_desde is null)"
+
+		rows, err := db.Query(query, id_convenio, id_empresa, id_concepto, id_tipo, fecha1, fecha2)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			// var proceso modelos.Proceso
+			var DTOproceso modelos.DTOproceso
+
+			if err := rows.Scan(&DTOproceso.Id, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &DTOproceso.Fecha_desde, &DTOproceso.Fecha_hasta, &DTOproceso.Nombre_salida, &DTOproceso.Ultima_ejecucion); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			DTOprocesos = append(DTOprocesos, DTOproceso)
+			// procesos = append(procesos, proceso)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if err := json.NewEncoder(w).Encode(DTOprocesos); err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+	}
+}
+
+func getConceptos(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// Extraigo IDs de la request
 		vars := mux.Vars(r)
 		id_convenio, err := strconv.Atoi(vars["id_convenio"])
@@ -202,100 +252,38 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		rows, err := db.Query("SELECT em.id_modelo, ea.razon_social as nombre_empresa_adm, c.nombre as nombre_convenio, em.nombre, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where em.id_convenio = $1 and em.id_empresa_adm = $2 and vigente", id_convenio, id_empresa)
+		rows, err := db.Query("select distinct ec.nombre as nombre_concepto, et.nombre as nombre_tipo from extractor.ext_modelos em join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = $1 and em.id_empresa_adm = $2", id_convenio, id_empresa)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		var dtoConceptos modelos.Conceptos
+		var conceptos []string
+		var tipos []string
 		for rows.Next() {
-			var id int
-			var empresa string
-			var sindicato string
-			var nombre string
-			var filtro_personas sql.NullString
-			var filtroPersonas string
-			var filtro_recibos sql.NullString
-			var filtroRecibos string
-			var formato_salida string
-			var archivo_modelo string
-
-			if err := rows.Scan(&id, &empresa, &sindicato, &nombre, &filtro_personas, &filtro_recibos, &formato_salida, &archivo_modelo); err != nil {
+			var concepto string
+			var tipo string
+			if err = rows.Scan(&concepto, &tipo); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			DTOprocesos = src.AddToSet(DTOprocesos, modelos.Option{Id: id, Nombre: nombre})
 
-			if filtro_personas.Valid {
-				filtroPersonas = filtro_personas.String
-			}
-			if filtro_recibos.Valid {
-				filtroRecibos = filtro_recibos.String
-			}
-			proceso := modelos.Proceso{
-				Id:              id,
-				Nombre:          nombre,
-				Filtro_personas: filtroPersonas,
-				Filtro_recibos:  filtroRecibos,
-				Formato_salida:  formato_salida,
-				Archivo_modelo:  archivo_modelo,
-			}
-			procesos = append(procesos, proceso)
+			conceptos = src.AddToSlice(conceptos, concepto)
+			tipos = src.AddToSlice(tipos, tipo)
+
 		}
-		rows.Close()
-
+		dtoConceptos = modelos.Conceptos{
+			Conceptos: conceptos,
+			Tipos:     tipos,
+		}
 		w.Header().Set("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(DTOprocesos); err != nil {
+		if err := json.NewEncoder(w).Encode(dtoConceptos); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
 	}
 }
-
-// func getConceptos(db *sql.DB) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		// Extraigo IDs de la request
-// 		vars := mux.Vars(r)
-// 		id_convenio, err := strconv.Atoi(vars["id_convenio"])
-// 		if err != nil {
-// 			http.Error(w, "ID invalido", http.StatusBadRequest)
-// 			return
-// 		}
-// 		id_empresa, err := strconv.Atoi(vars["id_empresa"])
-// 		if err != nil {
-// 			http.Error(w, "ID invalido", http.StatusBadRequest)
-// 			return
-// 		}
-
-// 		rows, err := db.Query("SELECT em.id_empresa_adm, ea.razon_social as nombre_empresa_adm FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm where id_convenio = $1 and vigente", id_convenio)
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-// 		var dtoConceptos modelos.Conceptos
-// 		var conceptos []string
-// 		var tipos []string
-// 		for rows.Next() {
-// 			var concepto string
-// 			var tipo string
-// 			if err = rows.Scan(&concepto, &tipo); err != nil {
-// 				http.Error(w, err.Error(), http.StatusInternalServerError)
-// 				return
-// 			}
-
-// 			conceptos = src.AddToSet(conceptos, {Id: id, Nombre: empresa})
-
-// 		}
-// 		w.Header().Set("Content-Type", "application/json")
-
-// 		if err := json.NewEncoder(w).Encode(empresas); err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-// 	}
-// }
 
 func sender(w http.ResponseWriter, r *http.Request) {
 
@@ -446,8 +434,9 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/convenios", getConvenios(db))
 	router.HandleFunc("/empresas/{id_convenio}", getEmpresas(db))
-	// router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", getConceptos(db))
-	router.HandleFunc("/procesos/{id_convenio}/{id_empresa}", getProcesos(db))
+	router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", getConceptos(db))
+	// router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}", getProcesos(db))
+	router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}/{fecha2}", getProcesos(db))
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/send", sender).Methods("POST")
 	router.HandleFunc("/force", force).Methods("POST")

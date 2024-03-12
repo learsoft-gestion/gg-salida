@@ -1,5 +1,7 @@
 package modelos
 
+import "database/sql"
+
 type Proceso struct {
 	Id              int    `json:"id"`
 	Nombre          string `json:"nombre"`
@@ -26,9 +28,16 @@ type DTOselect struct {
 }
 
 type DTOproceso struct {
-	Id     int    `json:"id"`
-	Nombre string `json:"nombre"`
-	// Cant_fechas int    `json:"cant_fechas"`
+	Id               int
+	Convenio         string
+	Empresa          string
+	Concepto         string
+	Nombre           string
+	Tipo             string
+	Fecha_desde      sql.NullString
+	Fecha_hasta      sql.NullString
+	Nombre_salida    sql.NullString
+	Ultima_ejecucion sql.NullString
 }
 
 type DTOdatos struct {

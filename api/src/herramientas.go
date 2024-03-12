@@ -101,3 +101,12 @@ func AddToSet(slice []modelos.Option, element modelos.Option) []modelos.Option {
 	}
 	return append(slice, modelos.Option{Id: element.Id, Nombre: element.Nombre})
 }
+
+func AddToSlice(slice []string, element string) []string {
+	for _, el := range slice {
+		if el == element {
+			return slice
+		}
+	}
+	return append(slice, element)
+}
