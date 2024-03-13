@@ -252,24 +252,26 @@ func getConceptos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		rows, err := db.Query("select distinct ec.nombre as nombre_concepto, et.nombre as nombre_tipo from extractor.ext_modelos em join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = $1 and em.id_empresa_adm = $2", id_convenio, id_empresa)
+		rows, err := db.Query("select ec.id_concepto, ec.nombre as nombre_concepto, et.id_tipo, et.nombre as nombre_tipo from extractor.ext_modelos em join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = $1 and em.id_empresa_adm = $2", id_convenio, id_empresa)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		var dtoConceptos modelos.Conceptos
-		var conceptos []string
-		var tipos []string
+		var conceptos []modelos.Concepto
+		var tipos []modelos.Concepto
 		for rows.Next() {
+			var id_concepto string
 			var concepto string
+			var id_tipo string
 			var tipo string
-			if err = rows.Scan(&concepto, &tipo); err != nil {
+			if err = rows.Scan(&id_concepto, &concepto, &id_tipo, &tipo); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			conceptos = src.AddToSlice(conceptos, concepto)
-			tipos = src.AddToSlice(tipos, tipo)
+			conceptos = src.AddToSetConceptos(conceptos, modelos.Concepto{Id: id_concepto, Nombre: concepto})
+			tipos = src.AddToSetConceptos(tipos, modelos.Concepto{Id: id_tipo, Nombre: tipo})
 
 		}
 		dtoConceptos = modelos.Conceptos{
@@ -285,128 +287,103 @@ func getConceptos(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func sender(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == "POST" {
-		var datos modelos.DTOdatos
-		err := json.NewDecoder(r.Body).Decode(&datos)
-		if err != nil {
-			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
-			return
-		}
-		// fmt.Println("Datos recibidos: ", datos)
-		var procs []modelos.Proceso
-		// var proc modelos.Proceso
-		for _, id := range datos.IDs {
-			for _, element := range procesos {
-				if element.Id == id {
-					// proc = element
-					procs = append(procs, element)
-				}
-			}
-		}
-
-		var resultado []string
-		for _, proc := range procs {
-			result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, datos.Forzado)
-			if result != "" {
-				resultado = append(resultado, result)
-			}
-			if (errFormateado.Mensaje != "") && (!errFormateado.Procesado) {
-				errString := "Error en " + proc.Nombre + ": " + errFormateado.Mensaje
-				// http.Error(w, errString, http.StatusBadRequest)
-				w.WriteHeader(http.StatusOK)
-				w.Header().Set("Content-Type", "application/json")
-				respuesta := modelos.Respuesta{
-					Mensaje:         errString,
-					Archivos_salida: nil,
-				}
-				jsonResp, _ := json.Marshal(respuesta)
-				w.Write(jsonResp)
-				return
-			} else if errFormateado.Procesado {
-				w.WriteHeader(http.StatusOK)
-				w.Header().Set("Content-Type", "application/json")
-				respuesta := modelos.Respuesta{
-					Mensaje:         errFormateado.Mensaje,
-					Archivos_salida: nil,
-					Procesado:       true,
-				}
-				jsonResp, _ := json.Marshal(respuesta)
-				w.Write(jsonResp)
+func sender(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			var datos modelos.DTOdatos
+			err := json.NewDecoder(r.Body).Decode(&datos)
+			if err != nil {
+				http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
 				return
 			}
 
-		}
-
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		respuesta := modelos.Respuesta{
-			Mensaje:         "Datos recibidos y procesados",
-			Archivos_salida: resultado,
-		}
-		jsonResp, _ := json.Marshal(respuesta)
-		w.Write(jsonResp)
-	}
-}
-
-func force(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		var datos modelos.DTOdatos
-		err := json.NewDecoder(r.Body).Decode(&datos)
-		if err != nil {
-			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
-			return
-		}
-		// fmt.Println("Datos recibidos: ", datos)
-		var procs []modelos.Proceso
-		for _, id := range datos.IDs {
-			for _, element := range procesos {
-				if element.Id == id {
-					procs = append(procs, element)
-				}
+			var placeholders []string
+			for i := range datos.IDs {
+				placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
 			}
-		}
-
-		var resultado string
-		for _, proc := range procs {
-			result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, datos.Forzado)
-			if errFormateado.Mensaje != "" && !errFormateado.Procesado {
-				errString := "Error en " + proc.Nombre + ": " + errFormateado.Mensaje
-				// http.Error(w, errString, http.StatusBadRequest)
-				w.WriteHeader(http.StatusOK)
-				w.Header().Set("Content-Type", "application/json")
-				respuesta := map[string]string{
-					"mensaje":        errString,
-					"archivo_salida": "",
-				}
-				jsonResp, _ := json.Marshal(respuesta)
-				w.Write(jsonResp)
+			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
+			// fmt.Println("Query modelos: ", queryModelos)
+			stmt, err := db.Prepare(queryModelos)
+			if err != nil {
+				http.Error(w, "Error al preparar query", http.StatusBadRequest)
 				return
-				// } else if errFormateado.Procesado {
-				// 	w.WriteHeader(http.StatusOK)
-				// 	w.Header().Set("Content-Type", "application/json")
-				// 	respuesta := map[string]string{
-				// 		"mensaje":        "",
-				// 		"archivo_salida": "",
-				// 		"procesado":      "si",
-				// 	}
-				// 	jsonResp, _ := json.Marshal(respuesta)
-				// 	w.Write(jsonResp)
-				// 	fmt.Println(err)
-				// 	return
 			}
-			resultado = result
-		}
+			defer stmt.Close()
+			var args []interface{}
+			for _, arg := range datos.IDs {
+				args = append(args, arg)
+			}
+			rows, err := stmt.Query(args...)
+			if err != nil {
+				http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
+				return
+			}
+			defer rows.Close()
+			for rows.Next() {
+				var proceso modelos.Proceso
+				err = rows.Scan(&proceso.Id, &proceso.Id_empresa, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo)
+				if err != nil {
+					fmt.Println(err.Error())
+					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					return
+				}
+				procesos = append(procesos, proceso)
+			}
 
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		respuesta := map[string]string{
-			"mensaje":        "Datos recibidos y procesados",
-			"archivo_salida": resultado,
+			// fmt.Println("Datos recibidos: ", datos)
+			// var procs []modelos.Proceso
+			// var proc modelos.Proceso
+			// for _, id := range datos.IDs {
+			// 	for _, element := range procesos {
+			// 		if element.Id == id {
+			// 			// proc = element
+			// 			procs = append(procs, element)
+			// 		}
+			// 	}
+			// }
+
+			var resultado []string
+			for _, proc := range procesos {
+				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, datos.Forzado)
+				if result != "" {
+					resultado = append(resultado, result)
+				}
+				if (errFormateado.Mensaje != "") && (!errFormateado.Procesado) {
+					errString := "Error en " + proc.Nombre + ": " + errFormateado.Mensaje
+					// http.Error(w, errString, http.StatusBadRequest)
+					w.WriteHeader(http.StatusOK)
+					w.Header().Set("Content-Type", "application/json")
+					respuesta := modelos.Respuesta{
+						Mensaje:         errString,
+						Archivos_salida: nil,
+					}
+					jsonResp, _ := json.Marshal(respuesta)
+					w.Write(jsonResp)
+					return
+				} else if errFormateado.Procesado {
+					w.WriteHeader(http.StatusOK)
+					w.Header().Set("Content-Type", "application/json")
+					respuesta := modelos.Respuesta{
+						Mensaje:         errFormateado.Mensaje,
+						Archivos_salida: nil,
+						Procesado:       true,
+					}
+					jsonResp, _ := json.Marshal(respuesta)
+					w.Write(jsonResp)
+					return
+				}
+
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			respuesta := modelos.Respuesta{
+				Mensaje:         "Datos recibidos y procesados",
+				Archivos_salida: resultado,
+			}
+			jsonResp, _ := json.Marshal(respuesta)
+			w.Write(jsonResp)
 		}
-		jsonResp, _ := json.Marshal(respuesta)
-		w.Write(jsonResp)
 	}
 }
 
@@ -435,11 +412,9 @@ func main() {
 	router.HandleFunc("/convenios", getConvenios(db))
 	router.HandleFunc("/empresas/{id_convenio}", getEmpresas(db))
 	router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", getConceptos(db))
-	// router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}", getProcesos(db))
 	router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}/{fecha2}", getProcesos(db))
 	router.HandleFunc("/", homeHandler).Methods("GET")
-	router.HandleFunc("/send", sender).Methods("POST")
-	router.HandleFunc("/force", force).Methods("POST")
+	router.HandleFunc("/send", sender(db)).Methods("POST")
 
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -462,20 +437,12 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, forzado bo
 	var version int
 	// Verificar si el proceso ya se corrió
 	if !forzado { // Si la ejecucion no viene forzada continuo evaluando si este modelo ya se procesó
-		fecha_desde, _ := time.Parse("200601", fecha)
-		fmt.Println(fecha_desde)
-		if fecha2 == "" {
-			err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2", proceso.Id, fecha_desde).Scan(&cuenta)
-			if err != nil {
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-			}
-		} else {
-			fecha_hasta, _ := time.Parse("200601", fecha2)
-			err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proceso.Id, fecha_desde, fecha_hasta).Scan(&cuenta)
-			if err != nil {
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-			}
+
+		err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proceso.Id, fecha, fecha2).Scan(&cuenta)
+		if err != nil {
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
+
 	}
 	if cuenta > 0 {
 		fmt.Println("Este modelo ya ha sido procesado.")
@@ -485,6 +452,7 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, forzado bo
 		version = cuenta + 1
 	}
 
+	// Conexion al origen de datos
 	sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
 	if err != nil {
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}

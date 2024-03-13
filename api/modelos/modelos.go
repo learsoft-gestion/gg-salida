@@ -4,7 +4,9 @@ import "database/sql"
 
 type Proceso struct {
 	Id              int    `json:"id"`
+	Id_empresa      int    `json:"id_empresa"`
 	Nombre          string `json:"nombre"`
+	Filtro_convenio string `json:"filtro_convenio"`
 	Filtro_personas string `json:"filtro_personas"`
 	Filtro_recibos  string `json:"filtro_recibos"`
 	Formato_salida  string `json:"formato_salida"`
@@ -106,6 +108,11 @@ type Respuesta struct {
 }
 
 type Conceptos struct {
-	Conceptos []string
-	Tipos     []string
+	Conceptos []Concepto
+	Tipos     []Concepto
+}
+
+type Concepto struct {
+	Id     string
+	Nombre string
 }

@@ -4,6 +4,7 @@ import (
 	"Nueva/modelos"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -11,16 +12,14 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 
 	// Reemplazo de fecha en query
 	queryFinal := strings.Replace(proceso.Query, "$PERIODO$", fecha, -1)
-	if fecha2 == "" {
-		fechaStr := "= " + fecha
-		queryFinal = strings.Replace(proceso.Query, "between '$PERIODO$' and isnull('$PERIODO2$','$PERIODO$')", fechaStr, -1)
-	} else {
-		queryFinal = strings.Replace(queryFinal, "$PERIODO2$", fecha2, -1)
-	}
+	queryFinal = strings.Replace(queryFinal, "$PERIODO2$", fecha2, -1)
+	queryFinal = strings.Replace(queryFinal, "$FILTRO_CONVENIO$", proceso.Filtro_convenio, 1)
+	queryFinal = strings.Replace(queryFinal, "$EMPRESA$", strconv.Itoa(proceso.Id_empresa), 1)
 	if proceso.Filtro_personas != "" {
 		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$", proceso.Filtro_personas, 1)
 	} else {
-		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$\n", "", -1)
+		parts := strings.Split(queryFinal, "$FILTRO_PERSONAS$")
+		queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
 	}
 	if proceso.Filtro_recibos != "" {
 		queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", proceso.Filtro_recibos, 1)
@@ -30,7 +29,6 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		// queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", "", -1)
 	}
 
-	// queryFinal = strings.TrimFunc()
 	// fmt.Println("Query: \n", queryFinal)
 
 	// Ejecucion de query y lectura de resultados
@@ -100,6 +98,14 @@ func AddToSet(slice []modelos.Option, element modelos.Option) []modelos.Option {
 		}
 	}
 	return append(slice, modelos.Option{Id: element.Id, Nombre: element.Nombre})
+}
+func AddToSetConceptos(slice []modelos.Concepto, element modelos.Concepto) []modelos.Concepto {
+	for _, el := range slice {
+		if el.Id == element.Id && el.Nombre == element.Nombre {
+			return slice
+		}
+	}
+	return append(slice, modelos.Concepto{Id: element.Id, Nombre: element.Nombre})
 }
 
 func AddToSlice(slice []string, element string) []string {
