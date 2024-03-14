@@ -116,3 +116,9 @@ func AddToSlice(slice []string, element string) []string {
 	}
 	return append(slice, element)
 }
+
+func FormatoFecha(s string) string {
+	// MM/YYYY ------> YYYYMM
+	parts := strings.Split(s, "/")
+	return parts[1] + parts[0]
+}
