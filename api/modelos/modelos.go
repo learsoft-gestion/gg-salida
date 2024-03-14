@@ -39,7 +39,9 @@ type DTOproceso struct {
 	Fecha_desde      sql.NullString
 	Fecha_hasta      sql.NullString
 	Nombre_salida    sql.NullString
+	Version          sql.NullInt16
 	Ultima_ejecucion sql.NullString
+	Procesado        bool
 }
 
 type DTOdatos struct {

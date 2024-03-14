@@ -212,7 +212,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.fecha_ejecucion from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v and ((ep.fecha_desde = '%s' and ep.fecha_hasta = '%s') or ep.fecha_desde is null)", id_convenio, fecha1, fecha2)
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v and ((ep.fecha_desde = '%s' and ep.fecha_hasta = '%s') or ep.fecha_desde is null)", id_convenio, fecha1, fecha2)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
@@ -235,7 +235,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			// var proceso modelos.Proceso
 			var DTOproceso modelos.DTOproceso
 
-			if err := rows.Scan(&DTOproceso.Id, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &DTOproceso.Fecha_desde, &DTOproceso.Fecha_hasta, &DTOproceso.Nombre_salida, &DTOproceso.Ultima_ejecucion); err != nil {
+			if err := rows.Scan(&DTOproceso.Id, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &DTOproceso.Fecha_desde, &DTOproceso.Fecha_hasta, &DTOproceso.Nombre_salida, &DTOproceso.Version, &DTOproceso.Ultima_ejecucion, &DTOproceso.Procesado); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
