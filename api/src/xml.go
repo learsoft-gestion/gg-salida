@@ -76,8 +76,8 @@ func CargarXml(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, registros 
 		return "", err
 	}
 	defer archivo.Close()
-
-	texto := fmt.Sprintf("<%s>\n", plantilla.Cabecera.Tag)
+	texto := fmt.Sprintf("%s\n", plantilla.Cabecera.XmlTag)
+	texto += fmt.Sprintf("<%s>\n", plantilla.Cabecera.Tag)
 	elemento := ""
 	for _, registro := range registros {
 		texto += fmt.Sprintf("\t<%s>\n", plantilla.Cabecera.Children)

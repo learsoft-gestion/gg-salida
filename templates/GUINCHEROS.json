@@ -30,12 +30,6 @@
             "formato": ""
         },
         {
-            "titulo": "AporteNoRemunerativo",
-            "nombre": "total_norem",
-            "tipo": "float",
-            "formato": "punto"
-        },
-        {
             "titulo": "Sexo",
             "nombre": "sexo",
             "tipo": "string",

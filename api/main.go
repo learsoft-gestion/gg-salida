@@ -206,16 +206,22 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		id_tipo := r.URL.Query().Get("tipo")
 		fecha1 := r.URL.Query().Get("fecha1")
 		fecha2 := r.URL.Query().Get("fecha2")
+
+		if len(id_convenio) == 0 || len(fecha1) == 0 || len(fecha2) == 0 {
+			http.Error(w, "Convenio, fecha1 y fecha2 son obligatorios", http.StatusInternalServerError)
+			return
+		}
+
 		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.fecha_ejecucion from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v and ((ep.fecha_desde = '%s' and ep.fecha_hasta = '%s') or ep.fecha_desde is null)", id_convenio, fecha1, fecha2)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
 		}
 		if len(id_concepto) > 0 {
-			query += fmt.Sprintf(" and em.id_concepto = %s", id_concepto)
+			query += fmt.Sprintf(" and em.id_concepto = '%s'", id_concepto)
 		}
 		if len(id_tipo) > 0 {
-			query += fmt.Sprintf(" and em.id_tipo = %s", id_tipo)
+			query += fmt.Sprintf(" and em.id_tipo = '%s'", id_tipo)
 		}
 
 		rows, err := db.Query(query)

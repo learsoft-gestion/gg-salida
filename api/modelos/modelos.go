@@ -68,6 +68,7 @@ type Registro struct {
 type Cabecera struct {
 	Formato   string
 	Separador string
+	XmlTag    string
 	Tag       string
 	Children  string
 }
