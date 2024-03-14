@@ -192,20 +192,20 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		DTOprocesos = nil
 		procesos = nil
 
-		// Extraigo IDs de la request
-		// vars := mux.Vars(r)
-		// id_convenio := vars["id_convenio"]
-		// id_empresa := vars["id_empresa"]
-		// id_concepto := vars["id_concepto"]
-		// id_tipo := vars["id_tipo"]
-		// fecha1 := vars["fecha1"]
-		// fecha2 := vars["fecha2"]
+		// Extraigo params de la request
 		id_convenio := r.URL.Query().Get("convenio")
 		id_empresa := r.URL.Query().Get("empresa")
 		id_concepto := r.URL.Query().Get("concepto")
 		id_tipo := r.URL.Query().Get("tipo")
 		fecha1 := r.URL.Query().Get("fecha1")
 		fecha2 := r.URL.Query().Get("fecha2")
+		procesadoStr := r.URL.Query().Get("procesado")
+		var procesado bool
+		if procesadoStr == "true" {
+			procesado = true
+		} else if procesadoStr == "false" {
+			procesado = false
+		}
 
 		if len(id_convenio) == 0 || len(fecha1) == 0 || len(fecha2) == 0 {
 			http.Error(w, "Convenio, fecha1 y fecha2 son obligatorios", http.StatusInternalServerError)
@@ -223,7 +223,9 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		if len(id_tipo) > 0 {
 			query += fmt.Sprintf(" and em.id_tipo = '%s'", id_tipo)
 		}
-
+		if len(procesadoStr) > 0 {
+			query += fmt.Sprintf(" and coalesce(nombre_salida is not null, false) = %v", procesado)
+		}
 		rows, err := db.Query(query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -363,7 +365,6 @@ func sender(db *sql.DB) http.HandlerFunc {
 
 				}
 				if cuenta > 0 {
-					fmt.Println("Este modelo ya ha sido procesado.")
 					version = cuenta + 1
 					// return "", modelos.ErrorFormateado{Mensaje: fmt.Errorf("el modelo ya ha sido procesado").Error(), Procesado: true}
 				} else {
@@ -374,7 +375,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 				if result != "" {
 					resultado = append(resultado, result)
 				}
-				if (errFormateado.Mensaje != "") && (!errFormateado.Procesado) {
+				if errFormateado.Mensaje != "" {
 					errString := "Error en " + proc.Nombre + ": " + errFormateado.Mensaje
 					// http.Error(w, errString, http.StatusBadRequest)
 					w.WriteHeader(http.StatusOK)
@@ -386,17 +387,17 @@ func sender(db *sql.DB) http.HandlerFunc {
 					jsonResp, _ := json.Marshal(respuesta)
 					w.Write(jsonResp)
 					return
-				} else if errFormateado.Procesado {
-					w.WriteHeader(http.StatusOK)
-					w.Header().Set("Content-Type", "application/json")
-					respuesta := modelos.Respuesta{
-						Mensaje:         errFormateado.Mensaje,
-						Archivos_salida: nil,
-						Procesado:       true,
-					}
-					jsonResp, _ := json.Marshal(respuesta)
-					w.Write(jsonResp)
-					return
+					// } else if errFormateado.Procesado {
+					// 	w.WriteHeader(http.StatusOK)
+					// 	w.Header().Set("Content-Type", "application/json")
+					// 	respuesta := modelos.Respuesta{
+					// 		Mensaje:         errFormateado.Mensaje,
+					// 		Archivos_salida: nil,
+					// 		Procesado:       true,
+					// 	}
+					// 	jsonResp, _ := json.Marshal(respuesta)
+					// 	w.Write(jsonResp)
+					// 	return
 				}
 
 			}

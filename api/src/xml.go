@@ -4,53 +4,10 @@ import (
 	"Nueva/modelos"
 	"database/sql"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"os"
 	"strings"
 )
-
-func mapToXML(data map[string]interface{}, rootName string) ([]byte, error) {
-	type xmlElement struct {
-		XMLName  xml.Name
-		Value    string `xml:",chardata"`
-		Attrs    []xml.Attr
-		Children []xmlElement `xml:",any"`
-	}
-
-	var elements []xmlElement
-	for key, value := range data {
-		var element xmlElement
-
-		switch v := value.(type) {
-		case map[string]interface{}:
-			nestedXML, err := mapToXML(v, key)
-			if err != nil {
-				return nil, err
-			}
-			element = xmlElement{
-				XMLName:  xml.Name{Local: key},
-				Children: []xmlElement{{Value: string(nestedXML)}},
-			}
-		case string:
-			element = xmlElement{
-				XMLName: xml.Name{Local: key},
-				Value:   v,
-			}
-		default:
-			continue
-		}
-
-		elements = append(elements, element)
-	}
-
-	xmlData, err := xml.MarshalIndent(xmlElement{XMLName: xml.Name{Local: rootName}, Children: elements}, "", "    ")
-	if err != nil {
-		return nil, err
-	}
-
-	return xmlData, nil
-}
 
 func CargarXml(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, registros []modelos.Registro, nombreSalida string) (string, error) {
 	// Leer archivo de plantilla

@@ -86,6 +86,9 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 								}
 							}
 						}
+						if value == "" {
+							value = fmt.Sprintf("##%s##", campo.Nombre)
+						}
 					} else {
 						value += v
 					}
