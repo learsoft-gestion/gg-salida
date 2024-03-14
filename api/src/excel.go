@@ -28,49 +28,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 		return "", err
 	}
 
-	// Construir path
-	// path := fmt.Sprintf("../templates/%s", proceso.Archivo_modelo)
-
-	// Abrir archivo Excel
-	// f, err := excelize.OpenFile(path)
-	// if err != nil {
-	// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 	return "", err
-	// }
-
-	// Nombre de la hoja
-	// sheetName := f.GetSheetName(0)
-
-	// Obtener las celdas de la primera fila
-	// filas, err := f.GetRows(sheetName)
-	// if err != nil {
-	// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 	return "", err
-	// }
 	fileNuevo := excelize.NewFile()
 
-	// var estilos []int
-	// for i := range filas[0] {
-	// 	colLetter, _ := excelize.ColumnNumberToName(i + 1)
-	// 	cell := colLetter + "1"
-	// 	styles, err := f.GetCellStyle(sheetName, cell)
-	// 	if err != nil {
-	// 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 		return "", err
-	// 	}
-	// 	estilo, err := f.GetStyle(styles)
-	// 	if err != nil {
-	// 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 		return "", err
-	// 	}
-	// 	fileNuevo.NewStyle(estilo)
-	// 	fileNuevo.SetCellStyle(sheetName, colLetter, "1", styles)
-	// 	// estilos = append(estilos, styles)
-	// }
-
-	// Extraer valores de la primera fila
-	// var primeraFila []string
-	// primeraFila = append(primeraFila, filas[0]...)
 	sheetName := "Hoja1"
 	fileNuevo.SetSheetName("Sheet1", sheetName)
 
@@ -157,27 +116,6 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 		}
 	}
 
-	// err := fileNuevo.SetRowStyle(sheetName, 1, 10, estilos[1])
-	// if err != nil {
-	// 	return err
-	// }
-
-	// Escribir datos en el archivo Excel
-	// for rowIndex, registro := range data { // row ----> 1 Gabi CABA 27
-	// 	for colIndex, columna := range primeraFila {
-	// 		// columnaMin := strings.ToLower(columna)
-	// 		colLetter, _ := excelize.ColumnNumberToName(colIndex + 1)
-	// 		cell := colLetter + strconv.Itoa(rowIndex+2)
-	// 		valor, ok := registro.Valores[strings.ToUpper(columna)]
-	// 		if ok {
-	// 			f.SetCellValue(sheetName, cell, valor)
-	// 		} else {
-	// 			f.SetCellValue(sheetName, cell, columna)
-	// 		}
-	// 		// fmt.Printf("sheetName: %s cell: %s value: %s\n", sheetName, cell, valor)
-	// 	}
-	// }
-
 	// Guardar archivo
 	if err = fileNuevo.SaveAs(nombreSalida); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
@@ -187,13 +125,14 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	return nombreSalida, nil
 }
 
+// 1000.1 ---> 1000,1
 func formatearFloat(s string) string {
 	partes := strings.Split(s, ".")
 	str := formatearMillares(partes[0])
 	return str + "," + partes[1]
 }
 
-// 1112223
+// 1112223 ----> 111.222,3
 func formatearMillares(s string) string {
 	n := len(s)
 	if n <= 3 {

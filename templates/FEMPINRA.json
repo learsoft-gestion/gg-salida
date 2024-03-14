@@ -1,0 +1,62 @@
+{
+    "cabecera": {
+        "tag": "Empleados",
+        "children": "Empleado"
+    },
+    "campo": [
+        {
+            "titulo": "Nombre",
+            "nombre": "apellidoynombre",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "RemuneracionBruta",
+            "nombre": "bruto_imp",
+            "tipo": "float",
+            "formato": "punto"
+        },
+        {
+            "titulo": "SueldoBasico",
+            "nombre": "sueldobasico",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "AporteNoRemunerativo",
+            "nombre": "total_norem",
+            "tipo": "float",
+            "formato": "punto"
+        },
+        {
+            "titulo": "Sexo",
+            "nombre": "sexo",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NroDoc",
+            "nombre": "nrodoc",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "TipDoc",
+            "nombre": "tipdoc",
+            "tipo": "fijo",
+            "formato": "DU"
+        },
+        {
+            "titulo": "Categoria",
+            "nombre": "cat",
+            "tipo": "fijo",
+            "formato": "1"
+        }
+    ]
+}

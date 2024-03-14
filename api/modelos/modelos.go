@@ -68,6 +68,8 @@ type Registro struct {
 type Cabecera struct {
 	Formato   string
 	Separador string
+	Tag       string
+	Children  string
 }
 
 type Campo struct {

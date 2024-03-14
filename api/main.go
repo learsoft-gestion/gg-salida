@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -147,14 +146,18 @@ var empresas []modelos.Option
 
 func getEmpresas(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var id_convenio string
+		var err error
+
+		query := "SELECT em.id_empresa_adm, ea.razon_social as nombre_empresa_adm FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm where vigente"
 		vars := mux.Vars(r)
-		id_convenio, err := strconv.Atoi(vars["id_convenio"])
-		if err != nil {
-			http.Error(w, "ID invalido", http.StatusBadRequest)
-			return
+
+		if len(vars["id_convenio"]) > 0 {
+			id_convenio = vars["id_convenio"]
+			query += fmt.Sprintf(" and em.id_convenio = %s", id_convenio)
 		}
-		fmt.Println("CONVENIO: ", id_convenio)
-		rows, err := db.Query("SELECT em.id_empresa_adm, ea.razon_social as nombre_empresa_adm FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm where id_convenio = $1 and vigente", id_convenio)
+
+		rows, err := db.Query(query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -190,24 +193,32 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		procesos = nil
 
 		// Extraigo IDs de la request
-		vars := mux.Vars(r)
-		id_convenio, err := strconv.Atoi(vars["id_convenio"])
-		if err != nil {
-			http.Error(w, "id_convenio invalido", http.StatusBadRequest)
-			return
-		}
-		id_empresa, err := strconv.Atoi(vars["id_empresa"])
-		if err != nil {
-			http.Error(w, "id_empresa invalido", http.StatusBadRequest)
-			return
-		}
-		id_concepto := vars["id_concepto"]
-		id_tipo := vars["id_tipo"]
-		fecha1 := vars["fecha1"]
-		fecha2 := vars["fecha2"]
-		query := "select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.fecha_ejecucion from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = $1 and em.id_empresa_adm = $2 and em.id_concepto = $3 and em.id_tipo = $4 and ((ep.fecha_desde = $5 and ep.fecha_hasta = $6) or ep.fecha_desde is null)"
+		// vars := mux.Vars(r)
+		// id_convenio := vars["id_convenio"]
+		// id_empresa := vars["id_empresa"]
+		// id_concepto := vars["id_concepto"]
+		// id_tipo := vars["id_tipo"]
+		// fecha1 := vars["fecha1"]
+		// fecha2 := vars["fecha2"]
+		id_convenio := r.URL.Query().Get("convenio")
+		id_empresa := r.URL.Query().Get("empresa")
+		id_concepto := r.URL.Query().Get("concepto")
+		id_tipo := r.URL.Query().Get("tipo")
+		fecha1 := r.URL.Query().Get("fecha1")
+		fecha2 := r.URL.Query().Get("fecha2")
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.fecha_ejecucion from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v and ((ep.fecha_desde = '%s' and ep.fecha_hasta = '%s') or ep.fecha_desde is null)", id_convenio, fecha1, fecha2)
 
-		rows, err := db.Query(query, id_convenio, id_empresa, id_concepto, id_tipo, fecha1, fecha2)
+		if len(id_empresa) > 0 {
+			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
+		}
+		if len(id_concepto) > 0 {
+			query += fmt.Sprintf(" and em.id_concepto = %s", id_concepto)
+		}
+		if len(id_tipo) > 0 {
+			query += fmt.Sprintf(" and em.id_tipo = %s", id_tipo)
+		}
+
+		rows, err := db.Query(query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -241,18 +252,18 @@ func getConceptos(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Extraigo IDs de la request
 		vars := mux.Vars(r)
-		id_convenio, err := strconv.Atoi(vars["id_convenio"])
-		if err != nil {
-			http.Error(w, "ID invalido", http.StatusBadRequest)
-			return
-		}
-		id_empresa, err := strconv.Atoi(vars["id_empresa"])
-		if err != nil {
-			http.Error(w, "ID invalido", http.StatusBadRequest)
-			return
-		}
 
-		rows, err := db.Query("select ec.id_concepto, ec.nombre as nombre_concepto, et.id_tipo, et.nombre as nombre_tipo from extractor.ext_modelos em join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = $1 and em.id_empresa_adm = $2", id_convenio, id_empresa)
+		id_convenio := vars["id_convenio"]
+		id_empresa := vars["id_empresa"]
+		query := "select ec.id_concepto, ec.nombre as nombre_concepto, et.id_tipo, et.nombre as nombre_tipo from extractor.ext_modelos em join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo"
+		if len(id_convenio) > 0 && len(id_empresa) > 0 {
+			query += fmt.Sprintf(" where em.id_convenio = %s and em.id_empresa_adm = %s", id_convenio, id_empresa)
+		} else if len(id_convenio) > 0 {
+			query += fmt.Sprintf(" where em.id_convenio = %s ", id_convenio)
+		} else if len(id_empresa) > 0 {
+			query += fmt.Sprintf(" where em.id_empresa_adm = %s", id_empresa)
+		}
+		rows, err := db.Query(query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -330,21 +341,30 @@ func sender(db *sql.DB) http.HandlerFunc {
 				procesos = append(procesos, proceso)
 			}
 
-			// fmt.Println("Datos recibidos: ", datos)
-			// var procs []modelos.Proceso
-			// var proc modelos.Proceso
-			// for _, id := range datos.IDs {
-			// 	for _, element := range procesos {
-			// 		if element.Id == id {
-			// 			// proc = element
-			// 			procs = append(procs, element)
-			// 		}
-			// 	}
-			// }
-
 			var resultado []string
 			for _, proc := range procesos {
-				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, datos.Forzado)
+				var cuenta int
+				var version int
+				// Verificar si el proceso ya se corrió
+				if !datos.Forzado { // Si la ejecucion no viene forzada continuo evaluando si este modelo ya se procesó
+
+					err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proc.Id, datos.Fecha, datos.Fecha2).Scan(&cuenta)
+					if err != nil {
+						fmt.Println(err.Error())
+						http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+						return
+					}
+
+				}
+				if cuenta > 0 {
+					fmt.Println("Este modelo ya ha sido procesado.")
+					version = cuenta + 1
+					// return "", modelos.ErrorFormateado{Mensaje: fmt.Errorf("el modelo ya ha sido procesado").Error(), Procesado: true}
+				} else {
+					version = cuenta + 1
+				}
+
+				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, version)
 				if result != "" {
 					resultado = append(resultado, result)
 				}
@@ -410,9 +430,15 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/convenios", getConvenios(db))
+	router.HandleFunc("/empresas", getEmpresas(db))
 	router.HandleFunc("/empresas/{id_convenio}", getEmpresas(db))
+	router.HandleFunc("/conceptos", getConceptos(db))
+	router.HandleFunc("/conceptos/{id_convenio}", getConceptos(db))
+	router.HandleFunc("/conceptos/{id_empresa}", getConceptos(db))
 	router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", getConceptos(db))
-	router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}/{fecha2}", getProcesos(db))
+	// router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}/{fecha2}", getProcesos(db))
+	// router.HandleFunc("/procesos", getProcesos(db)).Queries("convenio", "{convenio}", "fecha1", "{fecha1}", "fecha2", "{fecha2}", "empresa", "{empresa}", "concepto", "{concepto}", "tipo", "{tipo}").Methods("GET")
+	router.HandleFunc("/procesos", getProcesos(db))
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/send", sender(db)).Methods("POST")
 
@@ -425,32 +451,13 @@ func main() {
 	srv.ListenAndServe()
 }
 
-func procesador(proceso modelos.Proceso, fecha string, fecha2 string, forzado bool) (string, modelos.ErrorFormateado) {
+func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
 
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 	defer db.Close()
-
-	var cuenta int
-	var version int
-	// Verificar si el proceso ya se corrió
-	if !forzado { // Si la ejecucion no viene forzada continuo evaluando si este modelo ya se procesó
-
-		err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proceso.Id, fecha, fecha2).Scan(&cuenta)
-		if err != nil {
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-		}
-
-	}
-	if cuenta > 0 {
-		fmt.Println("Este modelo ya ha sido procesado.")
-		version = cuenta + 1
-		// return "", modelos.ErrorFormateado{Mensaje: fmt.Errorf("el modelo ya ha sido procesado").Error(), Procesado: true}
-	} else {
-		version = cuenta + 1
-	}
 
 	// Conexion al origen de datos
 	sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
@@ -494,6 +501,14 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, forzado bo
 		nombreSalida = fmt.Sprintf("../salida/%s_%s.txt", proceso.Nombre, fechaFormateada)
 		// Utilizar funcion para txt
 		name, err = src.CargarTxt(db, idLogDetalle, proceso, registros, nombreSalida)
+		if err != nil {
+			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
+	} else if formato == "xml" {
+		nombreSalida = fmt.Sprintf("../salida/%s_%s.xml", proceso.Nombre, fechaFormateada)
+		// Utilizar funcion para txt
+		name, err = src.CargarXml(db, idLogDetalle, proceso, registros, nombreSalida)
 		if err != nil {
 			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
