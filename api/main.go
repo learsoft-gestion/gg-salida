@@ -342,7 +342,8 @@ func sender(db *sql.DB) http.HandlerFunc {
 				http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
 				return
 			}
-
+			datos.Fecha = src.FormatoFecha(datos.Fecha)
+			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
 			var placeholders []string
 			for i := range datos.IDs {
 				placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
