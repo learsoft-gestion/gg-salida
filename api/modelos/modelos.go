@@ -46,10 +46,9 @@ type DTOproceso struct {
 }
 
 type DTOdatos struct {
-	Id      int
-	Fecha   string
-	Fecha2  string
-	Forzado bool
+	Id     string
+	Fecha  string
+	Fecha2 string
 }
 
 type ProcesosTemplate struct {
