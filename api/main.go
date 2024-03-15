@@ -215,7 +215,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v and ((ep.fecha_desde = '%s' and ep.fecha_hasta = '%s') or ep.fecha_desde is null)", id_convenio, fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado, case WHEN ep.version IS NULL THEN 'lanzar' WHEN (SELECT COUNT(*) FROM extractor.ext_procesados ep2 WHERE ep2.id_modelo = ep.id_modelo and ep2.fecha_desde = ep.fecha_desde and ep2.fecha_hasta = ep.fecha_hasta) = 1 THEN 'relanzar' WHEN ep.version = (SELECT MAX(ep2.version) FROM extractor.ext_procesados ep2 WHERE ep2.id_modelo = ep.id_modelo and ep2.fecha_desde = ep.fecha_desde and ep2.fecha_hasta = ep.fecha_hasta) THEN 'relanzar' ELSE '' END AS boton from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v and ((ep.fecha_desde = '%s' and ep.fecha_hasta = '%s') or ep.fecha_desde is null)", id_convenio, fechaFormateada, fechaFormateada2)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
@@ -232,7 +232,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		if len(jurisdiccion) > 0 {
 			query += " and UPPER(em.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
 		}
-
+		query += " order by nombre_empresa_adm, nombre_concepto, nombre, nombre_tipo, ep.version"
 		rows, err := db.Query(query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -244,14 +244,29 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			// var proceso modelos.Proceso
 			var DTOproceso modelos.DTOproceso
 			var version sql.NullInt16
+			var ult_ejecucion sql.NullString
+			var boton sql.NullString
 
-			if err := rows.Scan(&DTOproceso.Id, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &DTOproceso.Fecha_desde, &DTOproceso.Fecha_hasta, &DTOproceso.Nombre_salida, &version, &DTOproceso.Ultima_ejecucion, &DTOproceso.Procesado); err != nil {
+			if err := rows.Scan(&DTOproceso.Id, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &DTOproceso.Fecha_desde, &DTOproceso.Fecha_hasta, &DTOproceso.Nombre_salida, &version, &ult_ejecucion, &DTOproceso.Procesado, &boton); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			if version.Valid {
 				DTOproceso.Version = fmt.Sprintf("%v", version.Int16)
+			}
+			if ult_ejecucion.Valid {
+				fecha_ult_ejecucion, err := time.Parse("2006-01-02T15:04:05.999999Z", ult_ejecucion.String)
+				if err != nil {
+					fmt.Println("Error al parsear fecha de ultima ejecucion")
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				DTOproceso.Ultima_ejecucion = fecha_ult_ejecucion.Format("2006-01-02 15:04")
+			}
+			if boton.Valid {
+				DTOproceso.Boton = boton.String
 			}
 			DTOprocesos = append(DTOprocesos, DTOproceso)
 
@@ -366,23 +381,21 @@ func sender(db *sql.DB) http.HandlerFunc {
 				var cuenta int
 				var version int
 				// Verificar si el proceso ya se corrió
-				if !datos.Forzado { // Si la ejecucion no viene forzada continuo evaluando si este modelo ya se procesó
 
-					err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proc.Id, datos.Fecha, datos.Fecha2).Scan(&cuenta)
-					if err != nil {
-						fmt.Println(err.Error())
-						http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
-						return
-					}
-
+				err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proc.Id, datos.Fecha, datos.Fecha2).Scan(&cuenta)
+				if err != nil {
+					fmt.Println(err.Error())
+					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					return
 				}
+
 				if cuenta > 0 {
 					version = cuenta + 1
 					// return "", modelos.ErrorFormateado{Mensaje: fmt.Errorf("el modelo ya ha sido procesado").Error(), Procesado: true}
 				} else {
 					version = cuenta + 1
 				}
-
+				fmt.Println("pasó por procesador. version: ", version)
 				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, version)
 				if result != "" {
 					resultado = append(resultado, result)
@@ -399,17 +412,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 					jsonResp, _ := json.Marshal(respuesta)
 					w.Write(jsonResp)
 					return
-					// } else if errFormateado.Procesado {
-					// 	w.WriteHeader(http.StatusOK)
-					// 	w.Header().Set("Content-Type", "application/json")
-					// 	respuesta := modelos.Respuesta{
-					// 		Mensaje:         errFormateado.Mensaje,
-					// 		Archivos_salida: nil,
-					// 		Procesado:       true,
-					// 	}
-					// 	jsonResp, _ := json.Marshal(respuesta)
-					// 	w.Write(jsonResp)
-					// 	return
+
 				}
 
 			}
@@ -551,6 +554,7 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
-
+	// El proceso termino, reinicio procesos
+	procesos = nil
 	return name, modelos.ErrorFormateado{Mensaje: ""}
 }
