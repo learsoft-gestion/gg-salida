@@ -345,9 +345,10 @@ func sender(db *sql.DB) http.HandlerFunc {
 			datos.Fecha = src.FormatoFecha(datos.Fecha)
 			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
 			var placeholders []string
-			for i := range datos.IDs {
-				placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
-			}
+			// for i := range datos.Id {
+			// 	placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
+			// }
+			placeholders = append(placeholders, "$1")
 			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
 			// fmt.Println("Query modelos: ", queryModelos)
 			stmt, err := db.Prepare(queryModelos)
@@ -357,9 +358,10 @@ func sender(db *sql.DB) http.HandlerFunc {
 			}
 			defer stmt.Close()
 			var args []interface{}
-			for _, arg := range datos.IDs {
-				args = append(args, arg)
-			}
+			// for _, arg := range datos.IDs {
+			// 	args = append(args, arg)
+			// }
+			args = append(args, datos.Id)
 			rows, err := stmt.Query(args...)
 			if err != nil {
 				http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
@@ -396,7 +398,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 				} else {
 					version = cuenta + 1
 				}
-				fmt.Println("pasó por procesador. version: ", version)
+
 				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, version)
 				if result != "" {
 					resultado = append(resultado, result)

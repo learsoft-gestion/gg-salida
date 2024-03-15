@@ -46,7 +46,7 @@ type DTOproceso struct {
 }
 
 type DTOdatos struct {
-	IDs     []int
+	Id      int
 	Fecha   string
 	Fecha2  string
 	Forzado bool
