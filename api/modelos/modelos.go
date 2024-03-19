@@ -121,6 +121,7 @@ type Respuesta struct {
 
 type RespuestaRestantes struct {
 	Mensaje string `json:"mensaje"`
+	Boton   string `json:"boton"`
 }
 
 type Restantes struct {

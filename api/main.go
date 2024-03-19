@@ -450,13 +450,26 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 			Fecha2:   fechaFormateada2,
 		}
 		cantidad := len(id_modelos)
-		resString := fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
+		var resString string
+		var btn string
+		if cantidad == 0 {
+			err = db.QueryRow(fmt.Sprintf("SELECT nombre from extractor.ext_convenios where id_convenio = %v", id_convenio)).Scan(&nombre_conv)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			resString = fmt.Sprintf("Ya han sido generados todos los informes para el convenio %s", nombre_conv)
+		} else {
+			resString = fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
+			btn = "Generar"
+		}
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		respuesta := modelos.RespuestaRestantes{
 			Mensaje: resString,
+			Boton:   btn,
 		}
+
 		jsonResp, _ := json.Marshal(respuesta)
 		w.Write(jsonResp)
 
