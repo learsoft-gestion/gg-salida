@@ -4,14 +4,21 @@
 <head>
   <title>Generador de Informes</title>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css">
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
   <style>
     body {
       font-family: Arial, sans-serif;
+      padding: 0;
     }
 
     .form-group {
@@ -26,59 +33,110 @@
       text-align: center;
     }
 
-    .centrado {
+    .table td {
+      padding: 0;
+    }
+
+    .btn-buscar {
       display: flex;
       align-items: flex-end;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.5);
+      z-index: 9999;
+      display: none;
+    }
+
+    .loading-spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="container-fluid">
-    <h3 class="mt-5">Generador de Informes</h3>
-
-    <div class="row">
-      <div class="col-md-2 form-group">
-        <label for="convenio">Convenio</label>
-        <select id="conv" class="form-control">
-          <option value="" disabled selected>Selecciona una opción</option>
-        </select>
+    <div class="row bg-dark text-white">
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col form-group">
+            <label for="convenio">Convenio</label>
+            <select id="conv" class="form-control">
+              <option value="" disabled selected>Selecciona una opción</option>
+            </select>
+          </div>
+          <div class="col form-group">
+            <label for="empresa">Empresa</label>
+            <select id="emp" class="form-control">
+              <option value="" disabled selected>Todas</option>
+            </select>
+          </div>
+          <div class="col form-group">
+            <label for="concepto">Concepto</label>
+            <select id="conc" class="form-control">
+              <option value="" disabled selected>Todos</option>
+            </select>
+          </div>
+          <div class="col form-group">
+            <label for="tipo">Tipo</label>
+            <select id="tipo" class="form-control">
+              <option value="" disabled selected>Todos</option>
+            </select>
+          </div>
+          <div class="col form-group">
+            <label for="jurisdiccion">Jurisdicción</label>
+            <input type="text" id="jurisdiccion" class="form-control" placeholder="Todas">
+          </div>
+        </div>
       </div>
-      <div class="col-md-2 form-group">
-        <label for="empresa">Empresa</label>
-        <select id="emp" class="form-control">
-          <option value="" disabled selected>Selecciona una opción</option>
-        </select>
+      <div class="col-md-4">
+        <div class="row">
+          <div class="col form-group">
+            <label for="filtroFechaInicio">Desde</label>
+            <input id="filtroFechaInicio" class="form-control" placeholder="Selecciona desde" data-input>
+          </div>
+          <div class="col form-group">
+            <label for="filtroFechaFin">Hasta</label>
+            <input id="filtroFechaFin" class="form-control" placeholder="Selecciona hasta" data-input>
+          </div>
+          <div class="col-md-3 form-group">
+            <label>Procesado</label><br>
+            <input type="checkbox" id="procesadoTrue"> Sí
+            <input type="checkbox" id="procesadoFalse"> No
+          </div>
+          <div class="col-md-2 form-group btn-buscar">
+            <button type="button" class="btn btn-outline-light" id="btnBuscar" title="Buscar">
+              <i class="material-symbols-outlined">search</i>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="col-md-2 form-group">
-        <label for="concepto">Concepto</label>
-        <select id="conc" class="form-control">
-          <option value="" disabled selected>Selecciona una opción</option>
-        </select>
-      </div>
-      <div class="col-md-2 form-group">
-        <label for="tipo">Tipo</label>
-        <select id="tipo" class="form-control">
-          <option value="" disabled selected>Selecciona una opción</option>
-        </select>
-      </div>
-      <div class="col-md-1 form-group">
-        <label>Procesado:</label><br>
-        <input type="checkbox" id="procesadoTrue"> Sí
-        <input type="checkbox" id="procesadoFalse"> No
-      </div>
-      <!-- Campo de fecha -->
-      <div class="col-md-1 form-group">
-        <label for="filtroFechaInicio">Desde</label>
-        <input id="filtroFechaInicio" class="form-control" placeholder="Selecciona una fecha" data-input>
-      </div>
-      <!-- Campo de fecha final para el período -->
-      <div class="col-md-1 form-group">
-        <label for="filtroFechaFin">Hasta</label>
-        <input id="filtroFechaFin" class="form-control" placeholder="Selecciona hasta" data-input>
-      </div>
-      <div class="col-md-1 form-group centrado">
-        <button type="button" class="btn btn-primary" id="btnBuscar">Buscar</button>
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
       </div>
     </div>
 
@@ -93,6 +151,7 @@
             <th>Nombre de Salida</th>
             <th>Versión</th>
             <th>Última ejecución</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -101,6 +160,9 @@
   </div>
 
   <script>
+    // Chequear los checkbox
+    $('[type=checkbox]').prop('checked', true);
+
     // Llenar fecha hasta = fecha desde
     $(document).ready(function () {
       // Filtro de fecha/período
@@ -110,11 +172,13 @@
         }
       });
 
-      // Inicializar calendario Flatpickr
-      flatpickr("#filtroFechaInicio, #filtroFechaFin", {
-        dateFormat: "Ym",
-        locale: 'es',
+      $("#filtroFechaInicio, #filtroFechaFin").datepicker({
+        autoclose: true,
+        minViewMode: 1,
+        format: 'mm/yyyy',
+        language: "es"
       });
+
     });
 
     // Select de convenio
@@ -151,7 +215,7 @@
           $("#emp").empty();
           var selOption = document.createElement("option");
           selOption.value = '';
-          selOption.textContent = 'Selecciona una opción';
+          selOption.textContent = 'Todas';
           $("#emp").append(selOption);
           if (data && data.length > 0) {
             data.forEach(empresa => {
@@ -184,11 +248,11 @@
           $("#tipo").empty();
           var selOption = document.createElement("option");
           selOption.value = '';
-          selOption.textContent = 'Selecciona una opción';
+          selOption.textContent = 'Todos';
           $("#conc").append(selOption);
           var selOption2 = document.createElement("option");
           selOption2.value = '';
-          selOption2.textContent = 'Selecciona una opción';
+          selOption2.textContent = 'Todos';
           $("#tipo").append(selOption2);
           if (data) {
             data.Conceptos.forEach(concepto => {
@@ -224,6 +288,7 @@
         empresa: $("#emp").val(),
         concepto: $("#conc").val(),
         tipo: $("#tipo").val(),
+        jurisdiccion: $("#jurisdiccion").val(),
         fecha1: fechaDesde,
         fecha2: fechaHasta
       }
@@ -243,7 +308,6 @@
         alert("La fecha Hasta no puede ser menor a la fecha de inicio");
         return;
       }
-
       // Llamada al servidor
       $.ajax({
         url: `/procesos`,
@@ -276,11 +340,53 @@
         row.append('<td>' + item.Tipo + '</td>');
         row.append('<td>' + item.Nombre + '</td>');
         row.append('<td>' + item.Nombre_salida.String + '</td>');
-        row.append('<td>' + item.Version.Int16 + '</td>');
-        row.append('<td>' + item.Ultima_ejecucion.String + '</td>');
+        row.append('<td>' + item.Version + '</td>');
+        row.append('<td>' + item.Ultima_ejecucion + '</td>');
+        row.append('<td>' + generarBoton(item) + '</td>');
 
         tbody.append(row);
       });
+
+      // Botones de lanzar y relanzar
+      $('.lanzar').click(function () {
+        $('#loadingOverlay').show();
+
+        var id = $(this).val();
+        var json = {
+          Id: $(this).val(),
+          Fecha: $("#filtroFechaInicio").val(),
+          Fecha2: $("#filtroFechaFin").val()
+        }
+
+        $.ajax({
+          url: '/send',
+          method: 'POST',
+          dataType: 'json',
+          data: JSON.stringify(json),
+          success: function (data) {
+            $('#loadingOverlay').hide();
+            if (data) {
+              alert(data.mensaje);
+              $("#btnBuscar").trigger("click");
+            } else {
+              console.log('No se recibieron datos del servidor.');
+            }
+          },
+          error: function (error) {
+            $('#loadingOverlay').hide();
+            console.error('Error en la solicitud:', error);
+          }
+        });
+      });
+    }
+
+    generarBoton = function (item) {
+      if (item.Boton === "lanzar") {
+        return `<button type="button" class="btn btn-success btn-sm lanzar" value="${item.Id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
+      } else if (item.Boton === "relanzar") {
+        return `<button type="button" class="btn btn-primary btn-sm lanzar" value="${item.Id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
+      }
+      return '<button type="button" class="btn btn-transparent" style="width: 38px; height: 38px;" disabled></button>';
     }
   </script>
 </body>
