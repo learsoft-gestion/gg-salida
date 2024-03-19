@@ -6,6 +6,7 @@ type Proceso struct {
 	Id              int    `json:"id"`
 	Id_empresa      int    `json:"id_empresa"`
 	Nombre_empresa  string `json:"nombre_empresa"`
+	Id_convenio     int    `json:"id_convenio"`
 	Nombre_convenio string `json:"nombre_convenio"`
 	Nombre          string `json:"nombre"`
 	Filtro_convenio string `json:"filtro_convenio"`

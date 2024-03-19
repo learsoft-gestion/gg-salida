@@ -13,16 +13,17 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 	// Reemplazo de fecha en query
 	queryFinal := strings.Replace(proceso.Query, "$PERIODO$", fecha, -1)
 	queryFinal = strings.Replace(queryFinal, "$PERIODO2$", fecha2, -1)
-	queryFinal = strings.Replace(queryFinal, "$FILTRO_CONVENIO$", proceso.Filtro_convenio, 1)
-	queryFinal = strings.Replace(queryFinal, "$EMPRESA$", strconv.Itoa(proceso.Id_empresa), 1)
+	queryFinal = strings.Replace(queryFinal, "$FILTRO_CONVENIO$", proceso.Filtro_convenio, -1)
+	queryFinal = strings.Replace(queryFinal, "$CONVENIO$", strconv.Itoa(proceso.Id_convenio), -1)
+	queryFinal = strings.Replace(queryFinal, "$EMPRESA$", strconv.Itoa(proceso.Id_empresa), -1)
 	if proceso.Filtro_personas != "" {
-		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$", proceso.Filtro_personas, 1)
+		queryFinal = strings.Replace(queryFinal, "$FILTRO_PERSONAS$", proceso.Filtro_personas, -1)
 	} else {
 		parts := strings.Split(queryFinal, "$FILTRO_PERSONAS$")
 		queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
 	}
 	if proceso.Filtro_recibos != "" {
-		queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", proceso.Filtro_recibos, 1)
+		queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", proceso.Filtro_recibos, -1)
 	} else {
 		parts := strings.Split(queryFinal, "$FILTRO_RECIBOS$")
 		queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
