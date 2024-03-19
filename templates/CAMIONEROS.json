@@ -10,39 +10,24 @@
             "formato": "cuil sin guion"
         },
         {
-            "nombre": "periodoLiq",
-            "tipo": "fecha",
-            "formato": "MM/YY"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "N"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "S"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "1"
-        },
-        {
             "nombre": "apellidoynombre",
             "tipo": "string",
             "formato": ""
         },
         {
-            "nombre": "laboral_localidad",
-            "tipo": "string",
+            "nombre": "periodoLiq",
+            "tipo": "fecha",
+            "formato": "MM/YYYY"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
             "formato": "1"
         },
         {
-            "nombre": "categoria",
-            "tipo": "lookup",
-            "formato": ""
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "S"
         },
         {
             "nombre": "total_basico",
@@ -56,278 +41,115 @@
         },
         {
             "nombre": "ingreso",
-            "tipo": "float",
-            "formato": "punto"
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0"
+        },
+        {
+            "nombre": "categoria",
+            "tipo": "lookup",
+            "formato": "12"
         }
     ],
     "variables": [
         {
             "nombre": "categoria",
             "datos": [
-                {
-                    "id": 4,
-                    "nombre": "ADM. 1RA. CATEGORIA"
-                },
-                {
-                    "id": 4,
-                    "nombre": "Administrativo 1º Cat."
-                },
-                {
-                    "id": 5,
-                    "nombre": "ADM. 2DA. CATEGORIA"
-                },
-                {
-                    "id": 6,
-                    "nombre": "ADM. 3RA. CATEGORIA"
-                },
-                {
-                    "id": 32,
-                    "nombre": "ADM. 4TA. CATEGORIA"
-                },
-                {
-                    "id": 26,
-                    "nombre": "AUXILIAR OPERATIVO DE 1RA"
-                },
-                {
-                    "id": 27,
-                    "nombre": "AUXILIAR OPERATIVO DE 2DA"
-                },
-                {
-                    "id": 17,
-                    "nombre": "AYUDANTES MENORES 17 AÑOS"
-                },
-                {
-                    "id": 1,
-                    "nombre": "CHOFER 1RA. CATEGORIA"
-                },
-                {
-                    "id": 2,
-                    "nombre": "CHOFER 2DA. CATEGORIA"
-                },
-                {
-                    "id": 3,
-                    "nombre": "CHOFER 3RA CATEGORIA"
-                },
-                {
-                    "id": 25,
-                    "nombre": "CHOFER CON FIRMA"
-                },
-                {
-                    "id": 18,
-                    "nombre": "CHOFER LARGA DISTANCIA"
-                },
-                {
-                    "id": 20,
-                    "nombre": "CHOFER RECOLEC. RESIDUOS"
-                },
-                {
-                    "id": 8,
-                    "nombre": "CONDUCTOR CAMION BLINDADO"
-                },
-                {
-                    "id": 9,
-                    "nombre": "CONDUCTOR CLEARING Y C.P."
-                },
-                {
-                    "id": 7,
-                    "nombre": "CONDUCTOR GRUAS,AUTOG.,ET"
-                },
-                {
-                    "id": 33,
-                    "nombre": "CONDUCTOR TAXIS"
-                },
-                {
-                    "id": 59,
-                    "nombre": "CUSTODIA UNIDAD BLINDADA"
-                },
-                {
-                    "id": 37,
-                    "nombre": "DESEMPLEADO"
-                },
-                {
-                    "id": 24,
-                    "nombre": "Distribuidor Domiciliario (CCT 40/89)"
-                },
-                {
-                    "id": 11,
-                    "nombre": "EMBALAD.,PEONES ESP.MUD."
-                },
-                {
-                    "id": 10,
-                    "nombre": "ENCARGADO"
-                },
-                {
-                    "id": 16,
-                    "nombre": "LAVADORES, ENGRAS., AYUDAN."
-                },
-                {
-                    "id": 13,
-                    "nombre": "MAESTRANZA Y/O SERENO"
-                },
-                {
-                    "id": 31,
-                    "nombre": "MEDIO OFICIAL GOMERO"
-                },
-                {
-                    "id": 34,
-                    "nombre": "MONOTRIBUTISTA"
-                },
-                {
-                    "id": 28,
-                    "nombre": "OFICIAL 1RO. TALLER"
-                },
-                {
-                    "id": 29,
-                    "nombre": "OFICIAL COMPLETO TALLER"
-                },
-                {
-                    "id": 30,
-                    "nombre": "OFICIAL GOMERO"
-                },
-                {
-                    "id": 35,
-                    "nombre": "OPCION DE OBRA SOCIAL"
-                },
-                {
-                    "id": 38,
-                    "nombre": "OPCION OBRA SOCIAL"
-                },
-                {
-                    "id": 23,
-                    "nombre": "OPERADOR DE SERVICIO"
-                },
-                {
-                    "id": 36,
-                    "nombre": "OTROS"
-                },
-                {
-                    "id": 12,
-                    "nombre": "PEON"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peón"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peon Especial"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peón (CCT 40/89)"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peón Esp y Reparto"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peón Especializado"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Op. de Reparto"
-                },
-                {
-                    "id": 22,
-                    "nombre": "PEON GRAL. BARRIDO Y LIM."
-                },
-                {
-                    "id": 14,
-                    "nombre": "PERS. DE TALLER(OFICIAL)"
-                },
-                {
-                    "id": 15,
-                    "nombre": "PERS. TALLER(MEDIO OFIC.)"
-                },
-                {
-                    "id": 19,
-                    "nombre": "RECIBIDOR Y/O CLASIFICAD."
-                },
-                {
-                    "id": 21,
-                    "nombre": "RECOLECTOR RESID. Y/O LIM"
-                },
-                {
-                    "id": 15,
-                    "nombre": "1/2 Oficial Mecanico Mant."
-                },
-                {
-                    "id": 32,
-                    "nombre": "Administrativo 4º Cat."
-                },
-                {
-                    "id": 16,
-                    "nombre": "Ayudante de Taller"
-                },
-                {
-                    "id": 1,
-                    "nombre": "Chofer 1ª Categoría"
-                },
-                {
-                    "id": 3,
-                    "nombre": "Chofer 3ª categoría"
-                },
-                {
-                    "id": 1,
-                    "nombre": "Conductor 1° Categoria --"
-                },
-                {
-                    "id": 1,
-                    "nombre": "Conductor de 1ª Cat. (CCT 40/89)"
-                },
-                {
-                    "id": 13,
-                    "nombre": "Maestranza"
-                },
-                {
-                    "id": 15,
-                    "nombre": "Medio Oficial"
-                },
-                {
-                    "id": 15,
-                    "nombre": "Medio Oficial Mantenimiento"
-                },
-                {
-                    "id": 14,
-                    "nombre": "Oficial"
-                },
-                {
-                    "id": 14,
-                    "nombre": "Oficial Mecánicos - Foguista - Destilador"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peón (CCT40/89)"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peón Gral"
-                },
-                {
-                    "id": 11,
-                    "nombre": "Peón Gral. Barrido y Limpieza"
-                },
-                {
-                    "id": 12,
-                    "nombre": "PEONES ESPECIALIZADOS --"
-                },
-                {
-                    "id": 12,
-                    "nombre": "Peones Generales de Barrido y Limpieza (CCT 40/89)"
-                },
-                {
-                    "id": 32,
-                    "nombre": "Personal Administrativo - 4ª Cat. (CCT 40/89)"
-                },
-                {
-                    "id": 21,
-                    "nombre": "Rec. Residuos/Limpieza"
-                },
-                {
-                    "id": 21,
-                    "nombre": "Recolectores de Residuos y Limpieza (CCT 40/89)"
-                }
+                {"id": 4, "nombre": "ADM. 1RA. CATEGORIA"},
+                {"id": 4, "nombre": "Administrativo 1º Cat."},
+                {"id": 5, "nombre": "ADM. 2DA. CATEGORIA"},
+                {"id": 6, "nombre": "ADM. 3RA. CATEGORIA"},
+                {"id": 32, "nombre": "ADM. 4TA. CATEGORIA"},
+                {"id": 26, "nombre": "AUXILIAR OPERATIVO DE 1RA"},
+                {"id": 27, "nombre": "AUXILIAR OPERATIVO DE 2DA"},
+                {"id": 17, "nombre": "AYUDANTES MENORES 17 AÑOS"},
+                {"id": 1, "nombre": "CHOFER 1RA. CATEGORIA"},
+                {"id": 2, "nombre": "CHOFER 2DA. CATEGORIA"},
+                {"id": 3, "nombre": "CHOFER 3RA CATEGORIA"},
+                {"id": 25, "nombre": "CHOFER CON FIRMA"},
+                {"id": 18, "nombre": "CHOFER LARGA DISTANCIA"},
+                {"id": 20, "nombre": "CHOFER RECOLEC. RESIDUOS"},
+                {"id": 8, "nombre": "CONDUCTOR CAMION BLINDADO"},
+                {"id": 9, "nombre": "CONDUCTOR CLEARING Y C.P."},
+                {"id": 7, "nombre": "CONDUCTOR GRUAS,AUTOG.,ET"},
+                {"id": 33, "nombre": "CONDUCTOR TAXIS"},
+                {"id": 59, "nombre": "CUSTODIA UNIDAD BLINDADA"},
+                {"id": 37, "nombre": "DESEMPLEADO"},
+                {"id": 24, "nombre": "Distribuidor Domiciliario (CCT 40/89)"},
+                {"id": 11, "nombre": "EMBALAD.,PEONES ESP.MUD."},
+                {"id": 10, "nombre": "ENCARGADO"},
+                {"id": 16, "nombre": "LAVADORES, ENGRAS., AYUDAN."},
+                {"id": 13, "nombre": "MAESTRANZA Y/O SERENO"},
+                {"id": 31, "nombre": "MEDIO OFICIAL GOMERO"},
+                {"id": 34, "nombre": "MONOTRIBUTISTA"},
+                {"id": 28, "nombre": "OFICIAL 1RO. TALLER"},
+                {"id": 29, "nombre": "OFICIAL COMPLETO TALLER"},
+                {"id": 30, "nombre": "OFICIAL GOMERO"},
+                {"id": 35, "nombre": "OPCION DE OBRA SOCIAL"},
+                {"id": 38, "nombre": "OPCION OBRA SOCIAL"},
+                {"id": 23, "nombre": "OPERADOR DE SERVICIO"},
+                {"id": 36, "nombre": "OTROS"},
+                {"id": 12, "nombre": "PEON"},
+                {"id": 12, "nombre": "Peón"},
+                {"id": 12, "nombre": "Peon Especial"},
+                {"id": 12, "nombre": "Peón (CCT 40/89)"},
+                {"id": 12, "nombre": "Peón Esp y Reparto"},
+                {"id": 12, "nombre": "Peón Especializado"},
+                {"id": 12, "nombre": "Op. de Reparto"},
+                {"id": 22, "nombre": "PEON GRAL. BARRIDO Y LIM."},
+                {"id": 14, "nombre": "PERS. DE TALLER(OFICIAL)"},
+                {"id": 15, "nombre": "PERS. TALLER(MEDIO OFIC.)"},
+                {"id": 19, "nombre": "RECIBIDOR Y/O CLASIFICAD."},
+                {"id": 21, "nombre": "RECOLECTOR RESID. Y/O LIM"},
+                {"id": 15, "nombre": "1/2 Oficial Mecanico Mant."},
+                {"id": 32, "nombre": "Administrativo 4º Cat."},
+                {"id": 16, "nombre": "Ayudante de Taller"},
+                {"id": 1, "nombre": "Chofer 1ª Categoría"},
+                {"id": 3, "nombre": "Chofer 3ª categoría"},
+                {"id": 1, "nombre": "Conductor 1° Categoria --"},
+                {"id": 1, "nombre": "Conductor de 1ª Cat. (CCT 40/89)"},
+                {"id": 13, "nombre": "Maestranza"},
+                {"id": 15, "nombre": "Medio Oficial"},
+                {"id": 15, "nombre": "Medio Oficial Mantenimiento"},
+                {"id": 14, "nombre": "Oficial"},
+                {"id": 14, "nombre": "Oficial Mecánicos - Foguista - Destilador"},
+                {"id": 12, "nombre": "Peón (CCT40/89)"},
+                {"id": 12, "nombre": "Peón Gral"},
+                {"id": 11, "nombre": "Peón Gral. Barrido y Limpieza"},
+                {"id": 12, "nombre": "PEONES ESPECIALIZADOS --"},
+                {"id": 12, "nombre": "Peones Generales de Barrido y Limpieza (CCT 40/89)"},
+                {"id": 32, "nombre": "Personal Administrativo - 4ª Cat. (CCT 40/89)"},
+                {"id": 21, "nombre": "Rec. Residuos/Limpieza"},
+                {"id": 21, "nombre": "Recolectores de Residuos y Limpieza (CCT 40/89)"}
             ]
         } 
     ]

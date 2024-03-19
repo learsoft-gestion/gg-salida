@@ -5,6 +5,8 @@ import "database/sql"
 type Proceso struct {
 	Id              int    `json:"id"`
 	Id_empresa      int    `json:"id_empresa"`
+	Nombre_empresa  string `json:"nombre_empresa"`
+	Nombre_convenio string `json:"nombre_convenio"`
 	Nombre          string `json:"nombre"`
 	Filtro_convenio string `json:"filtro_convenio"`
 	Filtro_personas string `json:"filtro_personas"`
@@ -47,6 +49,11 @@ type DTOproceso struct {
 
 type DTOdatos struct {
 	Id     string
+	Fecha  string
+	Fecha2 string
+}
+type DTOdatosMultiple struct {
+	Id     []int
 	Fecha  string
 	Fecha2 string
 }
@@ -109,7 +116,18 @@ type Option struct {
 type Respuesta struct {
 	Mensaje         string   `json:"mensaje"`
 	Archivos_salida []string `json:"archivos_salida"`
-	Procesado       bool     `json:"procesado"`
+	// Procesado       bool     `json:"procesado"`
+}
+
+type RespuestaRestantes struct {
+	Mensaje string `json:"mensaje"`
+}
+
+type Restantes struct {
+	Id       []int
+	Convenio string
+	Fecha1   string
+	Fecha2   string
 }
 
 type Conceptos struct {

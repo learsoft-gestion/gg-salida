@@ -9,109 +9,29 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
-// func (p *Page) save() error {
-// 	filename := p.Title + ".txt"
-// 	return os.WriteFile(filename, p.Body, 0600)
-// }
-
-// func loadPage(title string) (*Page, error) {
-// 	filename := title + ".txt"
-// 	body, err := os.ReadFile(filename)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &Page{Title: title, Body: body}, nil
-// }
-
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	templates = template.Must(template.New("../client/index.html").ParseFiles("../client/index.html"))
 	w.WriteHeader(http.StatusAccepted)
 
-	// p, err := loadPage(title)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// }
 	renderTemplate(w, "index", nil)
 
 }
 
-// var procesos []modelos.Proceso
-// var dtoProcesos []modelos.DTOproceso
-
-// func getProcesos(db *sql.DB) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-
-// 		rows, err := db.Query("SELECT em.id_modelo, ea.razon_social as nombre_empresa_adm, c.nombre as nombre_convenio, em.nombre, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN datos.convenios c ON em.id_convenio = c.id_convenio where vigente")
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-
-// 		for rows.Next() {
-// 			var id int
-// 			var empresa string
-// 			var sindicato string
-// 			var nombre string
-// 			var filtro_personas sql.NullString
-// 			var filtroPersonas string
-// 			var filtro_recibos sql.NullString
-// 			var filtroRecibos string
-// 			var formato_salida string
-// 			var archivo_modelo string
-
-// 			if err := rows.Scan(&id, &empresa, &sindicato, &nombre, &filtro_personas, &filtro_recibos, &formato_salida, &archivo_modelo); err != nil {
-// 				http.Error(w, err.Error(), http.StatusInternalServerError)
-// 				return
-// 			}
-// 			dtoProceso := modelos.DTOproceso{
-// 				Id:        id,
-// 				Empresa:   empresa,
-// 				Sindicato: sindicato,
-// 				Nombre:    nombre,
-// 			}
-// 			dtoProcesos = append(dtoProcesos, dtoProceso)
-
-// 			if filtro_personas.Valid {
-// 				filtroPersonas = filtro_personas.String
-// 			}
-// 			if filtro_recibos.Valid {
-// 				filtroRecibos = filtro_recibos.String
-// 			}
-// 			proceso := modelos.Proceso{
-// 				Id:              id,
-// 				Nombre:          nombre,
-// 				Filtro_personas: filtroPersonas,
-// 				Filtro_recibos:  filtroRecibos,
-// 				Formato_salida:  formato_salida,
-// 				Archivo_modelo:  archivo_modelo,
-// 			}
-// 			procesos = append(procesos, proceso)
-// 		}
-// 		rows.Close()
-
-// 		dtoSelect := modelos.DTOselect{
-// 			Empresas:  empresas,
-// 			Convenios: convenios,
-// 			Procesos:  dtoProcesos,
-// 		}
-
-// 		w.Header().Set("Content-Type", "application/json")
-
-// 		if err := json.NewEncoder(w).Encode(dtoSelect); err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-
-// 	}
-// }
-
 var convenios []modelos.Option
+var empresas []modelos.Option
+var DTOprocesos []modelos.DTOproceso
+var procesos []modelos.Proceso
+
+// Almacena los registros restantes a ejecutar
+var restantes modelos.Restantes
 
 func getConvenios(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -141,8 +61,6 @@ func getConvenios(db *sql.DB) http.HandlerFunc {
 		}
 	}
 }
-
-var empresas []modelos.Option
 
 func getEmpresas(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -182,9 +100,6 @@ func getEmpresas(db *sql.DB) http.HandlerFunc {
 		}
 	}
 }
-
-var DTOprocesos []modelos.DTOproceso
-var procesos []modelos.Proceso
 
 func getProcesos(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -349,7 +264,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 			// 	placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
 			// }
 			placeholders = append(placeholders, "$1")
-			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
+			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
 			// fmt.Println("Query modelos: ", queryModelos)
 			stmt, err := db.Prepare(queryModelos)
 			if err != nil {
@@ -370,7 +285,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 			defer rows.Close()
 			for rows.Next() {
 				var proceso modelos.Proceso
-				err = rows.Scan(&proceso.Id, &proceso.Id_empresa, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo)
+				err = rows.Scan(&proceso.Id, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo)
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
@@ -392,12 +307,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 					return
 				}
 
-				if cuenta > 0 {
-					version = cuenta + 1
-					// return "", modelos.ErrorFormateado{Mensaje: fmt.Errorf("el modelo ya ha sido procesado").Error(), Procesado: true}
-				} else {
-					version = cuenta + 1
-				}
+				version = cuenta + 1
 
 				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, version)
 				if result != "" {
@@ -432,6 +342,127 @@ func sender(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+func multipleSend(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			procesos = nil
+
+			var placeholders []string
+			for i := range restantes.Id {
+				placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
+			}
+
+			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
+
+			stmt, err := db.Prepare(queryModelos)
+			if err != nil {
+				http.Error(w, "Error al preparar query", http.StatusBadRequest)
+				return
+			}
+			defer stmt.Close()
+			var args []interface{}
+			for _, arg := range restantes.Id {
+				args = append(args, arg)
+			}
+
+			rows, err := stmt.Query(args...)
+			if err != nil {
+				http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
+				return
+			}
+			defer rows.Close()
+			for rows.Next() {
+				var proceso modelos.Proceso
+				err = rows.Scan(&proceso.Id, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo)
+				if err != nil {
+					fmt.Println(err.Error())
+					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					return
+				}
+				procesos = append(procesos, proceso)
+			}
+
+			var resultado []string
+			for _, proc := range procesos {
+				var cuenta int
+				var version int
+
+				// Verificar si el proceso ya se corrió
+				err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proc.Id, restantes.Fecha1, restantes.Fecha2).Scan(&cuenta)
+				if err != nil {
+					fmt.Println(err.Error())
+					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					return
+				}
+
+				version = cuenta + 1
+
+				result, _ := procesador(proc, restantes.Fecha1, restantes.Fecha2, version)
+				if result != "" {
+					resultado = append(resultado, result)
+				}
+
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			respuesta := modelos.Respuesta{
+				Mensaje:         "Datos recibidos y procesados",
+				Archivos_salida: resultado,
+			}
+			jsonResp, _ := json.Marshal(respuesta)
+			w.Write(jsonResp)
+		}
+	}
+}
+
+func procesosRestantes(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id_convenio := r.URL.Query().Get("convenio")
+		fecha1 := r.URL.Query().Get("fecha1")
+		fechaFormateada := src.FormatoFecha(fecha1)
+		fecha2 := r.URL.Query().Get("fecha2")
+		fechaFormateada2 := src.FormatoFecha(fecha2)
+
+		query := fmt.Sprintf("SELECT modelo.id_modelo, c.nombre from extractor.ext_modelos modelo LEFT JOIN extractor.ext_procesados ep ON modelo.id_modelo = ep.id_modelo JOIN datos.empresas_adm ea ON modelo.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON modelo.id_convenio = c.id_convenio JOIN extractor.ext_conceptos ec ON modelo.id_concepto = ec.id_concepto JOIN extractor.ext_tipos et ON modelo.id_tipo = et.id_tipo WHERE modelo.id_convenio = %v AND ((ep.fecha_desde = '%s' AND ep.fecha_hasta = '%s') OR ep.fecha_desde IS NULL) AND ep.version IS NULL GROUP BY modelo.id_modelo, c.nombre, modelo.nombre, ep.version;", id_convenio, fechaFormateada, fechaFormateada2)
+
+		rows, err := db.Query(query)
+		if err != nil {
+			fmt.Println(fmt.Println("Error al ejecutar query de procesosRestantes"))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var id_modelos []int
+		var nombre_conv string
+		for rows.Next() {
+			var id_modelo int
+			var convenio string
+			rows.Scan(&id_modelo, &convenio)
+			id_modelos = append(id_modelos, id_modelo)
+			nombre_conv = convenio
+		}
+
+		restantes = modelos.Restantes{
+			Id:       id_modelos,
+			Convenio: nombre_conv,
+			Fecha1:   fechaFormateada,
+			Fecha2:   fechaFormateada2,
+		}
+		cantidad := len(id_modelos)
+		resString := fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		respuesta := modelos.RespuestaRestantes{
+			Mensaje: resString,
+		}
+		jsonResp, _ := json.Marshal(respuesta)
+		w.Write(jsonResp)
+
+	}
+}
+
 // var folder embed.FS
 var templates *template.Template
 
@@ -461,11 +492,11 @@ func main() {
 	router.HandleFunc("/conceptos/{id_convenio}", getConceptos(db))
 	router.HandleFunc("/conceptos/{id_empresa}", getConceptos(db))
 	router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", getConceptos(db))
-	// router.HandleFunc("/procesos/{id_convenio}/{id_empresa}/{id_concepto}/{id_tipo}/{fecha1}/{fecha2}", getProcesos(db))
-	// router.HandleFunc("/procesos", getProcesos(db)).Queries("convenio", "{convenio}", "fecha1", "{fecha1}", "fecha2", "{fecha2}", "empresa", "{empresa}", "concepto", "{concepto}", "tipo", "{tipo}").Methods("GET")
 	router.HandleFunc("/procesos", getProcesos(db))
 	router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/send", sender(db)).Methods("POST")
+	router.HandleFunc("/multiple", multipleSend(db)).Methods("POST")
+	router.HandleFunc("/restantes", procesosRestantes(db))
 
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -504,36 +535,76 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 	registros, err := src.Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
 	if err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
 	// Fecha para el nombre de salida
-	fechaSalida := time.Now()
-	fechaFormateada := fechaSalida.Format("20060102")
+	var fechaSalida string
+	if fecha == fecha2 {
+		fechaSalida = fecha
+	} else {
+		fechaSalida = fecha + "-" + fecha2
+	}
+
+	// Directorio del archivo main.go
+	directorioActual, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error al obtener el directorio actual:", err)
+		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
 	var nombreSalida string
+	proceso_periodo := fecha + "-" + fecha2
+	// Construir la ruta de la carpeta de salida
+	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo)
+
+	// Verificar si la carpeta de salida existe, si no, crearla
+	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
+		if err := os.MkdirAll(rutaCarpeta, 0755); err != nil {
+			fmt.Println("Error al crear la carpeta de salida:", err)
+			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
+	}
+
+	if version > 1 {
+		nombreSalida = fmt.Sprintf("%s_%s(%v)", proceso.Nombre, fechaSalida, version)
+	} else {
+		nombreSalida = fmt.Sprintf("%s_%s", proceso.Nombre, fechaSalida)
+	}
 
 	// Formato del archivo de salida
 	formato := strings.ToLower(proceso.Formato_salida)
 	var name string
 	if formato == "xls" {
-		nombreSalida = fmt.Sprintf("../salida/%s_%s.xlsx", proceso.Nombre, fechaFormateada)
-		name, err = src.CargarExcel(db, idLogDetalle, proceso, registros, nombreSalida)
+		// Ruta completa del archivo
+		nombreSalida += ".xlsx"
+		rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
+
+		name, err = src.CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo)
 		if err != nil {
 			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
+
 	} else if formato == "txt" {
-		nombreSalida = fmt.Sprintf("../salida/%s_%s.txt", proceso.Nombre, fechaFormateada)
+		// Ruta completa del archivo
+		nombreSalida += ".txt"
+		rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
+
 		// Utilizar funcion para txt
-		name, err = src.CargarTxt(db, idLogDetalle, proceso, registros, nombreSalida)
+		name, err = src.CargarTxt(db, idLogDetalle, proceso, registros, rutaArchivo)
 		if err != nil {
 			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 	} else if formato == "xml" {
-		nombreSalida = fmt.Sprintf("../salida/%s_%s.xml", proceso.Nombre, fechaFormateada)
+		// Ruta completa del archivo
+		nombreSalida += ".xml"
+		rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
 		// Utilizar funcion para txt
-		name, err = src.CargarXml(db, idLogDetalle, proceso, registros, nombreSalida)
+		name, err = src.CargarXml(db, idLogDetalle, proceso, registros, rutaArchivo)
 		if err != nil {
 			src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -541,13 +612,13 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 	}
 
 	// Insertar nuevo proceso en ext_procesados
-	if err = src.Procesados(db, proceso.Id, fecha, fecha2, version, len(registros), nombreSalida); err != nil {
+	if err = src.Procesados(db, proceso.Id, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreSalida)); err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
 	// Logueo
-	_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, fmt.Sprintf("Archivo guardado en: \"%s\"", nombreSalida))
+	_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, fmt.Sprintf("Archivo guardado en: \"%s\"", filepath.Join(rutaCarpeta, nombreSalida)))
 	if err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}

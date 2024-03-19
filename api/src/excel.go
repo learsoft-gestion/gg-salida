@@ -150,7 +150,7 @@ func formatearFecha(s string, formato string) string {
 		strFinal = partes[2] + "/" + partes[1] + "/" + partes[0]
 	} else if formato == "MM/YYYY" {
 		partes = append(partes, s[:4], s[4:])
-		strFinal = partes[0] + "/" + partes[1]
+		strFinal = partes[1] + "/" + partes[0]
 	}
 	return strFinal
 }

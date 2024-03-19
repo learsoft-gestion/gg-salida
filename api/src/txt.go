@@ -75,6 +75,8 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 						value += strings.ReplaceAll(v, "-", "")
 					} else if campo.Formato == "MM/YYYY" {
 						value = formatearFecha(v, campo.Formato)
+					} else if campo.Formato == "DD/MM/YYYY" {
+						value = formatearFecha(v, campo.Formato)
 					} else if strings.ToLower(campo.Tipo) == "lookup" {
 						// El dato lo saco del .json
 						for _, variable := range plantilla.Variables {
@@ -87,7 +89,7 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 							}
 						}
 						if value == "" {
-							value = fmt.Sprintf("##%s##", campo.Nombre)
+							value = "12"
 						}
 					} else {
 						value += v

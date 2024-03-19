@@ -87,7 +87,7 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 	} else {
 		fmt.Println("Cantidad de registros: ", len(registros))
 	}
-	// fmt.Println("Registro: ", registros[0])
+
 	return registros, nil
 }
 
