@@ -45,6 +45,7 @@ type DTOproceso struct {
 	Ultima_ejecucion string
 	Procesado        bool
 	Boton            string
+	Ultima_version   bool
 }
 
 type DTOdatos struct {
