@@ -46,6 +46,9 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 			var value string
 
 			// Validaciones
+			if plantilla.Cabecera.Formato == "" {
+				return "", fmt.Errorf("debe agregarle un formato a la cabecera del template")
+			}
 			if campo.Titulo != "" {
 				return "", fmt.Errorf("JSON: el campo %s no debe tener Titulo", campo.Nombre)
 			}
@@ -140,7 +143,7 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 	}
 
 	// fmt.Printf("Cadena: %s\n", texto)
-	_, err = fmt.Fprintf(archivo, "%s", texto)
+	_, err = fmt.Fprintf(archivo, "%s", strings.TrimSpace(texto))
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", err

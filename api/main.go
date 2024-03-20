@@ -130,7 +130,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("WITH LatestVersions AS (SELECT em.id_modelo, MAX(ep.version) AS max_version FROM extractor.ext_modelos em LEFT JOIN extractor.ext_procesados ep ON em.id_modelo = ep.id_modelo WHERE em.id_convenio = %v AND ((ep.fecha_desde = '%s' AND ep.fecha_hasta = '%s') OR ep.fecha_desde IS NULL) GROUP BY em.id_modelo) SELECT em.id_modelo, c.nombre AS nombre_convenio, ea.razon_social AS nombre_empresa_adm, ec.nombre AS nombre_concepto, em.nombre, et.nombre AS nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, COALESCE(nombre_salida IS NOT NULL, FALSE) AS procesado, CASE WHEN ep.version IS NULL THEN 'lanzar' WHEN ep.version = lv.max_version THEN 'relanzar' END AS boton,CASE WHEN ep.version >= 2 AND ep.version = lv.max_version THEN TRUE ELSE FALSE END AS ult_version FROM extractor.ext_modelos em LEFT JOIN extractor.ext_procesados ep ON em.id_modelo = ep.id_modelo JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio JOIN extractor.ext_conceptos ec ON em.id_concepto = ec.id_concepto JOIN extractor.ext_tipos et ON em.id_tipo = et.id_tipo JOIN LatestVersions lv ON em.id_modelo = lv.id_modelo WHERE em.id_convenio = %v AND ((ep.fecha_desde = '%s' AND ep.fecha_hasta = '%s') OR ep.fecha_desde IS NULL)", id_convenio, fechaFormateada, fechaFormateada2, id_convenio, fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado, case when version is null then 'lanzar' when version = max(ep.version) over(partition by em.id_modelo) then 'relanzar' end boton, case when ep.version >= 2 and ep.version = max(ep.version) over(partition by em.id_modelo) then true else false end as ult_version from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", id_convenio, fechaFormateada, fechaFormateada2)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
@@ -420,12 +420,39 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 func procesosRestantes(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id_convenio := r.URL.Query().Get("convenio")
+		id_empresa := r.URL.Query().Get("empresa")
+		id_concepto := r.URL.Query().Get("concepto")
+		id_tipo := r.URL.Query().Get("tipo")
 		fecha1 := r.URL.Query().Get("fecha1")
 		fechaFormateada := src.FormatoFecha(fecha1)
 		fecha2 := r.URL.Query().Get("fecha2")
 		fechaFormateada2 := src.FormatoFecha(fecha2)
+		jurisdiccion := r.URL.Query().Get("jurisdiccion")
+		procesadoStr := r.URL.Query().Get("procesado")
+		var procesado bool
+		if procesadoStr == "true" {
+			procesado = true
+		} else if procesadoStr == "false" {
+			procesado = false
+		}
 
-		query := fmt.Sprintf("SELECT modelo.id_modelo, c.nombre from extractor.ext_modelos modelo LEFT JOIN extractor.ext_procesados ep ON modelo.id_modelo = ep.id_modelo JOIN datos.empresas_adm ea ON modelo.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON modelo.id_convenio = c.id_convenio JOIN extractor.ext_conceptos ec ON modelo.id_concepto = ec.id_concepto JOIN extractor.ext_tipos et ON modelo.id_tipo = et.id_tipo WHERE modelo.id_convenio = %v AND ((ep.fecha_desde = '%s' AND ep.fecha_hasta = '%s') OR ep.fecha_desde IS NULL) AND ep.version IS NULL GROUP BY modelo.id_modelo, c.nombre, modelo.nombre, ep.version;", id_convenio, fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("select modelo.id_modelo from extractor.ext_modelos modelo where modelo.id_convenio = %v and not exists  (select 1 from extractor.ext_procesados ep where ep.id_modelo = modelo.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s')", id_convenio, fechaFormateada, fechaFormateada2)
+
+		if len(id_empresa) > 0 {
+			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
+		}
+		if len(id_concepto) > 0 {
+			query += fmt.Sprintf(" and em.id_concepto = '%s'", id_concepto)
+		}
+		if len(id_tipo) > 0 {
+			query += fmt.Sprintf(" and em.id_tipo = '%s'", id_tipo)
+		}
+		if len(procesadoStr) > 0 {
+			query += fmt.Sprintf(" and coalesce(nombre_salida is not null, false) = %v", procesado)
+		}
+		if len(jurisdiccion) > 0 {
+			query += " and UPPER(em.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
+		}
 
 		rows, err := db.Query(query)
 		if err != nil {
@@ -438,10 +465,13 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 		var nombre_conv string
 		for rows.Next() {
 			var id_modelo int
-			var convenio string
-			rows.Scan(&id_modelo, &convenio)
+			rows.Scan(&id_modelo)
 			id_modelos = append(id_modelos, id_modelo)
-			nombre_conv = convenio
+		}
+
+		err = db.QueryRow(fmt.Sprintf("SELECT nombre from extractor.ext_convenios where id_convenio = %v", id_convenio)).Scan(&nombre_conv)
+		if err != nil {
+			fmt.Println(err.Error())
 		}
 
 		restantes = modelos.Restantes{
@@ -454,10 +484,6 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 		var resString string
 		var btn string
 		if cantidad == 0 {
-			err = db.QueryRow(fmt.Sprintf("SELECT nombre from extractor.ext_convenios where id_convenio = %v", id_convenio)).Scan(&nombre_conv)
-			if err != nil {
-				fmt.Println(err.Error())
-			}
 			resString = fmt.Sprintf("Ya han sido generados todos los informes para el convenio %s", nombre_conv)
 		} else {
 			resString = fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
