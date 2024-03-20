@@ -439,19 +439,19 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 		query := fmt.Sprintf("select modelo.id_modelo from extractor.ext_modelos modelo where modelo.id_convenio = %v and not exists  (select 1 from extractor.ext_procesados ep where ep.id_modelo = modelo.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s')", id_convenio, fechaFormateada, fechaFormateada2)
 
 		if len(id_empresa) > 0 {
-			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
+			query += fmt.Sprintf(" and modelo.id_empresa_adm = %s", id_empresa)
 		}
 		if len(id_concepto) > 0 {
-			query += fmt.Sprintf(" and em.id_concepto = '%s'", id_concepto)
+			query += fmt.Sprintf(" and modelo.id_concepto = '%s'", id_concepto)
 		}
 		if len(id_tipo) > 0 {
-			query += fmt.Sprintf(" and em.id_tipo = '%s'", id_tipo)
+			query += fmt.Sprintf(" and modelo.id_tipo = '%s'", id_tipo)
 		}
 		if len(procesadoStr) > 0 {
 			query += fmt.Sprintf(" and coalesce(nombre_salida is not null, false) = %v", procesado)
 		}
 		if len(jurisdiccion) > 0 {
-			query += " and UPPER(em.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
+			query += " and UPPER(modelo.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
 		}
 
 		rows, err := db.Query(query)
