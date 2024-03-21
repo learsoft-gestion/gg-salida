@@ -65,12 +65,13 @@ tbody td {
 
 #mensajeFaltantes {
   position: relative;
-  top: 90px;
+  top: 80px;
   padding: 5px;
 }
 
 #filtros {
   z-index: 10;
+  width: 100%;
 }
 
 #mensajeFaltantes {
@@ -81,6 +82,7 @@ tbody td {
 #mensaje {
   margin-bottom: 0;
   font-size: 14px;
+  display: inline-block;
 }
 
 #btnGenerar {

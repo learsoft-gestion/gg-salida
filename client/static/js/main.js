@@ -160,12 +160,17 @@ $("#btnBuscar").click(function () {
             } else {
                 $("#tablaDatos").hide();
                 $("#mensajeFaltantes").hide();
-                alert("No hubo resultados para su búsqueda");
+                Swal.fire("No hubo resultados para su búsqueda");
                 console.log('No se recibieron datos del servidor.');
             }
         },
         error: function (error) {
             console.error('Error en la búsqueda:', error);
+            Swal.fire({
+                title: "Ocurrió un error",
+                text: error.mensaje,
+                icon: "error"
+              });
         }
     });
 });
@@ -209,9 +214,9 @@ llenarTabla = function (rawData) {
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
                 row.append('<td>' + proceso.Nombre + '</td>');
-                row.append(`<td title="${proceso.Nombre_salida.String}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</td>`);
+                row.append(`<td title="${proceso.Nombre_salida.String}"><a href="${proceso.Nombre_salida.String.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</a></td>`);
                 if (proceso.Ultima_version) {
-                    row.append(`<td><button class="btn btn-default btn-sm openOculto" data-target="#${proceso.Id}"><span class="material-symbols-outlined">arrow_drop_down</span></button>${proceso.Version}</td>`)
+                    row.append(`<td>${proceso.Version}<button class="btn btn-default btn-sm openOculto" data-target="#${proceso.Id}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`)
                 } else {
                     row.append('<td>' + proceso.Version + '</td>')
                 }
@@ -226,7 +231,7 @@ llenarTabla = function (rawData) {
             } else {
                 var subTbody = $(`#tbody-${proceso.Id}`);
                 var subRow = $('<tr>');
-                subRow.append(`<td title="${proceso.Nombre_salida.String}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</td>`);
+                subRow.append(`<td title="${proceso.Nombre_salida.String}"><a href="${proceso.Nombre_salida.String.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</a></td>`);
                 subRow.append('<td>' + proceso.Version + '</td>');
                 subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
 
@@ -259,7 +264,11 @@ llenarTabla = function (rawData) {
             success: function (data) {
                 $('#loadingOverlay').hide();
                 if (data) {
-                    alert(data.mensaje);
+                    Swal.fire({
+                        title: "Éxito!",
+                        text: data.mensaje,
+                        icon: "success"
+                      });
                     $("#btnBuscar").trigger("click");
                 } else {
                     console.log('No se recibieron datos del servidor.');
@@ -267,6 +276,11 @@ llenarTabla = function (rawData) {
             },
             error: function (error) {
                 $('#loadingOverlay').hide();
+                Swal.fire({
+                    title: "Ocurrió un error",
+                    text: error.mensaje,
+                    icon: "error"
+                  });
                 console.error('Error en la solicitud:', error);
             }
         });
@@ -331,7 +345,11 @@ $("#btnGenerar").click(function () {
         success: function (data) {
             $('#loadingOverlay').hide();
             if (data) {
-                alert(data.mensaje);
+                Swal.fire({
+                    title: "Éxito!",
+                    text: data.mensaje,
+                    icon: "success"
+                  });
                 $("#btnBuscar").trigger("click");
             } else {
                 console.log('No se recibieron datos del servidor.');
@@ -340,6 +358,11 @@ $("#btnGenerar").click(function () {
         error: function (error) {
             $('#loadingOverlay').hide();
             console.error('Error en la solicitud:', error);
+            Swal.fire({
+                title: "Ocurrió un error",
+                text: error.mensaje,
+                icon: "error"
+              });
         }
     });
 });
