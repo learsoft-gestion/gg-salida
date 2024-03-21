@@ -130,7 +130,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado, case when version is null then 'lanzar' when version = max(ep.version) over(partition by em.id_modelo) then 'relanzar' end boton, case when ep.version >= 2 and ep.version = max(ep.version) over(partition by em.id_modelo) then true else false end as ult_version from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", id_convenio, fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado, case when version is null then 'lanzar' when version = max(ep.version) over(partition by em.id_modelo) then 'relanzar' end boton, case when ep.version >= 2 and ep.version = max(ep.version) over(partition by em.id_modelo) then true else false end as ult_version from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", fechaFormateada, fechaFormateada2, id_convenio)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
@@ -150,6 +150,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 		query += " ORDER BY nombre_empresa_adm, nombre_concepto, nombre, nombre_tipo, ep.version desc;"
 		rows, err := db.Query(query)
 		if err != nil {
+			fmt.Println("Fallo el query: ", err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -163,6 +164,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			var boton sql.NullString
 
 			if err := rows.Scan(&DTOproceso.Id, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &DTOproceso.Fecha_desde, &DTOproceso.Fecha_hasta, &DTOproceso.Nombre_salida, &version, &ult_ejecucion, &DTOproceso.Procesado, &boton, &DTOproceso.Ultima_version); err != nil {
+				println("Fallo el scan", err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
