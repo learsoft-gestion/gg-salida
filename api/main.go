@@ -336,7 +336,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			w.Header().Set("Content-Type", "application/json")
 			respuesta := modelos.Respuesta{
-				Mensaje:         "Datos recibidos y procesados",
+				Mensaje:         "Informe generado exitosamente",
 				Archivos_salida: resultado,
 			}
 			jsonResp, _ := json.Marshal(respuesta)
