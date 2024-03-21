@@ -465,6 +465,10 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 
 		var id_modelos []int
 		var nombre_conv string
+		var nombre_emp string
+		var nombre_concepto string
+		var nombre_tipo string
+
 		for rows.Next() {
 			var id_modelo int
 			rows.Scan(&id_modelo)
@@ -474,6 +478,25 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 		err = db.QueryRow(fmt.Sprintf("SELECT nombre from extractor.ext_convenios where id_convenio = %v", id_convenio)).Scan(&nombre_conv)
 		if err != nil {
 			fmt.Println(err.Error())
+		}
+
+		if id_empresa != "" {
+			err = db.QueryRow(fmt.Sprintf("select razon_social from datos.empresas_adm where id_empresa_adm = %s", id_empresa)).Scan(&nombre_emp)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
+		if id_concepto != "" {
+			err = db.QueryRow(fmt.Sprintf("select ec.nombre from extractor.ext_conceptos ec where id_concepto = '%s'", strings.ToUpper(id_concepto))).Scan(&nombre_concepto)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
+		if id_tipo != "" {
+			err = db.QueryRow(fmt.Sprintf("select et.nombre from extractor.ext_tipos et where id_tipo = '%s'", strings.ToUpper(id_tipo))).Scan(&nombre_tipo)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 		}
 
 		restantes = modelos.Restantes{
@@ -487,8 +510,32 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 		var btn string
 		if cantidad == 0 {
 			resString = fmt.Sprintf("Ya han sido generados todos los informes para el convenio %s", nombre_conv)
+			if nombre_emp != "" {
+				resString += ", empresa " + nombre_emp
+			}
+			if nombre_concepto != "" {
+				resString += ", concepto " + nombre_concepto
+			}
+			if nombre_tipo != "" {
+				resString += ", tipo " + nombre_tipo
+			}
+			if jurisdiccion != "" {
+				resString += ", jurisdiccion " + jurisdiccion
+			}
 		} else {
 			resString = fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
+			if nombre_emp != "" {
+				resString += ", empresa " + nombre_emp
+			}
+			if nombre_concepto != "" {
+				resString += ", concepto " + nombre_concepto
+			}
+			if nombre_tipo != "" {
+				resString += ", tipo " + nombre_tipo
+			}
+			if jurisdiccion != "" {
+				resString += ", jurisdiccion " + jurisdiccion
+			}
 			btn = "Generar"
 		}
 
