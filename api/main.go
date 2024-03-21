@@ -7,7 +7,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,13 +16,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	templates = template.Must(template.New("../client/index.html").ParseFiles("../client/index.html"))
-	w.WriteHeader(http.StatusAccepted)
+// func homeHandler(w http.ResponseWriter, r *http.Request) {
+// 	templates = template.Must(template.New("../client/index.html").ParseFiles("../client/index.html"))
+// 	w.WriteHeader(http.StatusAccepted)
 
-	renderTemplate(w, "index", nil)
+// 	renderTemplate(w, "index", nil)
 
-}
+// }
 
 var convenios []modelos.Option
 var empresas []modelos.Option
@@ -553,20 +552,16 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 }
 
 // var folder embed.FS
-var templates *template.Template
+// var templates *template.Template
 
-func renderTemplate(w http.ResponseWriter, tmpl string, p *modelos.Page) {
-	err := templates.ExecuteTemplate(w, tmpl+".html", p)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
+// func renderTemplate(w http.ResponseWriter, tmpl string, p *modelos.Page) {
+// 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 	}
+// }
 
 func main() {
-
-	// Carga de archivos estaticos
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
@@ -574,6 +569,12 @@ func main() {
 	}
 
 	router := mux.NewRouter()
+	// Carga de archivos estaticos
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../client/static"))))
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/index.html")
+	})
+
 	router.HandleFunc("/convenios", getConvenios(db))
 	router.HandleFunc("/empresas", getEmpresas(db))
 	router.HandleFunc("/empresas/{id_convenio}", getEmpresas(db))
@@ -582,7 +583,7 @@ func main() {
 	router.HandleFunc("/conceptos/{id_empresa}", getConceptos(db))
 	router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", getConceptos(db))
 	router.HandleFunc("/procesos", getProcesos(db))
-	router.HandleFunc("/", homeHandler).Methods("GET")
+	// router.HandleFunc("/", homeHandler).Methods("GET")
 	router.HandleFunc("/send", sender(db)).Methods("POST")
 	router.HandleFunc("/multiple", multipleSend(db)).Methods("POST")
 	router.HandleFunc("/restantes", procesosRestantes(db))
