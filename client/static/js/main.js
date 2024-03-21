@@ -146,7 +146,9 @@ $("#btnBuscar").click(function () {
         alert("La fecha Hasta no puede ser menor a la fecha de inicio");
         return;
     }
-    // Llamada al servidor
+    // Muestro mensaje de archivos por generar
+    mostrarMensaje(json);
+    // Llamada al servidor para mostrar tabla
     $.ajax({
         url: `/procesos`,
         method: 'GET',
@@ -156,6 +158,9 @@ $("#btnBuscar").click(function () {
             if (data && data.length > 0) {
                 llenarTabla(data);
             } else {
+                $("#tablaDatos").hide();
+                $("#mensajeFaltantes").hide();
+                alert("No hubo resultados para su búsqueda");
                 console.log('No se recibieron datos del servidor.');
             }
         },
@@ -165,24 +170,74 @@ $("#btnBuscar").click(function () {
     });
 });
 
+mostrarMensaje = function (json) {
+    $.ajax({
+        url: '/restantes',
+        method: 'GET',
+        dataType: 'json',
+        data: json,
+        success: function (data) {
+            if (data) {
+                $("#mensajeFaltantes").show();
+                $("#mensaje").text(data.mensaje);
+                if (data.boton) {
+                    $("#btnGenerar").show();
+                } else {
+                    $("#btnGenerar").hide();
+                }
+            } else {
+                console.log('No se recibieron datos del servidor.');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
+}
+
 // Función para llenar la tabla
-llenarTabla = function (data) {
+llenarTabla = function (rawData) {
+    data = reordenarData(rawData);
     $("#tablaDatos").show();
     var tbody = $('table tbody');
     tbody.empty();
-
     $.each(data, function (index, item) {
-        var row = $('<tr>');
-        row.append('<td>' + item.Empresa + '</td>');
-        row.append('<td>' + item.Concepto + '</td>');
-        row.append('<td>' + item.Tipo + '</td>');
-        row.append('<td>' + item.Nombre + '</td>');
-        row.append('<td>' + item.Nombre_salida.String + '</td>');
-        row.append('<td>' + item.Version + '</td>');
-        row.append('<td>' + item.Ultima_ejecucion + '</td>');
-        row.append('<td>' + generarBoton(item) + '</td>');
+        $.each(item, function (i, proceso) {
+            if (i === 0) {
+                var row = $(`<tr data-toggle="collapse" class="accordion-toggle">`);
+                row.append('<td>' + proceso.Empresa + '</td>');
+                row.append('<td>' + proceso.Concepto + '</td>');
+                row.append('<td>' + proceso.Tipo + '</td>');
+                row.append('<td>' + proceso.Nombre + '</td>');
+                row.append(`<td title="${proceso.Nombre_salida.String}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</td>`);
+                if (proceso.Ultima_version) {
+                    row.append(`<td><button class="btn btn-default btn-sm openOculto" data-target="#${proceso.Id}"><span class="material-symbols-outlined">arrow_drop_down</span></button>${proceso.Version}</td>`)
+                } else {
+                    row.append('<td>' + proceso.Version + '</td>')
+                }
+                row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
+                row.append('<td>' + generarBoton(proceso) + '</td>');
 
-        tbody.append(row);
+                tbody.append(row);
+                if (proceso.Ultima_version) {
+                    var subtabla = armarSubtabla(proceso.Id);
+                    tbody.append(subtabla);
+                }
+            } else {
+                var subTbody = $(`#tbody-${proceso.Id}`);
+                var subRow = $('<tr>');
+                subRow.append(`<td title="${proceso.Nombre_salida.String}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</td>`);
+                subRow.append('<td>' + proceso.Version + '</td>');
+                subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
+
+                subTbody.append(subRow);
+            }
+        });
+    });
+
+    $("tr.accordion-toggle .openOculto").on('click', function () {
+        id = $(this).attr("data-target");
+        $(id).toggleClass("collapse");
     });
 
     // Botones de lanzar y relanzar
@@ -218,6 +273,25 @@ llenarTabla = function (data) {
     });
 }
 
+reordenarData = function (rawData) {
+    const data = {};
+
+    rawData.forEach(item => {
+        const id = item.Id;
+        if (!data[id]) {
+            data[id] = [];
+        }
+        data[id].push(item);
+    });
+
+    return data;
+}
+
+obtenerNombreArchivo = function (nombre) {
+    nombre = nombre.split("\\");
+    return nombre[nombre.length - 1];
+}
+
 generarBoton = function (item) {
     if (item.Boton === "lanzar") {
         return `<button type="button" class="btn btn-success btn-sm lanzar" value="${item.Id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
@@ -226,3 +300,46 @@ generarBoton = function (item) {
     }
     return '<button type="button" class="btn btn-transparent" style="width: 38px; height: 38px;" disabled></button>';
 }
+
+armarSubtabla = function (id) {
+    var hiddenRow = $('<tr>');
+    var td = $('<td colspan="10" class="hiddenRow">');
+    var div = $(`<div class="accordian-body collapse" id="${id}">`);
+    var table = $('<table class="table">');
+    var tbody2 = $(`<tbody id="tbody-${id}">`)
+    var tr = $('<tr>');
+    tr.append('<th>Nombre de salida</th>');
+    tr.append('<th>Versión</th>');
+    tr.append('<th>Última ejecución</th>');
+    table.append(tr);
+    table.append(tbody2);
+    div.append(table);
+    td.append(div);
+    hiddenRow.append(td);
+
+    return hiddenRow;
+}
+
+// Botón Generar documentos
+$("#btnGenerar").click(function () {
+    $('#loadingOverlay').show();
+
+    $.ajax({
+        url: '/multiple',
+        method: 'POST',
+        dataType: 'json',
+        success: function (data) {
+            $('#loadingOverlay').hide();
+            if (data) {
+                alert(data.mensaje);
+                $("#btnBuscar").trigger("click");
+            } else {
+                console.log('No se recibieron datos del servidor.');
+            }
+        },
+        error: function (error) {
+            $('#loadingOverlay').hide();
+            console.error('Error en la solicitud:', error);
+        }
+    });
+});

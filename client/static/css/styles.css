@@ -1,59 +1,94 @@
 body {
-    font-family: Arial, sans-serif;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  padding: 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+th {
+  text-align: center;
+}
+
+tbody td {
+  text-align: center;
+}
+
+.table td {
+  padding: 0;
+  vertical-align: middle;
+}
+
+.table th {
+  vertical-align: middle;
+}
+
+.btn-buscar {
+  display: flex;
+  align-items: flex-end;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 9999;
+  display: none;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
 
-  .form-group {
-    margin-bottom: 20px;
+  100% {
+    transform: rotate(360deg);
   }
+}
 
-  th {
-    text-align: center;
-  }
+#mensajeFaltantes {
+  position: relative;
+  top: 90px;
+  padding: 5px;
+}
 
-  tbody td {
-    text-align: center;
-  }
+#filtros {
+  z-index: 10;
+}
 
-  .table td {
-    padding: 0;
-  }
+#mensajeFaltantes {
+  display: none;
+  z-index: 0;
+}
 
-  .btn-buscar {
-    display: flex;
-    align-items: flex-end;
-  }
+#mensaje {
+  margin-bottom: 0;
+  font-size: 14px;
+}
 
-  .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    z-index: 9999;
-    display: none;
-  }
+#btnGenerar {
+  display: none;
+  padding: 3px;
+  font-size: 14px;
+}
 
-  .loading-spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+.hiddenRow {
+  padding: 0 !important;
+}
