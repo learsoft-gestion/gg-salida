@@ -92,6 +92,8 @@ type Campo struct {
 	Columna string
 	Tipo    string
 	Formato string
+	Option1 string
+	Option2 string
 }
 
 type Variable struct {

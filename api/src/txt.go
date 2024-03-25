@@ -97,7 +97,6 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 					} else {
 						value += v
 					}
-
 				case []int:
 					value += fmt.Sprintf("%v", v)
 				case []byte:
@@ -105,6 +104,13 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 						value += string(v)
 					} else if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) == "coma" {
 						value += strings.Replace(string(v), ".", ",", -1)
+					} else if strings.ToLower(campo.Formato) == "condicional" {
+
+						if string(v) != "0.00" {
+							value = campo.Option1
+						} else {
+							value = campo.Option2
+						}
 					}
 				default:
 					value = fmt.Sprintf("##%s##", campo.Nombre)
@@ -112,7 +118,9 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 			}
 
 			if plantilla.Cabecera.Formato == "fijo" {
-
+				// if strings.ToLower(campo.Formato) == "condicional" {
+				// 	println(value)
+				// }
 				longitud_campo := campo.Fin - campo.Inicio + 1
 
 				if len(value) < longitud_campo {

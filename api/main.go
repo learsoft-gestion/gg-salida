@@ -629,6 +629,16 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
+	if len(registros) == 0 {
+		if err = src.Procesados(db, proceso.Id, fecha, fecha2, version, 0, ""); err != nil {
+			fmt.Println(err.Error())
+			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+		}
+		return "", modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
+	} else {
+		fmt.Println("Cantidad de registros: ", len(registros))
+	}
+
 	// Fecha para el nombre de salida
 	var fechaSalida string
 	if fecha == fecha2 {

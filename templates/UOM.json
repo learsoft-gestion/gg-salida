@@ -20,9 +20,18 @@
         {
             "nombre": "",
             "inicio": 41,
-            "fin": 43,
+            "fin": 42,
             "tipo": "fijo",
-            "formato": "00N"
+            "formato": "00"
+        },
+        {
+            "nombre": "total_870",
+            "inicio": 43,
+            "fin": 43,
+            "tipo": "string",
+            "formato": "condicional",
+            "option1": "S",
+            "option2": "N"
         },
         {
             "nombre": "bruto_imp",

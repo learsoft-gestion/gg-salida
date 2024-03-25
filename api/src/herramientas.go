@@ -79,16 +79,6 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		registros = append(registros, registro)
 	}
 
-	if len(registros) == 0 {
-		// if err = Procesados(db, proceso.Id, fecha, fecha2, 0, 0, ""); err != nil {
-		// 	fmt.Println(err.Error())
-		// 	return nil, fmt.Errorf("error al loguear en procesados")
-		// }
-		return nil, fmt.Errorf("no se han encontrado registros")
-	} else {
-		fmt.Println("Cantidad de registros: ", len(registros))
-	}
-
 	return registros, nil
 }
 
