@@ -301,14 +301,17 @@ func sender(db *sql.DB) http.HandlerFunc {
 				var cuenta int
 				var version int
 				// Verificar si el proceso ya se corrió
-
-				err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proc.Id, datos.Fecha, datos.Fecha2).Scan(&cuenta)
+				queryCuenta := fmt.Sprintf("select count(*) from extractor.ext_procesados where id_modelo = %v and fecha_desde = '%s' and fecha_hasta = '%s'", proc.Id, datos.Fecha, datos.Fecha2)
+				fmt.Println("Query: ", queryCuenta)
+				err = db.QueryRow(queryCuenta).Scan(&cuenta)
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
 					return
 				}
 
+				fmt.Println("Cuenta: ", cuenta)
+				fmt.Println("Version: ", version)
 				version = cuenta + 1
 
 				result, errFormateado := procesador(proc, datos.Fecha, datos.Fecha2, version)
@@ -658,7 +661,7 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 	var nombreSalida string
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
-	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo)
+	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, proceso.Nombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {

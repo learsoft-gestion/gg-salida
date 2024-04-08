@@ -18,22 +18,10 @@
             "formato": "cuil sin guion"
         },
         {
-            "titulo": "RemuneracionBruta",
-            "nombre": "bruto_imp",
-            "tipo": "float",
-            "formato": "punto"
-        },
-        {
             "titulo": "SueldoBasico",
             "nombre": "sueldobasico",
             "tipo": "fijo",
             "formato": "0.00"
-        },
-        {
-            "titulo": "AporteNoRemunerativo",
-            "nombre": "total_norem",
-            "tipo": "float",
-            "formato": "punto"
         },
         {
             "titulo": "Sexo",
@@ -49,15 +37,9 @@
         },
         {
             "titulo": "TipDoc",
-            "nombre": "tipdoc",
+            "nombre": "",
             "tipo": "fijo",
             "formato": "DU"
-        },
-        {
-            "titulo": "Categoria",
-            "nombre": "cat",
-            "tipo": "fijo",
-            "formato": "1"
         }
     ]
 }

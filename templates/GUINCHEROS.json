@@ -18,12 +18,6 @@
             "formato": "cuil sin guion"
         },
         {
-            "titulo": "RemuneracionBruta",
-            "nombre": "bruto_imp",
-            "tipo": "float",
-            "formato": "punto"
-        },
-        {
             "titulo": "SueldoBasico",
             "nombre": "sueldobasico",
             "tipo": "string",
@@ -46,12 +40,6 @@
             "nombre": "tipdoc",
             "tipo": "fijo",
             "formato": "DU"
-        },
-        {
-            "titulo": "Categoria",
-            "nombre": "cat",
-            "tipo": "fijo",
-            "formato": "1"
         }
     ]
 }
