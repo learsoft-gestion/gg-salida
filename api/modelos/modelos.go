@@ -27,6 +27,11 @@ type Convenio struct {
 	Nombre string `json:"nombre"`
 }
 
+type Cliente struct {
+	Nombre string `json:"nombre"`
+	Cuit   string `json:"cuit"`
+}
+
 type DTOselect struct {
 	Empresas  []Empresa
 	Convenios []Convenio

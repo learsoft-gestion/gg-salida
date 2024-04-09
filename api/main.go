@@ -28,6 +28,7 @@ var convenios []modelos.Option
 var empresas []modelos.Option
 var DTOprocesos []modelos.DTOproceso
 var procesos []modelos.Proceso
+var clientes []modelos.Cliente
 
 // Almacena los registros restantes a ejecutar
 var restantes modelos.Restantes
@@ -554,6 +555,48 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+func getClientes(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clientes = nil
+		query := "select razon_social, cuit from datos.clientes"
+		nombre_cliente := r.URL.Query().Get("cliente")
+		cuit_cliente := r.URL.Query().Get("cuit")
+		if len(nombre_cliente) > 0 {
+			if len(cuit_cliente) == 0 {
+				query += " where razon_social like '%" + nombre_cliente + "%'"
+			}
+		}
+		if len(cuit_cliente) > 0 {
+			if len(nombre_cliente) == 0 {
+				query += " where cuit like '%" + cuit_cliente + "%'"
+			}
+		}
+
+		rows, err := db.Query(query)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for rows.Next() {
+			var cliente modelos.Cliente
+			if err = rows.Scan(&cliente.Nombre, &cliente.Cuit); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			clientes = append(clientes, cliente)
+
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if err := json.NewEncoder(w).Encode(clientes); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 // var folder embed.FS
 // var templates *template.Template
 
@@ -591,6 +634,7 @@ func main() {
 	router.HandleFunc("/send", sender(db)).Methods("POST")
 	router.HandleFunc("/multiple", multipleSend(db)).Methods("POST")
 	router.HandleFunc("/restantes", procesosRestantes(db))
+	router.HandleFunc("/clientes", getClientes(db))
 
 	srv := &http.Server{
 		Addr:    ":8080",
