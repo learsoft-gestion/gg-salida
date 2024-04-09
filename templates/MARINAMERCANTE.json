@@ -19,7 +19,7 @@
         },
         {
             "titulo": "SueldoBasico",
-            "nombre": "sueldobasico",
+            "nombre": "",
             "tipo": "fijo",
             "formato": "0.00"
         },

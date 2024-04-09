@@ -562,13 +562,13 @@ func getClientes(db *sql.DB) http.HandlerFunc {
 		nombre_cliente := r.URL.Query().Get("cliente")
 		cuit_cliente := r.URL.Query().Get("cuit")
 		if len(nombre_cliente) > 0 {
-			if len(cuit_cliente) == 0 {
-				query += " where razon_social like '%" + nombre_cliente + "%'"
-			}
+			query += " where razon_social like '%" + nombre_cliente + "%'"
 		}
 		if len(cuit_cliente) > 0 {
 			if len(nombre_cliente) == 0 {
 				query += " where cuit like '%" + cuit_cliente + "%'"
+			} else {
+				query += " and cuit like '%" + cuit_cliente + "%'"
 			}
 		}
 
