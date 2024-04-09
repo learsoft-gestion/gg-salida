@@ -15,6 +15,7 @@ type Proceso struct {
 	Formato_salida  string `json:"formato_salida"`
 	Query           string `json:"query"`
 	Archivo_modelo  string `json:"archivo_modelo"`
+	Filtro_having   string `json:"filtro_having"`
 }
 
 type Empresa struct {

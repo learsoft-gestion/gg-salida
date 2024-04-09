@@ -1,6 +1,6 @@
 {
     "cabecera": {
-        "xmlTag": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"true\"?>",
+        "xmlTag": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
         "tag": "Empleados",
         "children": "Empleado"
     },
@@ -19,9 +19,9 @@
         },
         {
             "titulo": "SueldoBasico",
-            "nombre": "sueldobasico",
-            "tipo": "string",
-            "formato": ""
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
         },
         {
             "titulo": "Sexo",
@@ -37,7 +37,7 @@
         },
         {
             "titulo": "TipDoc",
-            "nombre": "tipdoc",
+            "nombre": "",
             "tipo": "fijo",
             "formato": "DU"
         }
