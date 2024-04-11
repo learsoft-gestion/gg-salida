@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Ejecuta la query de ext_query y trae los registros que necesito para escribir los archivos de salida y control.
 func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, idLogDetalle int) ([]modelos.Registro, error) {
 
 	// Reemplazo de fecha en query
