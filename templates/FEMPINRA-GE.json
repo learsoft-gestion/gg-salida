@@ -18,7 +18,19 @@
             "formato": "cuil sin guion"
         },
         {
+            "titulo": "RemuneracionBruta",
+            "nombre": "",
+            "tipo": "suma",
+            "formato": "bruto_imp,total_norem"
+        },
+        {
             "titulo": "SueldoBasico",
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
+        },
+        {
+            "titulo": "AporteNoRemunerativo",
             "nombre": "",
             "tipo": "fijo",
             "formato": "0.00"
@@ -40,6 +52,22 @@
             "nombre": "",
             "tipo": "fijo",
             "formato": "DU"
+        },
+        {
+            "titulo": "Categoria",
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "1"
+        }
+    ],
+    "variables": [
+        {
+            "nombre": "categoria",
+            "datos": [
+                {"id": 1, "nombre": "Apuntador"},
+                {"id": 1, "nombre": "Maquinista"},
+                {"id": 2, "nombre": "Guinchero"}
+            ]
         }
     ]
 }

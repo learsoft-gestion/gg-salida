@@ -130,7 +130,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.nombre_salida, ep.version, ep.fecha_ejecucion, coalesce(nombre_salida is not null, false) procesado, case when version is null then 'lanzar' when version = max(ep.version) over(partition by em.id_modelo) then 'relanzar' end boton, case when ep.version >= 2 and ep.version = max(ep.version) over(partition by em.id_modelo) then true else false end as ult_version from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", fechaFormateada, fechaFormateada2, id_convenio)
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.razon_social as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.archivo_salida, ep.version, ep.fecha_ejecucion_salida, coalesce(archivo_salida is not null, false) procesado, case when version is null then 'lanzar' when version = max(ep.version) over(partition by em.id_modelo) then 'relanzar' end boton, case when ep.version >= 2 and ep.version = max(ep.version) over(partition by em.id_modelo) then true else false end as ult_version from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", fechaFormateada, fechaFormateada2, id_convenio)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
@@ -142,7 +142,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			query += fmt.Sprintf(" and em.id_tipo = '%s'", id_tipo)
 		}
 		if len(procesadoStr) > 0 {
-			query += fmt.Sprintf(" and coalesce(nombre_salida is not null, false) = %v", procesado)
+			query += fmt.Sprintf(" and coalesce(archivo_salida is not null, false) = %v", procesado)
 		}
 		if len(jurisdiccion) > 0 {
 			query += " and UPPER(em.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
@@ -453,7 +453,7 @@ func procesosRestantes(db *sql.DB) http.HandlerFunc {
 			query += fmt.Sprintf(" and modelo.id_tipo = '%s'", id_tipo)
 		}
 		if len(procesadoStr) > 0 {
-			query += fmt.Sprintf(" and coalesce(nombre_salida is not null, false) = %v", procesado)
+			query += fmt.Sprintf(" and coalesce(archivo_salida is not null, false) = %v", procesado)
 		}
 		if len(jurisdiccion) > 0 {
 			query += " and UPPER(modelo.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
@@ -677,7 +677,7 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 	}
 
 	if len(registros) == 0 {
-		if err = src.Procesados(db, proceso.Id, fecha, fecha2, version, 0, ""); err != nil {
+		if err = src.ProcesadosSalida(db, proceso.Id, fecha, fecha2, version, 0, ""); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
@@ -760,7 +760,7 @@ func procesador(proceso modelos.Proceso, fecha string, fecha2 string, version in
 	}
 
 	// Insertar nuevo proceso en ext_procesados
-	if err = src.Procesados(db, proceso.Id, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreSalida)); err != nil {
+	if err = src.ProcesadosSalida(db, proceso.Id, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreSalida)); err != nil {
 		src.ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}

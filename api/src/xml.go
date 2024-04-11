@@ -50,11 +50,25 @@ func CargarXml(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, registros 
 					return "", fmt.Errorf("JSON: tipo de dato float con formato erroneo para el campo %s", campo.Nombre)
 				}
 			}
-			if campo.Nombre == "" && strings.ToLower(campo.Tipo) != "fijo" {
+			if campo.Nombre == "" && strings.ToLower(campo.Tipo) != "fijo" && strings.ToLower(campo.Tipo) != "suma" {
 				return "", fmt.Errorf("campo sin nombre")
 			}
-			if campo.Nombre == "" {
+			if campo.Nombre == "" && strings.ToLower(campo.Tipo) != "suma" {
 				value += campo.Formato
+			} else if strings.ToLower(campo.Tipo) == "suma" {
+				partes := strings.Split(campo.Formato, ",")
+				var acumulador float64
+				for _, parte := range partes {
+					campoSuma := strings.ToUpper(strings.TrimSpace(parte))
+					valor := registro.Valores[campoSuma]
+					switch v := valor.(type) {
+					case []byte:
+						// valorStr := string(v)
+						valorFloat := valueToFloat(v)
+						acumulador += valorFloat
+					}
+				}
+				value = fmt.Sprintf("%.2f", acumulador)
 			} else {
 				campo.Nombre = strings.ToUpper(campo.Nombre)
 				val := registro.Valores[campo.Nombre]

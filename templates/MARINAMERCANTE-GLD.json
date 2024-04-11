@@ -21,7 +21,7 @@
             "titulo": "RemuneracionBruta",
             "nombre": "",
             "tipo": "suma",
-            "formato": "bruto_imp,total_noRem"
+            "formato": "bruto_imp,total_592"
         },
         {
             "titulo": "SueldoBasico",

@@ -3,6 +3,7 @@ package src
 import (
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 func Logueo(db *sql.DB, nombre string) (int, int, error) {
@@ -23,12 +24,28 @@ func Logueo(db *sql.DB, nombre string) (int, int, error) {
 	return id_log, idLogDetalle, nil
 }
 
-func Procesados(db *sql.DB, id int, fecha1 string, fecha2 string, version int, cant_registros int, nombre_salida string) error {
+func ProcesadosSalida(db *sql.DB, id int, fecha1 string, fecha2 string, version int, cant_registros int, nombre_salida string) error {
 
-	_, err := db.Exec("insert into extractor.ext_procesados (id_modelo, fecha_desde, fecha_hasta, version, cant_registros, nombre_salida) values ($1,$2,$3,$4,$5,$6)", id, fecha1, fecha2, version, cant_registros, nombre_salida)
+	fecha_completa := time.Now()
+	fecha_actual := fecha_completa.Format("2006-01-02 15:04:05")
+
+	_, err := db.Exec("insert into extractor.ext_procesados (id_modelo, fecha_desde, fecha_hasta, version, cant_registros_salida, archivo_salida, fecha_ejecucion_salida) values ($1,$2,$3,$4,$5,$6,$7)", id, fecha1, fecha2, version, cant_registros, nombre_salida, fecha_actual)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
+
+// func ProcesadosControl(db *sql.DB, id int, fecha1 string, fecha2 string, version int, cant_registros int, nombre_salida string) error {
+
+// 	fecha_completa := time.Now()
+// 	fecha_actual := fecha_completa.Format("2006-01-02 15:04:05")
+
+// 	_, err := db.Exec("insert into extractor.ext_procesados (id_modelo, fecha_desde, fecha_hasta, version, cant_registros_salida, archivo_salida, fecha_ejecucion_salida) values ($1,$2,$3,$4,$5,$6,$7)", id, fecha1, fecha2, version, cant_registros, nombre_salida, fecha_actual)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

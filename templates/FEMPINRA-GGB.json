@@ -19,9 +19,9 @@
         },
         {
             "titulo": "RemuneracionBruta",
-            "nombre": "bruto_imp",
-            "tipo": "float",
-            "formato": "punto"
+            "nombre": "",
+            "tipo": "suma",
+            "formato": "bruto_imp,total_norem"
         },
         {
             "titulo": "SueldoBasico",
@@ -31,9 +31,9 @@
         },
         {
             "titulo": "AporteNoRemunerativo",
-            "nombre": "total_norem",
-            "tipo": "float",
-            "formato": "punto"
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
         },
         {
             "titulo": "Sexo",
@@ -55,9 +55,18 @@
         },
         {
             "titulo": "Categoria",
-            "nombre": "catnro",
-            "tipo": "string",
+            "nombre": "categoria",
+            "tipo": "lookup",
             "formato": ""
+        }
+    ],
+    "variables": [
+        {
+            "nombre": "categoria",
+            "datos": [
+                {"id": 1, "nombre": "Guinchero"},
+                {"id": 2, "nombre": "Apuntador"}
+            ]
         }
     ]
 }

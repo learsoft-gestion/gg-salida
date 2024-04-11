@@ -1,0 +1,305 @@
+{
+    "campo": [
+        {
+            "titulo": "Periodo",
+            "nombre": "periodoliq",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Legajo",
+            "nombre": "numero_legajo",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Apellido y Nombre",
+            "nombre": "apellidoynombre",
+            "columna": "C",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "columna": "D",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Nro. Doc",
+            "nombre": "nrodoc",
+            "columna": "E",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Apellidos",
+            "nombre": "apellidos",
+            "columna": "F",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Nombre",
+            "nombre": "nombre",
+            "columna": "G",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Sexo",
+            "nombre": "sexo",
+            "columna": "H",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Ingreso",
+            "nombre": "ingreso",
+            "columna": "I",
+            "tipo": "string",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Egreso",
+            "nombre": "egreso",
+            "columna": "J",
+            "tipo": "string",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Convenio",
+            "nombre": "convenio",
+            "columna": "K",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Categoria",
+            "nombre": "categoria",
+            "columna": "L",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Cliente",
+            "nombre": "cliente",
+            "columna": "M",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Calificacion Profesional",
+            "nombre": "calificacion_profesional",
+            "columna": "N",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC CODIGO",
+            "nombre": "osoccodigo",
+            "columna": "O",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Sucursal",
+            "nombre": "sucursal",
+            "columna": "Q",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Lugar de Pago",
+            "nombre": "lugar_pago",
+            "columna": "R",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Jornada",
+            "nombre": "jornada",
+            "columna": "S",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Recibos",
+            "nombre": "Recibos",
+            "columna": "T",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Legajos",
+            "nombre": "legajos",
+            "columna": "U",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Bruto",
+            "nombre": "bruto_imp",
+            "columna": "V",
+            "tipo": "float",
+            "formato": "millares con coma"
+        },
+        {
+            "titulo": "Retenciones",
+            "nombre": "retenciones",
+            "columna": "W",
+            "tipo": "float",
+            "formato": "millares con coma"
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "X",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "Y",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "Z",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "O SOC NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "NOMBRE",
+            "nombre": "osocnombre",
+            "columna": "P",
+            "tipo": "string",
+            "formato": ""
+        }
+    ]
+}
