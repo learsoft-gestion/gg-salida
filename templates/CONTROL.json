@@ -32,8 +32,8 @@
             "titulo": "Nro. Doc",
             "nombre": "nrodoc",
             "columna": "E",
-            "tipo": "fecha",
-            "formato": "DD/MM/YYYY"
+            "tipo": "string",
+            "formato": ""
         },
         {
             "titulo": "Apellidos",
@@ -60,14 +60,14 @@
             "titulo": "Ingreso",
             "nombre": "ingreso",
             "columna": "I",
-            "tipo": "string",
+            "tipo": "fecha",
             "formato": "DD/MM/YYYY"
         },
         {
             "titulo": "Egreso",
             "nombre": "egreso",
             "columna": "J",
-            "tipo": "string",
+            "tipo": "fecha",
             "formato": "DD/MM/YYYY"
         },
         {
@@ -93,7 +93,7 @@
         },
         {
             "titulo": "Calificacion Profesional",
-            "nombre": "calificacion_profesional",
+            "nombre": "Calificacion_Profesional",
             "columna": "N",
             "tipo": "string",
             "formato": ""
@@ -156,14 +156,14 @@
         },
         {
             "titulo": "Retenciones",
-            "nombre": "retenciones",
+            "nombre": "retencion",
             "columna": "W",
             "tipo": "float",
             "formato": "millares con coma"
         },
         {
             "titulo": "Salario Familiar",
-            "nombre": "salario_familiar",
+            "nombre": "salariofamiliar",
             "columna": "X",
             "tipo": "float",
             "formato": "millares con coma"

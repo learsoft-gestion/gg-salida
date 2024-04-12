@@ -14,7 +14,8 @@ type Proceso struct {
 	Query           string `json:"query"`
 	Archivo_modelo  string `json:"archivo_modelo"`
 	Filtro_having   string `json:"filtro_having"`
-	Id_procesado    string
+	Archivo_control string `json:"archivo_control"`
+	Id_procesado    int
 }
 
 type Empresa struct {
@@ -53,12 +54,12 @@ type DTOproceso struct {
 	Nombre_control           string
 	Ultima_ejecucion_control string
 	Boton_control            string
-	Id_procesado             int32
+	Id_procesado             int
 }
 
 type DTOdatos struct {
-	Id_modelo    string
-	Id_procesado string
+	Id_modelo    int
+	Id_procesado int
 	Fecha        string
 	Fecha2       string
 }
@@ -126,8 +127,9 @@ type Option struct {
 }
 
 type Respuesta struct {
-	Mensaje         string   `json:"mensaje"`
-	Archivos_salida []string `json:"archivos_salida"`
+	Mensaje          string   `json:"mensaje"`
+	Archivos_salida  []string `json:"archivos_salida"`
+	Archivos_control []string `json:"archivos_control"`
 	// Procesado       bool     `json:"procesado"`
 }
 

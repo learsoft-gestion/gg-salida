@@ -14,7 +14,7 @@ import (
 func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string) (string, error) {
 	// Leer archivo de plantilla
 	var plantilla modelos.Plantilla
-	path := "../templates/" + proceso.Archivo_modelo
+	path := "../templates/" + proceso.Archivo_control
 	fmt.Println("Path: ", path)
 	file, err := os.Open(path)
 	if err != nil {
@@ -86,7 +86,11 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					if strings.ToLower(campo.Formato) == "cuil sin guion" {
 						value += strings.ReplaceAll(v, "-", "")
 					} else if campo.Formato == "DD/MM/YYYY" {
-						value += formatearFecha(v, campo.Formato)
+						if len(v) == 8 {
+							value += formatearFecha(v, campo.Formato)
+						} else {
+							value += v
+						}
 					} else {
 						value += v
 					}
