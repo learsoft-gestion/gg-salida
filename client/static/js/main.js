@@ -170,7 +170,7 @@ $("#btnBuscar").click(function () {
                 title: "Ocurrió un error",
                 text: error.mensaje,
                 icon: "error"
-              });
+            });
         }
     });
 });
@@ -209,37 +209,48 @@ llenarTabla = function (rawData) {
     $.each(data, function (index, item) {
         $.each(item, function (i, proceso) {
             if (i === 0) {
-                var row = $(`<tr data-toggle="collapse" class="accordion-toggle">`);
+                var row = $(`<tr class="accordion-toggle">`);
                 row.append('<td>' + proceso.Empresa + '</td>');
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
                 row.append('<td>' + proceso.Nombre + '</td>');
-                row.append(`<td title="${proceso.Nombre_salida.String}"><a href="${proceso.Nombre_salida.String.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</a></td>`);
-                if (proceso.Ultima_version) {
-                    row.append(`<td>${proceso.Version}<button class="btn btn-default btn-sm openOculto" data-target="#${proceso.Id}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`)
+                if (proceso.Version > '1') {
+                    row.append(`<td>${proceso.Version}<button class="btn btn-default btn-sm openOculto" data-target=".${proceso.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`)
                 } else {
                     row.append('<td>' + proceso.Version + '</td>')
                 }
-                row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                row.append('<td>' + generarBoton(proceso) + '</td>');
+                // Archivo de configuración
+                row.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
+                row.append('<td>' + proceso.Ultima_ejecucion_control + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton_control, proceso.Id_modelo) + '</td>');
+                // Archivo de pago
+                row.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
+                row.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton_salida, proceso.Id_modelo) + '</td>');
 
                 tbody.append(row);
-                if (proceso.Ultima_version) {
-                    var subtabla = armarSubtabla(proceso.Id);
-                    tbody.append(subtabla);
-                }
             } else {
-                var subTbody = $(`#tbody-${proceso.Id}`);
-                var subRow = $('<tr>');
-                subRow.append(`<td title="${proceso.Nombre_salida.String}"><a href="${proceso.Nombre_salida.String.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida.String)}</a></td>`);
+                var subRow = $(`<tr class="collapse ${proceso.Id_modelo}">`);
+                subRow.append('<td></td>');
+                subRow.append('<td></td>');
+                subRow.append('<td></td>');
+                subRow.append('<td></td>');
                 subRow.append('<td>' + proceso.Version + '</td>');
-                subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
+                subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
+                subRow.append('<td>' + proceso.Ultima_ejecucion_control + '</td>');
+                subRow.append('<td></td>');
+                subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
+                subRow.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
+                subRow.append('<td></td>');
 
-                subTbody.append(subRow);
+                tbody.append(subRow);
             }
         });
     });
 
+    $('table th:nth-child(8), table td:nth-child(8)').css('border-right', '1px solid black');
+    $('table th:nth-child(6), table td:nth-child(6)').css('border-left', '1px solid black');
+    
     $("tr.accordion-toggle .openOculto").on('click', function () {
         id = $(this).attr("data-target");
         $(id).toggleClass("collapse");
@@ -268,7 +279,7 @@ llenarTabla = function (rawData) {
                         title: "Éxito!",
                         text: data.mensaje,
                         icon: "success"
-                      });
+                    });
                     $("#btnBuscar").trigger("click");
                 } else {
                     console.log('No se recibieron datos del servidor.');
@@ -280,7 +291,7 @@ llenarTabla = function (rawData) {
                     title: "Ocurrió un error",
                     text: error.mensaje,
                     icon: "error"
-                  });
+                });
                 console.error('Error en la solicitud:', error);
             }
         });
@@ -291,13 +302,12 @@ reordenarData = function (rawData) {
     const data = {};
 
     rawData.forEach(item => {
-        const id = item.Id;
+        const id = item.Id_modelo;
         if (!data[id]) {
             data[id] = [];
         }
         data[id].push(item);
     });
-
     return data;
 }
 
@@ -306,32 +316,11 @@ obtenerNombreArchivo = function (nombre) {
     return nombre[nombre.length - 1];
 }
 
-generarBoton = function (item) {
-    if (item.Boton === "lanzar") {
-        return `<button type="button" class="btn btn-success btn-sm lanzar" value="${item.Id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
-    } else if (item.Boton === "relanzar") {
-        return `<button type="button" class="btn btn-primary btn-sm lanzar" value="${item.Id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
+generarBoton = function (boton, id) {
+    if (boton === "lanzar") {
+        return `<button type="button" class="btn btn-success btn-sm lanzar" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
     }
-    return '<button type="button" class="btn btn-transparent" style="width: 38px; height: 38px;" disabled></button>';
-}
-
-armarSubtabla = function (id) {
-    var hiddenRow = $('<tr>');
-    var td = $('<td colspan="10" class="hiddenRow">');
-    var div = $(`<div class="accordian-body collapse" id="${id}">`);
-    var table = $('<table class="table">');
-    var tbody2 = $(`<tbody id="tbody-${id}">`)
-    var tr = $('<tr>');
-    tr.append('<th>Nombre de salida</th>');
-    tr.append('<th>Versión</th>');
-    tr.append('<th>Última ejecución</th>');
-    table.append(tr);
-    table.append(tbody2);
-    div.append(table);
-    td.append(div);
-    hiddenRow.append(td);
-
-    return hiddenRow;
+    return `<button type="button" class="btn btn-primary btn-sm lanzar" value="${id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
 }
 
 // Botón Generar documentos
@@ -349,7 +338,7 @@ $("#btnGenerar").click(function () {
                     title: "Éxito!",
                     text: data.mensaje,
                     icon: "success"
-                  });
+                });
                 $("#btnBuscar").trigger("click");
             } else {
                 console.log('No se recibieron datos del servidor.');
@@ -362,7 +351,127 @@ $("#btnGenerar").click(function () {
                 title: "Ocurrió un error",
                 text: error.mensaje,
                 icon: "error"
-              });
+            });
         }
     });
 });
+
+function abrirModal() {
+    Swal.fire({
+        title: 'Clientes',
+        html: `
+            <div id="clientesAgregados"></div>
+            <input id="cuit" class="swal2-input" placeholder="CUIT">
+            <input id="razonSocial" class="swal2-input" placeholder="Razón Social">
+            <button type="button" class="btn btn-outline-dark" id="btnBuscarClientes">
+              <i class="material-symbols-outlined">search</i>
+            </button>
+            <div id="resultado"></div>
+        `,
+        customClass: {
+            denyButton: "btn btn-success"
+        },
+        buttonsStyling: false,
+        showConfirmButton: false,
+        showDenyButton: true,
+        denyButtonText: 'Agregar',
+        width: 1000,
+        didOpen: () => {
+            $('.swal2-deny').hide();
+            const denyButton = Swal.getDenyButton();
+            $('#btnBuscarClientes').click(function () { buscarCientes(); });
+            denyButton.onclick = function () { agregarClientes(); };
+        }
+    });
+}
+
+function buscarCientes() {
+    const cuit = $('#cuit').val();
+    const razonSocial = $('#razonSocial').val();
+
+    $.ajax({
+        url: '/clientes',
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            cuit: cuit,
+            cliente: razonSocial
+        },
+        success: function (data) {
+            if (data && data.length > 0) {
+                mostrarResultados(data);
+            } else {
+                $('#resultado').html('<p>No se encontraron resultados</p>');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
+}
+
+let clientesAgregados = [];
+
+function agregarClientes() {
+    $('.seleccionar-cliente:checked').each(function () {
+        const fila = $(this).closest('tr');
+        const cuit = fila.find('td:nth-child(2)').text();
+        const razonSocial = fila.find('td:nth-child(3)').text();
+        const cliente = { cuit: cuit, razonSocial: razonSocial };
+        if(!clientesAgregados.some(c => c.cuit === cliente.cuit && c.razonSocial === cliente.razonSocial)) {
+            clientesAgregados.push(cliente);
+        }
+    });
+    mostrarClientesAgregados();
+}
+
+function mostrarClientesAgregados() {
+    let html = '';
+    clientesAgregados.forEach(cliente => {
+        html += `
+            <div class="cliente-agregado">
+                <span>${cliente.cuit} / ${cliente.razonSocial}</span>
+                <button class="btn btn-danger btn-sm" onclick="quitarCliente('` + cliente.cuit + `')">X</button>
+            </div>
+        `;
+    });
+    $('#clientesAgregados').html(html);
+}
+
+function quitarCliente(cuit) {
+    clientesAgregados = clientesAgregados.filter(cliente => cliente.cuit !== cuit);
+    mostrarClientesAgregados();
+}
+
+function mostrarResultados(clientes) {
+    $('.swal2-deny').show();
+    let html = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="seleccionarTodo"></th>
+                    <th>CUIT</th>
+                    <th>Razón Social</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    clientes.forEach(cliente => {
+        html += `
+            <tr>
+                <td><input type="checkbox" class="seleccionar-cliente" value="${cliente.id}"></td>
+                <td>${cliente.cuit}</td>
+                <td>${cliente.nombre}</td>
+            </tr>
+        `;
+    });
+    html += `
+            </tbody>
+        </table>
+    `;
+    $('#resultado').html(html);
+
+    $('#seleccionarTodo').change(function () {
+        $('.seleccionar-cliente').prop('checked', $(this).prop('checked'));
+    });
+}

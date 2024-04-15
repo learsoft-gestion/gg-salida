@@ -94,3 +94,32 @@ tbody td {
 .hiddenRow {
   padding: 0 !important;
 }
+
+.swal2-input {
+  font-size: 16px; /* Tamaño de fuente más pequeño */
+  width: 170px; /* Ancho más estrecho */
+  display: inline-block; /* Mostrar en una sola línea */
+  margin-right: 10px; /* Margen a la derecha para separar los filtros */
+  margin-left: 10px; /* Margen a la derecha para separar los filtros */
+}
+
+#resultado {
+  margin-top: 10px;
+}
+
+#btnBuscarClientes {
+  margin-left: 10px;
+}
+
+.cliente-agregado {
+  display: inline-block;
+  border: solid 2px;
+}
+
+#colConfig {
+  background-color: antiquewhite;
+}
+
+#colPago {
+  background-color: aquamarine;
+}
