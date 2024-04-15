@@ -123,7 +123,7 @@ func CargarXml(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, registros 
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", err
 	}
-	fmt.Printf("Archivo XML generado con %v bytes", num)
+	fmt.Printf("Archivo XML generado con %v bytes\n", num)
 
 	return nombreSalida, nil
 }

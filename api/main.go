@@ -314,45 +314,48 @@ func sender(db *sql.DB) http.HandlerFunc {
 				procesos = append(procesos, proceso)
 			}
 
-			var resultado []string
-			for _, proc := range procesos {
-				var cuenta int
-				var version int
+			var version int
+			var archivo_salida bool
+			if datos.Id_procesado > 0 {
 				// Verificar si el proceso ya se corrió
-				queryCuenta := fmt.Sprintf("select count(*) from extractor.ext_procesados where id_modelo = %v and fecha_desde = '%s' and fecha_hasta = '%s'", proc.Id_modelo, datos.Fecha, datos.Fecha2)
+				queryCuenta := fmt.Sprintf("select version, archivo_salida from extractor.ext_procesados where id_proceso = %v", datos.Id_procesado)
 				// fmt.Println("Query: ", queryCuenta)
-				err = db.QueryRow(queryCuenta).Scan(&cuenta)
+				var archivoSalida sql.NullString
+				err = db.QueryRow(queryCuenta).Scan(&version, &archivoSalida)
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
 					return
 				}
-
-				fmt.Println("Cuenta: ", cuenta)
-				fmt.Println("Version: ", version)
-				version = cuenta + 1
-
-				result, errFormateado := src.ProcesadorSalida(proc, datos.Fecha, datos.Fecha2, version)
-				if result != "" {
-					resultado = append(resultado, result)
+				if archivoSalida.Valid {
+					archivo_salida = true
 				}
-				if errFormateado.Mensaje != "" {
-					errString := "Error en " + proc.Nombre + ": " + errFormateado.Mensaje
-					// http.Error(w, errString, http.StatusBadRequest)
-					w.WriteHeader(http.StatusOK)
-					w.Header().Set("Content-Type", "application/json")
-					respuesta := modelos.Respuesta{
-						Mensaje:         errString,
-						Archivos_salida: nil,
-					}
-					jsonResp, _ := json.Marshal(respuesta)
-					w.Write(jsonResp)
-					return
 
-				}
-				// El proceso termino, reinicio procesos
-				procesos = nil
+				version += 1
+			} else {
+				version = 1
 			}
+
+			var resultado []string
+			result, errFormateado := src.ProcesadorSalida(procesos[0], datos.Fecha, datos.Fecha2, version, archivo_salida)
+			if result != "" {
+				resultado = append(resultado, result)
+			}
+			if errFormateado.Mensaje != "" {
+				errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
+				// http.Error(w, errString, http.StatusBadRequest)
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				respuesta := modelos.Respuesta{
+					Mensaje:         errString,
+					Archivos_salida: nil,
+				}
+				jsonResp, _ := json.Marshal(respuesta)
+				w.Write(jsonResp)
+				return
+			}
+			// El proceso termino, reinicio procesos
+			procesos = nil
 
 			w.WriteHeader(http.StatusOK)
 			w.Header().Set("Content-Type", "application/json")
@@ -408,20 +411,28 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 
 			var resultado []string
 			for _, proc := range procesos {
-				var cuenta int
+				var archivoSalida bool
+				var archivo_salida sql.NullString
 				var version int
+				var cuenta sql.NullInt32
 
 				// Verificar si el proceso ya se corrió
-				err = db.QueryRow("select count(*) from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3", proc.Id_modelo, restantes.Fecha1, restantes.Fecha2).Scan(&cuenta)
-				if err != nil {
+				err = db.QueryRow("select version, archivo_salida from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3 order by version desc limit 1", proc.Id_modelo, restantes.Fecha1, restantes.Fecha2).Scan(&cuenta, &archivo_salida)
+				if err != nil && err != sql.ErrNoRows {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
 					return
 				}
-
-				version = cuenta + 1
-
-				result, _ := src.ProcesadorSalida(proc, restantes.Fecha1, restantes.Fecha2, version)
+				if archivo_salida.Valid {
+					archivoSalida = true
+				}
+				if cuenta.Valid {
+					version = int(cuenta.Int32) + 1
+				} else {
+					version = 1
+				}
+				fmt.Println("Version: ", version)
+				result, _ := src.ProcesadorSalida(proc, restantes.Fecha1, restantes.Fecha2, version, archivoSalida)
 				if result != "" {
 					resultado = append(resultado, result)
 				}
