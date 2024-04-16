@@ -27,7 +27,7 @@ func Logueo(db *sql.DB, nombre string) (int, int, error) {
 func ProcesadosSalida(db *sql.DB, id_modelo int, fecha1 string, fecha2 string, version int, cant_registros int, nombre_salida string) (int, error) {
 
 	var id_proceso int
-	err := db.QueryRow("insert into extractor.ext_procesados (id_modelo, fecha_desde, fecha_hasta, num_version, cant_registros_salida, archivo_salida) values ($1,$2,$3,$4,$5,$6,$7) returning id_proceso", id_modelo, fecha1, fecha2, version, cant_registros, nombre_salida).Scan(&id_proceso)
+	err := db.QueryRow("insert into extractor.ext_procesados (id_modelo, fecha_desde, fecha_hasta, num_version, cant_registros_salida, archivo_salida) values ($1,$2,$3,$4,$5,$6) returning id_proceso", id_modelo, fecha1, fecha2, version, cant_registros, nombre_salida).Scan(&id_proceso)
 	if err != nil {
 		return 0, err
 	}

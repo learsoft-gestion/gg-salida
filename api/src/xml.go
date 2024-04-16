@@ -13,7 +13,7 @@ func CargarXml(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, registros 
 	// Leer archivo de plantilla
 	var plantilla modelos.Plantilla
 	path := "../templates/" + proceso.Archivo_modelo
-	fmt.Println("Path: ", path)
+	// fmt.Println("Path: ", path)
 	file, err := os.Open(path)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)

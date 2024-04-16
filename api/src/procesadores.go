@@ -40,15 +40,15 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		return err.Error(), 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
-	if len(registros) == 0 {
-		if _, err = ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
-			fmt.Println(err.Error())
-			return err.Error(), 0, modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
-		}
-		return "", 0, modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
-	} else {
-		fmt.Println("Cantidad de registros: ", len(registros))
-	}
+	// if len(registros) == 0 {
+	// 	if id, err = ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
+	// 		fmt.Println(err.Error())
+	// 		return err.Error(), 0, modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+	// 	}
+	// 	return "", 0, modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
+	// } else {
+	fmt.Println("Cantidad de registros: ", len(registros))
+	// }
 
 	// Fecha para el nombre de salida
 	var fechaSalida string
@@ -93,8 +93,9 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		// Ruta completa del archivo
 		nombreSalida += ".xlsx"
 		rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
+		plantilla := "../templates/" + proceso.Archivo_modelo
 
-		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo)
+		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -229,32 +230,13 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	// Ruta completa del archivo
 	nombreControl += ".xlsx"
 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
-	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo)
+	plantilla := "../templates/" + proceso.Archivo_nomina
+
+	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
-
-	// } else if formato == "txt" {
-	// 	// Ruta completa del archivo
-	// 	nombreControl += ".txt"
-	// 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
-	// 	// Utilizar funcion para txt
-	// 	name, err = CargarTxt(db, idLogDetalle, proceso, registros, rutaArchivo)
-	// 	if err != nil {
-	// 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// 	}
-	// } else if formato == "xml" {
-	// 	// Ruta completa del archivo
-	// 	nombreControl += ".xml"
-	// 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
-	// 	// Utilizar funcion para txt
-	// 	name, err = CargarXml(db, idLogDetalle, proceso, registros, rutaArchivo)
-	// 	if err != nil {
-	// 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// 	}
 
 	// Insertar o actualizar proceso en ext_procesados
 	if err = ProcesadosNomina(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {

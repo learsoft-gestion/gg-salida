@@ -93,7 +93,7 @@
         },
         {
             "titulo": "Calificacion Profesional",
-            "nombre": "Calificacion_Profesional",
+            "nombre": "calificacion_profesional",
             "columna": "N",
             "tipo": "string",
             "formato": ""

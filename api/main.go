@@ -14,8 +14,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var serverAddress string
-
 var convenios []modelos.Option
 var empresas []modelos.Option
 var DTOprocesos []modelos.DTOproceso
@@ -304,25 +302,22 @@ func sender(db *sql.DB) http.HandlerFunc {
 
 			var version int
 			var archivo_salida bool
-			if datos.Id_procesado > 0 {
-				// Verificar si el proceso ya se corrió
-				queryCuenta := fmt.Sprintf("select num_version, archivo_salida from extractor.ext_procesados where id_proceso = %v", datos.Id_procesado)
-				// fmt.Println("Query: ", queryCuenta)
-				var archivoSalida sql.NullString
-				err = db.QueryRow(queryCuenta).Scan(&version, &archivoSalida)
-				if err != nil {
-					fmt.Println(err.Error())
-					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
-					return
-				}
-				if archivoSalida.Valid {
-					archivo_salida = true
-				}
-
-				version += 1
-			} else {
-				version = 1
+			// Verificar si el proceso ya se corrió
+			var archivoSalida sql.NullString
+			var num_version sql.NullInt32
+			err = db.QueryRow("select num_version, archivo_salida from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3 order by num_version desc limit 1;", datos.Id_modelo, datos.Fecha, datos.Fecha2).Scan(&num_version, &archivoSalida)
+			if err != nil && err != sql.ErrNoRows {
+				fmt.Println(err.Error())
+				http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+				return
 			}
+			if archivoSalida.Valid {
+				archivo_salida = true
+			}
+			if num_version.Valid {
+				version = int(num_version.Int32) + 1
+			}
+
 			datos.Version = version
 
 			var resultado []string
@@ -350,13 +345,13 @@ func sender(db *sql.DB) http.HandlerFunc {
 			// Ejecutar nomina
 			resp := nomina(db, datos)
 
-			if resp.Archivos_control != nil {
+			if resp.Archivos_nomina != nil {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
-					Mensaje:          "Informe generado exitosamente",
-					Archivos_salida:  resultado,
-					Archivos_control: resp.Archivos_control,
+					Mensaje:         "Informe generado exitosamente",
+					Archivos_salida: resultado,
+					Archivos_nomina: resp.Archivos_nomina,
 				}
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
@@ -411,7 +406,13 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 				procesos = append(procesos, proceso)
 			}
 
-			var resultado []string
+			datos := modelos.DTOdatos{
+				Fecha:  restantes.Fecha1,
+				Fecha2: restantes.Fecha2,
+			}
+
+			var resultado_salida []string
+			var resultado_nomina []string
 			for _, proc := range procesos {
 				var archivoSalida bool
 				var archivo_salida sql.NullString
@@ -419,7 +420,7 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 				var cuenta sql.NullInt32
 
 				// Verificar si el proceso ya se corrió
-				err = db.QueryRow("select version, archivo_salida from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3 order by version desc limit 1", proc.Id_modelo, restantes.Fecha1, restantes.Fecha2).Scan(&cuenta, &archivo_salida)
+				err = db.QueryRow("select num_version, archivo_salida from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3 order by num_version desc limit 1", proc.Id_modelo, restantes.Fecha1, restantes.Fecha2).Scan(&cuenta, &archivo_salida)
 				if err != nil && err != sql.ErrNoRows {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
@@ -434,19 +435,35 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 					version = 1
 				}
 				fmt.Println("Version: ", version)
-				result, _, _ := src.ProcesadorSalida(proc, restantes.Fecha1, restantes.Fecha2, version, archivoSalida)
-				if result != "" {
-					resultado = append(resultado, result)
+				result_salida, id_procesado, err := src.ProcesadorSalida(proc, restantes.Fecha1, restantes.Fecha2, version, archivoSalida)
+				if err.Mensaje != "" {
+					fmt.Println(err.Mensaje)
+					http.Error(w, err.Mensaje, http.StatusBadRequest)
+					return
 				}
+				if result_salida != "" {
+					resultado_salida = append(resultado_salida, result_salida)
+				}
+				datos.Id_modelo = proc.Id_modelo
+				datos.Id_procesado = id_procesado
+				datos.Version = version
 				// El proceso termino, reinicio procesos
-				procesos = nil
+				// procesos = nil
+
+				// Ejecutar nomina
+				result_nomina := nomina(db, datos)
+
+				if result_nomina.Archivos_nomina != nil {
+					resultado_nomina = append(resultado_nomina, result_nomina.Archivos_nomina[0])
+				}
 			}
 
 			w.WriteHeader(http.StatusOK)
 			w.Header().Set("Content-Type", "application/json")
 			respuesta := modelos.Respuesta{
 				Mensaje:         "Datos recibidos y procesados",
-				Archivos_salida: resultado,
+				Archivos_salida: resultado_salida,
+				Archivos_nomina: resultado_nomina,
 			}
 			jsonResp, _ := json.Marshal(respuesta)
 			w.Write(jsonResp)
@@ -494,8 +511,8 @@ func nomina(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
 		errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
 
 		respuesta := modelos.Respuesta{
-			Mensaje:          errString,
-			Archivos_control: nil,
+			Mensaje:         errString,
+			Archivos_nomina: nil,
 		}
 
 		return respuesta
@@ -504,8 +521,8 @@ func nomina(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
 	procesos = nil
 
 	respuesta := modelos.Respuesta{
-		Mensaje:          "Informe generado exitosamente",
-		Archivos_control: resultado,
+		Mensaje:         "Informe generado exitosamente",
+		Archivos_nomina: resultado,
 	}
 	return respuesta
 }
@@ -718,8 +735,6 @@ func main() {
 		Addr:    ":8080",
 		Handler: router,
 	}
-
-	serverAddress = srv.Addr
 
 	fmt.Println("Listening...")
 	srv.ListenAndServe()

@@ -131,6 +131,7 @@ type Respuesta struct {
 	Mensaje          string   `json:"mensaje"`
 	Archivos_salida  []string `json:"archivos_salida"`
 	Archivos_control []string `json:"archivos_control"`
+	Archivos_nomina  []string `json:"archivos_nomina"`
 	// Procesado       bool     `json:"procesado"`
 }
 

@@ -6,15 +6,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
 )
 
-func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string) (string, error) {
+func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string) (string, error) {
 	// Leer archivo de plantilla
 	var plantilla modelos.Plantilla
-	path := "../templates/" + proceso.Archivo_control
+	// path := "../templates/" + proceso.Archivo_control
 	fmt.Println("Path: ", path)
 	file, err := os.Open(path)
 	if err != nil {
@@ -86,11 +87,19 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					if strings.ToLower(campo.Formato) == "cuil sin guion" {
 						value += strings.ReplaceAll(v, "-", "")
 					} else if campo.Formato == "DD/MM/YYYY" {
+						numRegex := regexp.MustCompile(`^\s{8}$`)
 						if len(v) == 8 {
-							value += formatearFecha(v, campo.Formato)
-						} else {
-							value += v
+							if numRegex.MatchString(v) {
+								value += v
+							} else {
+								value += formatearFecha(v, campo.Formato)
+							}
 						}
+						// if v[0] > 0 {
+						// 	value += formatearFecha(v, campo.Formato)
+						// } else {
+						// 	value += v
+						// }
 					} else {
 						value += v
 					}
@@ -105,7 +114,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						value += string(v)
 					}
 				case nil:
-					value = fmt.Sprintf("##%s##", campo.Nombre)
+					value = " "
 				default:
 					value = fmt.Sprintf("%v", v)
 				}
@@ -149,6 +158,16 @@ func formatearMillares(s string) string {
 func formatearFecha(s string, formato string) string {
 	var strFinal string
 	var partes []string
+
+	// Verificar si son caracteres vacios
+	numRegex := regexp.MustCompile(`^\d{8}$`)
+	if len(s) == 8 {
+		if numRegex.MatchString(s) {
+			return s
+		}
+	}
+
+	// Verificar formato y transformar
 	if formato == "DD/MM/YYYY" {
 		partes = append(partes, s[:4], s[4:6], s[6:])
 		strFinal = partes[2] + "/" + partes[1] + "/" + partes[0]
