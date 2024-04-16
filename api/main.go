@@ -14,6 +14,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var serverAddress string
+
 var convenios []modelos.Option
 var empresas []modelos.Option
 var DTOprocesos []modelos.DTOproceso
@@ -357,15 +359,36 @@ func sender(db *sql.DB) http.HandlerFunc {
 			// El proceso termino, reinicio procesos
 			procesos = nil
 
-			w.WriteHeader(http.StatusOK)
-			w.Header().Set("Content-Type", "application/json")
-			respuesta := modelos.Respuesta{
-				Mensaje:         "Informe generado exitosamente",
-				Archivos_salida: resultado,
+			// Ejecutar nomina
+			resp := control(db, datos)
+
+			// segundaURL := "http://localhost" + serverAddress + "/control"
+			// resp, err := http.Post(segundaURL, "application/json", r.Body)
+			// if err != nil {
+			// 	fmt.Println(err.Error())
+			// 	http.Error(w, "Error al llamar al endpoint de nomina", http.StatusBadRequest)
+			// 	return
+			// }
+
+			if resp.Archivos_control != nil {
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				respuesta := modelos.Respuesta{
+					Mensaje:          "Informe generado exitosamente",
+					Archivos_salida:  resultado,
+					Archivos_control: resp.Archivos_control,
+				}
+				jsonResp, _ := json.Marshal(respuesta)
+				w.Write(jsonResp)
+			} else {
+				w.WriteHeader(http.StatusBadRequest)
+				jsonResp, _ := json.Marshal(resp)
+				w.Write(jsonResp)
 			}
-			jsonResp, _ := json.Marshal(respuesta)
-			w.Write(jsonResp)
+
+			// defer resp.Body.Close()
 		}
+
 	}
 }
 
@@ -452,104 +475,97 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func control(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "POST" {
-			procesos = nil
-			var datos modelos.DTOdatos
-			err := json.NewDecoder(r.Body).Decode(&datos)
-			if err != nil {
-				http.Error(w, "Error decodificando JSON de control", http.StatusBadRequest)
-				return
-			}
-			datos.Fecha = src.FormatoFecha(datos.Fecha)
-			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
-
-			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_control FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
-			// fmt.Println("Query modelos: ", queryModelos)
-			stmt, err := db.Prepare(queryModelos)
-			if err != nil {
-				http.Error(w, "Error al preparar query", http.StatusBadRequest)
-				return
-			}
-			defer stmt.Close()
-			var args []interface{}
-			args = append(args, datos.Id_modelo)
-			rows, err := stmt.Query(args...)
-			if err != nil {
-				http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
-				return
-			}
-			defer rows.Close()
-
-			for rows.Next() {
-				var proceso modelos.Proceso
-				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_control)
-				if err != nil {
-					fmt.Println(err.Error())
-					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
-					return
-				}
-				proceso.Id_procesado = datos.Id_procesado
-				procesos = append(procesos, proceso)
-			}
-
-			var version int
-			var archivoControl bool
-			if datos.Id_procesado > 0 {
-				// Verificar si el proceso ya se corrió
-				queryCuenta := fmt.Sprintf("select version, archivo_control from extractor.ext_procesados where id_proceso = %v", datos.Id_procesado)
-				// fmt.Println("Query: ", queryCuenta)
-				var archivo_control sql.NullString
-				err = db.QueryRow(queryCuenta).Scan(&version, &archivo_control)
-				if err != nil {
-					fmt.Println(err.Error())
-					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
-					return
-				}
-				if archivo_control.Valid {
-					archivoControl = true
-				} else {
-					archivoControl = false
-				}
-
-				version += 1
-			} else {
-				version = 1
-			}
-
-			var resultado []string
-			result, errFormateado := src.ProcesadorControl(procesos[0], datos.Fecha, datos.Fecha2, version, archivoControl)
-			if result != "" {
-				resultado = append(resultado, result)
-			}
-			if errFormateado.Mensaje != "" {
-				errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
-				// http.Error(w, errString, http.StatusBadRequest)
-				w.WriteHeader(http.StatusOK)
-				w.Header().Set("Content-Type", "application/json")
-				respuesta := modelos.Respuesta{
-					Mensaje:          errString,
-					Archivos_control: nil,
-				}
-				jsonResp, _ := json.Marshal(respuesta)
-				w.Write(jsonResp)
-				return
-
-			}
-			// El proceso termino, reinicio procesos
-			procesos = nil
-
-			w.WriteHeader(http.StatusOK)
-			w.Header().Set("Content-Type", "application/json")
-			respuesta := modelos.Respuesta{
-				Mensaje:          "Informe generado exitosamente",
-				Archivos_control: resultado,
-			}
-			jsonResp, _ := json.Marshal(respuesta)
-			w.Write(jsonResp)
-		}
+//	func control(db *sql.DB) http.HandlerFunc {
+//		return func(w http.ResponseWriter, r *http.Request) {
+//			if r.Method == "POST" {
+func control(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
+	procesos = nil
+	// var datos modelos.DTOdatos
+	// err := json.NewDecoder(r.Body).Decode(&datos)
+	// if err != nil {
+	// 	http.Error(w, "Error decodificando JSON de control", http.StatusBadRequest)
+	// 	return
+	// }
+	// datos.Fecha = src.FormatoFecha(datos.Fecha)
+	// datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
+	queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_control FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
+	// fmt.Println("Query modelos: ", queryModelos)
+	stmt, err := db.Prepare(queryModelos)
+	if err != nil {
+		// http.Error(w, "Error al preparar query", http.StatusBadRequest)
+		return modelos.Respuesta{Mensaje: err.Error()}
 	}
+	defer stmt.Close()
+	var args []interface{}
+	args = append(args, datos.Id_modelo)
+	rows, err := stmt.Query(args...)
+	if err != nil {
+		// http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
+		return modelos.Respuesta{Mensaje: "Error al ejecutar el query"}
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var proceso modelos.Proceso
+		err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_control)
+		if err != nil {
+			fmt.Println(err.Error())
+			// http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+			return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
+		}
+		proceso.Id_procesado = datos.Id_procesado
+		procesos = append(procesos, proceso)
+	}
+	var version int
+	var archivoControl bool
+	if datos.Id_procesado > 0 {
+		// Verificar si el proceso ya se corrió
+		queryCuenta := fmt.Sprintf("select version, archivo_control from extractor.ext_procesados where id_proceso = %v", datos.Id_procesado)
+		// fmt.Println("Query: ", queryCuenta)
+		var archivo_control sql.NullString
+		err = db.QueryRow(queryCuenta).Scan(&version, &archivo_control)
+		if err != nil {
+			fmt.Println(err.Error())
+			// http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+			return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
+		}
+		if archivo_control.Valid {
+			archivoControl = true
+		} else {
+			archivoControl = false
+		}
+		version += 1
+	} else {
+		version = 1
+	}
+	var resultado []string
+	result, errFormateado := src.ProcesadorControl(procesos[0], datos.Fecha, datos.Fecha2, version, archivoControl)
+	if result != "" {
+		resultado = append(resultado, result)
+	}
+	if errFormateado.Mensaje != "" {
+		errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
+		// http.Error(w, errString, http.StatusBadRequest)
+		// w.WriteHeader(http.StatusOK)
+		// w.Header().Set("Content-Type", "application/json")
+		respuesta := modelos.Respuesta{
+			Mensaje:          errString,
+			Archivos_control: nil,
+		}
+		// jsonResp, _ := json.Marshal(respuesta)
+		// w.Write(jsonResp)
+		return respuesta
+	}
+	// El proceso termino, reinicio procesos
+	procesos = nil
+	// w.WriteHeader(http.StatusOK)
+	// w.Header().Set("Content-Type", "application/json")
+	respuesta := modelos.Respuesta{
+		Mensaje:          "Informe generado exitosamente",
+		Archivos_control: resultado,
+	}
+	return respuesta
+	// jsonResp, _ := json.Marshal(respuesta)
+	// w.Write(jsonResp)
 }
 
 func procesosRestantes(db *sql.DB) http.HandlerFunc {
@@ -754,12 +770,14 @@ func main() {
 	router.HandleFunc("/multiple", multipleSend(db)).Methods("POST")
 	router.HandleFunc("/restantes", procesosRestantes(db))
 	router.HandleFunc("/clientes", getClientes(db))
-	router.HandleFunc("/control", control(db))
+	// router.HandleFunc("/control", control(db))
 
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
+
+	serverAddress = srv.Addr
 
 	fmt.Println("Listening...")
 	srv.ListenAndServe()

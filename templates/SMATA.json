@@ -44,7 +44,7 @@
         },
         {
             "titulo": "Apo",
-            "nombre": "total_870",
+            "nombre": "total_871",
             "columna": "G",
             "tipo": "float",
             "formato": "millares con coma"
@@ -82,14 +82,14 @@
             "nombre": "OtrosAportes",
             "columna": "L",
             "tipo": "fijo",
-            "formato": "0"
+            "formato": "0,00"
         },
         {
             "titulo": "CC_Codigo",
             "nombre": "CC_Codigo",
             "columna": "M",
             "tipo": "fijo",
-            "formato": "0"
+            "formato": "0,00"
         },
         {
             "titulo": "SAC",
