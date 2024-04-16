@@ -220,13 +220,12 @@ llenarTabla = function (rawData) {
                     row.append('<td>' + proceso.Version + '</td>')
                 }
                 // Archivo de configuración
-                row.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
+                row.append(`<td title="${proceso.Nombre_control}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
                 row.append('<td>' + proceso.Ultima_ejecucion_control + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton_control, proceso.Id_modelo) + '</td>');
                 // Archivo de pago
                 row.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
                 row.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton_salida, proceso.Id_modelo) + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton_salida, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
 
                 tbody.append(row);
             } else {
@@ -236,9 +235,8 @@ llenarTabla = function (rawData) {
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
                 subRow.append('<td>' + proceso.Version + '</td>');
-                subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
+                subRow.append(`<td title="${proceso.Nombre_control}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
                 subRow.append('<td>' + proceso.Ultima_ejecucion_control + '</td>');
-                subRow.append('<td></td>');
                 subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
                 subRow.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
                 subRow.append('<td></td>');
@@ -248,7 +246,8 @@ llenarTabla = function (rawData) {
         });
     });
 
-    $('table th:nth-child(8), table td:nth-child(8)').css('border-right', '1px solid black');
+    $('table th:nth-child(7), table td:nth-child(7)').css('border-right', '1px solid black');
+    $('table th:nth-child(9), table td:nth-child(9)').css('border-right', '1px solid black');
     $('table th:nth-child(6), table td:nth-child(6)').css('border-left', '1px solid black');
     
     $("tr.accordion-toggle .openOculto").on('click', function () {
@@ -257,14 +256,18 @@ llenarTabla = function (rawData) {
     });
 
     // Botones de lanzar y relanzar
-    $('.lanzar').click(function () {
+    $('.salida').click(function () {
         $('#loadingOverlay').show();
 
-        var id = $(this).val();
         var json = {
-            Id: $(this).val(),
+            Id_modelo: Number($(this).val()),
             Fecha: $("#filtroFechaInicio").val(),
             Fecha2: $("#filtroFechaFin").val()
+        };
+
+        let idProcesado = Number($(this).attr('procesado'));
+        if (idProcesado) {
+            json.Id_procesado = idProcesado;
         }
 
         $.ajax({
@@ -316,11 +319,11 @@ obtenerNombreArchivo = function (nombre) {
     return nombre[nombre.length - 1];
 }
 
-generarBoton = function (boton, id) {
+generarBoton = function (boton, id, idProcesado, tipo) {
     if (boton === "lanzar") {
-        return `<button type="button" class="btn btn-success btn-sm lanzar" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
+        return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" procesado="${idProcesado}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
     }
-    return `<button type="button" class="btn btn-primary btn-sm lanzar" value="${id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
+    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" procesado="${idProcesado}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
 }
 
 // Botón Generar documentos
