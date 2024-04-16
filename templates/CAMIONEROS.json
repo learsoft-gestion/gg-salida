@@ -10,11 +10,6 @@
             "formato": "cuil sin guion"
         },
         {
-            "nombre": "apellidoynombre",
-            "tipo": "string",
-            "formato": ""
-        },
-        {
             "nombre": "periodoLiq",
             "tipo": "fecha",
             "formato": "MM/YYYY"
@@ -22,12 +17,32 @@
         {
             "nombre": "",
             "tipo": "fijo",
-            "formato": "1"
+            "formato": "N"
         },
         {
             "nombre": "",
             "tipo": "fijo",
             "formato": "S"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "1"
+        },
+        {
+            "nombre": "apellidoynombre",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "laboral_localidad",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "categoria",
+            "tipo": "lookup",
+            "formato": ""
         },
         {
             "nombre": "total_basico",
@@ -41,8 +56,38 @@
         },
         {
             "nombre": "ingreso",
-            "tipo": "fecha",
-            "formato": "DD/MM/YYYY"
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "0.00"
         },
         {
             "nombre": "",
@@ -52,32 +97,7 @@
         {
             "nombre": "",
             "tipo": "fijo",
-            "formato": "0"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "0"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "0"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "0"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "0"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "12"
+            "formato": "0.00"
         }
     ],
     "variables": [

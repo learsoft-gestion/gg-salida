@@ -15,6 +15,7 @@ type Proceso struct {
 	Archivo_modelo  string `json:"archivo_modelo"`
 	Filtro_having   string `json:"filtro_having"`
 	Archivo_control string `json:"archivo_control"`
+	Archivo_nomina  string `json:"archivo_nomina"`
 	Id_procesado    int
 }
 
@@ -39,22 +40,21 @@ type DTOselect struct {
 }
 
 type DTOproceso struct {
-	Id_modelo                int
-	Convenio                 string
-	Empresa                  string
-	Concepto                 string
-	Nombre                   string
-	Tipo                     string
-	Fecha_desde              string
-	Fecha_hasta              string
-	Version                  string
-	Nombre_salida            string
-	Ultima_ejecucion_salida  string
-	Boton_salida             string
-	Nombre_control           string
-	Ultima_ejecucion_control string
-	Boton_control            string
-	Id_procesado             int
+	Id_modelo        int
+	Convenio         string
+	Empresa          string
+	Concepto         string
+	Nombre           string
+	Tipo             string
+	Fecha_desde      string
+	Fecha_hasta      string
+	Version          string
+	Nombre_salida    string
+	Ultima_ejecucion string
+	Boton            string
+	Nombre_control   string
+	Nombre_nomina    string
+	Id_procesado     int
 }
 
 type DTOdatos struct {

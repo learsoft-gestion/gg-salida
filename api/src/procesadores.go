@@ -146,7 +146,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	return name, proceso.Id_procesado, modelos.ErrorFormateado{Mensaje: ""}
 }
 
-func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
+func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
 
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
@@ -178,7 +178,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosControl(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
+		if err = ProcesadosNomina(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
@@ -257,7 +257,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	// 	}
 
 	// Insertar o actualizar proceso en ext_procesados
-	if err = ProcesadosControl(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
+	if err = ProcesadosNomina(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
