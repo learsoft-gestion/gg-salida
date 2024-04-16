@@ -9,25 +9,25 @@ import (
 	"strings"
 )
 
-func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, version int, procesado_salida bool) (string, modelos.ErrorFormateado) {
+func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, version int, procesado_salida bool) (string, int, modelos.ErrorFormateado) {
 
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 	defer db.Close()
 
 	// Conexion al origen de datos
 	sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
 	if err != nil {
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 	defer sql.Close()
 
 	id_log, idLogDetalle, err := Logueo(db, proceso.Nombre)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
 	query := ""
@@ -37,15 +37,15 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
+		return err.Error(), 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosSalida(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, 0, "", procesado_salida); err != nil {
+		if _, err = ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
 			fmt.Println(err.Error())
-			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+			return err.Error(), 0, modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
-		return "", modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
+		return "", 0, modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
 	} else {
 		fmt.Println("Cantidad de registros: ", len(registros))
 	}
@@ -63,7 +63,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	if err != nil {
 		fmt.Println("Error al obtener el directorio actual:", err)
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
 	var nombreSalida string
@@ -76,7 +76,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		if err := os.MkdirAll(rutaCarpeta, 0755); err != nil {
 			fmt.Println("Error al crear la carpeta de salida:", err)
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 	}
 
@@ -97,7 +97,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
 	} else if formato == "txt" {
@@ -109,7 +109,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		name, err = CargarTxt(db, idLogDetalle, proceso, registros, rutaArchivo)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 	} else if formato == "xml" {
 		// Ruta completa del archivo
@@ -119,32 +119,34 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		name, err = CargarXml(db, idLogDetalle, proceso, registros, rutaArchivo)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 	}
 
 	// Insertar nuevo proceso en ext_procesados
-	if err = ProcesadosSalida(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreSalida), procesado_salida); err != nil {
+	if idProc, err := ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreSalida)); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
+	} else if idProc > 0 {
+		proceso.Id_procesado = idProc
 	}
 
 	// Logueo
 	_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, fmt.Sprintf("Archivo guardado en: \"%s\"", filepath.Join(rutaCarpeta, nombreSalida)))
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 	_, err = db.Exec("CALL extractor.etl_ending($1)", id_log)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
-	return name, modelos.ErrorFormateado{Mensaje: ""}
+	return name, proceso.Id_procesado, modelos.ErrorFormateado{Mensaje: ""}
 }
 
-func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, version int, procesado bool) (string, modelos.ErrorFormateado) {
+func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
 
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
@@ -176,7 +178,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosControl(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, 0, "", procesado); err != nil {
+		if err = ProcesadosControl(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
@@ -255,7 +257,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	// 	}
 
 	// Insertar o actualizar proceso en ext_procesados
-	if err = ProcesadosControl(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreControl), procesado); err != nil {
+	if err = ProcesadosControl(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}

@@ -337,12 +337,14 @@ func sender(db *sql.DB) http.HandlerFunc {
 			} else {
 				version = 1
 			}
+			datos.Version = version
 
 			var resultado []string
-			result, errFormateado := src.ProcesadorSalida(procesos[0], datos.Fecha, datos.Fecha2, version, archivo_salida)
+			result, id_procesado, errFormateado := src.ProcesadorSalida(procesos[0], datos.Fecha, datos.Fecha2, version, archivo_salida)
 			if result != "" {
 				resultado = append(resultado, result)
 			}
+			datos.Id_procesado = id_procesado
 			if errFormateado.Mensaje != "" {
 				errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
 				// http.Error(w, errString, http.StatusBadRequest)
@@ -455,7 +457,7 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 					version = 1
 				}
 				fmt.Println("Version: ", version)
-				result, _ := src.ProcesadorSalida(proc, restantes.Fecha1, restantes.Fecha2, version, archivoSalida)
+				result, _, _ := src.ProcesadorSalida(proc, restantes.Fecha1, restantes.Fecha2, version, archivoSalida)
 				if result != "" {
 					resultado = append(resultado, result)
 				}
@@ -515,30 +517,28 @@ func control(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
 		proceso.Id_procesado = datos.Id_procesado
 		procesos = append(procesos, proceso)
 	}
-	var version int
-	var archivoControl bool
-	if datos.Id_procesado > 0 {
-		// Verificar si el proceso ya se corrió
-		queryCuenta := fmt.Sprintf("select version, archivo_control from extractor.ext_procesados where id_proceso = %v", datos.Id_procesado)
-		// fmt.Println("Query: ", queryCuenta)
-		var archivo_control sql.NullString
-		err = db.QueryRow(queryCuenta).Scan(&version, &archivo_control)
-		if err != nil {
-			fmt.Println(err.Error())
-			// http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
-			return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
-		}
-		if archivo_control.Valid {
-			archivoControl = true
-		} else {
-			archivoControl = false
-		}
-		version += 1
-	} else {
-		version = 1
-	}
+	// var version int
+	// var archivoControl bool
+	// if datos.Id_procesado > 0 {
+	// 	// Verificar si el proceso ya se corrió
+	// 	queryCuenta := fmt.Sprintf("select version, archivo_control from extractor.ext_procesados where id_proceso = %v", datos.Id_procesado)
+	// 	// fmt.Println("Query: ", queryCuenta)
+	// 	var archivo_control sql.NullString
+	// 	err = db.QueryRow(queryCuenta).Scan(&version, &archivo_control)
+	// 	if err != nil {
+	// 		fmt.Println(err.Error())
+	// 		// http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+	// 		return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
+	// 	}
+	// 	if archivo_control.Valid {
+	// 		archivoControl = true
+	// 	} else {
+	// 		archivoControl = false
+	// 	}
+	// }
+
 	var resultado []string
-	result, errFormateado := src.ProcesadorControl(procesos[0], datos.Fecha, datos.Fecha2, version, archivoControl)
+	result, errFormateado := src.ProcesadorControl(procesos[0], datos.Fecha, datos.Fecha2, datos.Version)
 	if result != "" {
 		resultado = append(resultado, result)
 	}

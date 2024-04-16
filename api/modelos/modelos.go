@@ -62,6 +62,7 @@ type DTOdatos struct {
 	Id_procesado int
 	Fecha        string
 	Fecha2       string
+	Version      int
 }
 type DTOdatosMultiple struct {
 	Id     []int
