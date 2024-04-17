@@ -30,9 +30,12 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
-	query := ""
+	var query string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
-	proceso.Query = query
+	var queryReplace string
+	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
+	queryFinal := strings.Replace(query, "$SELECT$", queryReplace, 1)
+	proceso.Query = queryFinal
 
 	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
 	if err != nil {
@@ -168,9 +171,12 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
-	query := ""
+	var query string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
-	proceso.Query = query
+	var queryReplace string
+	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
+	queryFinal := strings.Replace(query, "$SELECT$", queryReplace, 1)
+	proceso.Query = queryFinal
 
 	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
 	if err != nil {
@@ -179,7 +185,7 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosNomina(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
+		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, ""); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
@@ -239,7 +245,122 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	}
 
 	// Insertar o actualizar proceso en ext_procesados
-	if err = ProcesadosNomina(db, proceso.Id_procesado, proceso.Id_modelo, fecha, fecha2, version, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
+	if err = ProcesadosNomina(db, proceso.Id_procesado, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
+	// Logueo
+	_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, fmt.Sprintf("Archivo guardado en: \"%s\"", filepath.Join(rutaCarpeta, nombreControl)))
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+	_, err = db.Exec("CALL extractor.etl_ending($1)", id_log)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
+	return name, modelos.ErrorFormateado{Mensaje: ""}
+}
+
+func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
+
+	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
+	if err != nil {
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+	defer db.Close()
+
+	// Conexion al origen de datos
+	sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
+	if err != nil {
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+	defer sql.Close()
+
+	id_log, idLogDetalle, err := Logueo(db, proceso.Nombre)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
+	var query string
+	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
+	var queryReplace string
+	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'CONTROL'").Scan(&queryReplace)
+	queryFinal := strings.Replace(query, "$SELECT$", queryReplace, 1)
+	proceso.Query = queryFinal
+
+	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
+	if len(registros) == 0 {
+		if err = ProcesadosControl(db, proceso.Id_procesado, ""); err != nil {
+			fmt.Println(err.Error())
+			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+		}
+		return "", modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
+	} else {
+		fmt.Println("Cantidad de registros: ", len(registros))
+	}
+
+	// Fecha para el nombre de salida
+	var fechaControl string
+	if fecha == fecha2 {
+		fechaControl = fecha
+	} else {
+		fechaControl = fecha + "-" + fecha2
+	}
+
+	// Directorio del archivo main.go
+	directorioActual, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error al obtener el directorio actual:", err)
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
+	var nombreControl string
+	proceso_periodo := fecha + "-" + fecha2
+	// Construir la ruta de la carpeta de salida
+	procesoNombre := proceso.Nombre + "-Control"
+	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
+
+	// Verificar si la carpeta de salida existe, si no, crearla
+	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
+		if err := os.MkdirAll(rutaCarpeta, 0755); err != nil {
+			fmt.Println("Error al crear la carpeta de salida:", err)
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
+	}
+
+	if version > 1 {
+		nombreControl = fmt.Sprintf("%s_%s(%v)", procesoNombre, fechaControl, version)
+	} else {
+		nombreControl = fmt.Sprintf("%s_%s", procesoNombre, fechaControl)
+	}
+
+	// Formato del archivo de salida
+	var name string
+	// Ruta completa del archivo
+	nombreControl += ".xlsx"
+	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
+	plantilla := "../templates/" + proceso.Archivo_control
+
+	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	}
+
+	// Insertar o actualizar proceso en ext_procesados
+	if err = ProcesadosControl(db, proceso.Id_procesado, filepath.Join(rutaCarpeta, nombreControl)); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}

@@ -27,7 +27,7 @@ var restantes modelos.Restantes
 func getConvenios(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		rows, err := db.Query("SELECT em.id_convenio, c.nombre as nombre_convenio FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente order by c.nombre")
+		rows, err := db.Query("SELECT em.id_convenio, c.nombre, c.filtro FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente order by c.nombre")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -35,12 +35,18 @@ func getConvenios(db *sql.DB) http.HandlerFunc {
 		for rows.Next() {
 			var id int
 			var convenio string
-			if err = rows.Scan(&id, &convenio); err != nil {
+			var filtro sql.NullString
+			var filtroJson string
+
+			if err = rows.Scan(&id, &convenio, &filtro); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			if filtro.Valid {
+				filtroJson = filtro.String
+			}
 
-			convenios = src.AddToSet(convenios, modelos.Option{Id: id, Nombre: convenio})
+			convenios = src.AddToSet(convenios, modelos.Option{Id: id, Nombre: convenio, Filtro: filtroJson})
 
 		}
 
@@ -272,7 +278,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 			datos.Fecha = src.FormatoFecha(datos.Fecha)
 			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
 
-			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
+			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina, em.archivo_control FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
 			// fmt.Println("Query modelos: ", queryModelos)
 			stmt, err := db.Prepare(queryModelos)
 			if err != nil {
@@ -291,7 +297,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 
 			for rows.Next() {
 				var proceso modelos.Proceso
-				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having)
+				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina, &proceso.Archivo_control)
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
@@ -301,7 +307,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 				procesos = append(procesos, proceso)
 			}
 
-			var version int
+			version := 1
 			var archivo_salida bool
 			// Verificar si el proceso ya se corrió
 			var archivoSalida sql.NullString
@@ -316,7 +322,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 				archivo_salida = true
 			}
 			if num_version.Valid {
-				version = int(num_version.Int32) + 1
+				version += int(num_version.Int32)
 			}
 
 			datos.Version = version
@@ -340,25 +346,27 @@ func sender(db *sql.DB) http.HandlerFunc {
 				w.Write(jsonResp)
 				return
 			}
-			// El proceso termino, reinicio procesos
-			procesos = nil
 
 			// Ejecutar nomina
-			resp := nomina(db, datos)
+			respuesta_nomina := nomina(db, datos)
 
-			if resp.Archivos_nomina != nil {
+			// Ejecutar control
+			respuesta_control := control(datos)
+
+			if respuesta_nomina.Archivos_nomina != nil {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
-					Mensaje:         "Informe generado exitosamente",
-					Archivos_salida: resultado,
-					Archivos_nomina: resp.Archivos_nomina,
+					Mensaje:          "Informe generado exitosamente",
+					Archivos_salida:  resultado,
+					Archivos_nomina:  respuesta_nomina.Archivos_nomina,
+					Archivos_control: respuesta_control.Archivos_control,
 				}
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
 			} else {
 				w.WriteHeader(http.StatusBadRequest)
-				jsonResp, _ := json.Marshal(resp)
+				jsonResp, _ := json.Marshal(respuesta_nomina)
 				w.Write(jsonResp)
 			}
 
@@ -473,35 +481,34 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 }
 
 func nomina(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
-	procesos = nil
 
-	queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
-	// fmt.Println("Query modelos: ", queryModelos)
-	stmt, err := db.Prepare(queryModelos)
-	if err != nil {
+	// queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
+	// // fmt.Println("Query modelos: ", queryModelos)
+	// stmt, err := db.Prepare(queryModelos)
+	// if err != nil {
 
-		return modelos.Respuesta{Mensaje: err.Error()}
-	}
-	defer stmt.Close()
-	var args []interface{}
-	args = append(args, datos.Id_modelo)
-	rows, err := stmt.Query(args...)
-	if err != nil {
+	// 	return modelos.Respuesta{Mensaje: err.Error()}
+	// }
+	// defer stmt.Close()
+	// var args []interface{}
+	// args = append(args, datos.Id_modelo)
+	// rows, err := stmt.Query(args...)
+	// if err != nil {
 
-		return modelos.Respuesta{Mensaje: "Error al ejecutar el query"}
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var proceso modelos.Proceso
-		err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina)
-		if err != nil {
-			fmt.Println(err.Error())
+	// 	return modelos.Respuesta{Mensaje: "Error al ejecutar el query"}
+	// }
+	// defer rows.Close()
+	// for rows.Next() {
+	// 	var proceso modelos.Proceso
+	// 	err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina)
+	// 	if err != nil {
+	// 		fmt.Println(err.Error())
 
-			return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
-		}
-		proceso.Id_procesado = datos.Id_procesado
-		procesos = append(procesos, proceso)
-	}
+	// 		return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
+	// 	}
+	// 	proceso.Id_procesado = datos.Id_procesado
+	// 	procesos = append(procesos, proceso)
+	// }
 
 	var resultado []string
 	result, errFormateado := src.ProcesadorNomina(procesos[0], datos.Fecha, datos.Fecha2, datos.Version)
@@ -518,12 +525,35 @@ func nomina(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
 
 		return respuesta
 	}
-	// El proceso termino, reinicio procesos
-	procesos = nil
 
 	respuesta := modelos.Respuesta{
 		Mensaje:         "Informe generado exitosamente",
 		Archivos_nomina: resultado,
+	}
+	return respuesta
+}
+
+func control(datos modelos.DTOdatos) modelos.Respuesta {
+
+	var resultado []string
+	result, errFormateado := src.ProcesadorControl(procesos[0], datos.Fecha, datos.Fecha2, datos.Version)
+	if result != "" {
+		resultado = append(resultado, result)
+	}
+	if errFormateado.Mensaje != "" {
+		errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
+
+		respuesta := modelos.Respuesta{
+			Mensaje:          errString,
+			Archivos_control: nil,
+		}
+
+		return respuesta
+	}
+
+	respuesta := modelos.Respuesta{
+		Mensaje:          "Informe generado exitosamente",
+		Archivos_control: resultado,
 	}
 	return respuesta
 }

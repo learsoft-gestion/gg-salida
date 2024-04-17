@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -34,11 +35,33 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	sheetName := "Hoja1"
 	fileNuevo.SetSheetName("Sheet1", sheetName)
 
-	// Escribir encabezados en el Excel
-	for _, campo := range plantilla.Campos {
-		cell := campo.Columna + "1"
-		// fmt.Println("Nombre del campo: ", campo.Titulo)
-		fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
+	styleMoneda, err := fileNuevo.NewStyle(&excelize.Style{NumFmt: 44})
+	if err != nil {
+		return "", err
+	}
+	styleNumero, err := fileNuevo.NewStyle(&excelize.Style{NumFmt: 1})
+	if err != nil {
+		return "", err
+	}
+	styleNumeroDecimal, err := fileNuevo.NewStyle(&excelize.Style{NumFmt: 2})
+	if err != nil {
+		return "", err
+	}
+
+	if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
+		// Escribir verticalmente encabezados en el Excel
+		for _, campo := range plantilla.Campos {
+			cell := "A" + campo.Columna
+			// fmt.Println("Nombre del campo: ", campo.Titulo)
+			fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
+		}
+	} else {
+		// Escribir horizontalmente encabezados en el Excel
+		for _, campo := range plantilla.Campos {
+			cell := campo.Columna + "1"
+			// fmt.Println("Nombre del campo: ", campo.Titulo)
+			fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
+		}
 	}
 
 	// Escribir datos en el archivo Excel
@@ -71,9 +94,9 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						return "", fmt.Errorf("JSON: el campo %s debe ser de tipo fecha", campo.Titulo)
 					}
 				}
-				if campo.Tipo != "string" && campo.Tipo != "float" && campo.Tipo != "fecha" && campo.Tipo != "fijo" && campo.Tipo != "condicional" {
-					return "", fmt.Errorf("JSON: tipo desconocido para %s", campo.Titulo)
-				}
+				// if campo.Tipo != "string" && campo.Tipo != "float" && campo.Tipo != "fecha" && campo.Tipo != "fijo" && campo.Tipo != "condicional" {
+				// 	return "", fmt.Errorf("JSON: tipo desconocido para %s", campo.Titulo)
+				// }
 
 				switch v := val.(type) {
 				case int:
@@ -132,8 +155,28 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 			}
 			// colLetter, _ := excelize.ColumnNumberToName(colIndex + 1)
 			// cell := colLetter + "1"
-			cell := campo.Columna + fmt.Sprintf("%v", i+2)
-			fileNuevo.SetCellValue(sheetName, cell, value)
+			if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
+				// cell := fmt.Sprintf("%v", i+2) + campo.Columna
+				colLetter := ObtenerLetra(i + 2)
+				cell := colLetter + campo.Columna
+				// cell := "B" + campo.Columna
+				if strings.ToLower(campo.Tipo) == "moneda" {
+					valor, _ := strconv.ParseFloat(value, 64)
+					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleMoneda)
+					fileNuevo.SetCellValue(sheetName, cell, valor)
+				} else if strings.ToLower(campo.Tipo) == "numero" {
+					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumero)
+					fileNuevo.SetCellValue(sheetName, cell, value)
+				} else if strings.ToLower(campo.Tipo) == "numero decimal" {
+					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumeroDecimal)
+					fileNuevo.SetCellValue(sheetName, cell, value)
+				} else {
+					fileNuevo.SetCellValue(sheetName, cell, value)
+				}
+			} else {
+				cell := campo.Columna + fmt.Sprintf("%v", i+2)
+				fileNuevo.SetCellValue(sheetName, cell, value)
+			}
 		}
 	}
 
@@ -144,6 +187,35 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	}
 
 	return nombreSalida, nil
+}
+
+func ObtenerLetra(numero int) string {
+	// Asumiendo que estamos trabajando con el alfabeto inglés (a-z)
+	alfabeto := "abcdefghijklmnopqrstuvwxyz"
+
+	longitudAlfabeto := len(alfabeto)
+	numRepeticiones := numero / longitudAlfabeto
+	indice := numero % longitudAlfabeto
+
+	// Si el índice es 0, corresponde a la última letra del alfabeto
+	if indice == 0 {
+		indice = longitudAlfabeto
+		// Si el índice es 0, debemos reducir el número de repeticiones
+		numRepeticiones--
+	}
+
+	primeraLetra := string(alfabeto[indice-1])
+
+	// Si hay repeticiones, obtener la segunda letra
+	var segundaLetra string
+	if numRepeticiones > 0 {
+		segundaLetra = string(alfabeto[numRepeticiones-1])
+	}
+
+	// Combinar las letras
+	letras := strings.Repeat(segundaLetra, numRepeticiones) + primeraLetra
+
+	return letras
 }
 
 // 1000.1 ---> 1000,1

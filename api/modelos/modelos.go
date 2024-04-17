@@ -87,11 +87,12 @@ type Registro struct {
 }
 
 type Cabecera struct {
-	Formato   string
-	Separador string
-	XmlTag    string
-	Tag       string
-	Children  string
+	Formato            string
+	Separador          string
+	XmlTag             string
+	Tag                string
+	Children           string
+	Sentido_encabezado string
 }
 
 type Campo struct {
@@ -125,6 +126,7 @@ type ErrorFormateado struct {
 type Option struct {
 	Id     int    `json:"id"`
 	Nombre string `json:"nombre"`
+	Filtro string `json:"filtro"`
 }
 
 type Respuesta struct {
