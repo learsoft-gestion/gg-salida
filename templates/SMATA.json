@@ -44,7 +44,7 @@
         },
         {
             "titulo": "Apo",
-            "nombre": "total_871",
+            "nombre": "total_870",
             "columna": "G",
             "tipo": "float",
             "formato": "millares con coma"
@@ -100,10 +100,10 @@
         },
         {
             "titulo": "Estado",
-            "nombre": "estado",
+            "nombre": "egreso",
             "columna": "O",
-            "tipo": "string",
-            "formato": ""
+            "tipo": "condicional",
+            "formato": "1/0"
         },
         {
             "titulo": "NoRem",

@@ -71,7 +71,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						return "", fmt.Errorf("JSON: el campo %s debe ser de tipo fecha", campo.Titulo)
 					}
 				}
-				if campo.Tipo != "string" && campo.Tipo != "float" && campo.Tipo != "fecha" && campo.Tipo != "fijo" {
+				if campo.Tipo != "string" && campo.Tipo != "float" && campo.Tipo != "fecha" && campo.Tipo != "fijo" && campo.Tipo != "condicional" {
 					return "", fmt.Errorf("JSON: tipo desconocido para %s", campo.Titulo)
 				}
 
@@ -100,6 +100,14 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						// } else {
 						// 	value += v
 						// }
+					} else if strings.ToLower(campo.Tipo) == "condicional" {
+						numRegex := regexp.MustCompile(`^\s{8}$`)
+						condiciones := strings.Split(campo.Formato, "/")
+						if numRegex.MatchString(v) {
+							value = condiciones[1]
+						} else {
+							value = condiciones[0]
+						}
 					} else {
 						value += v
 					}
