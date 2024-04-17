@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador de Convenios</title>
+    <!-- Agrega enlaces a tus archivos CSS -->
+</head>
+
+<body>
+    <h1>Administrador de Convenios</h1>
+
+    <!-- Formulario para agregar un nuevo convenio -->
+    <form id="formAgregarConvenio">
+        <h2>Agregar Nuevo Convenio</h2>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <label for="fechaInicio">Fecha de Inicio:</label>
+        <input type="date" id="fechaInicio" name="fechaInicio" required>
+        <label for="fechaFin">Fecha de Fin:</label>
+        <input type="date" id="fechaFin" name="fechaFin" required>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" required></textarea>
+        <button type="submit">Agregar Convenio</button>
+    </form>
+
+    <!-- Lista de convenios -->
+    <h2>Lista de Convenios</h2>
+    <ul id="listaConvenios">
+        <!-- Los convenios se cargarán aquí dinámicamente -->
+    </ul>
+
+    <!-- Detalles del convenio seleccionado -->
+    <div id="detallesConvenio">
+        <h2>Detalles del Convenio</h2>
+        <p id="nombreConvenio"></p>
+        <p id="fechaInicioConvenio"></p>
+        <p id="fechaFinConvenio"></p>
+        <p id="descripcionConvenio"></p>
+        <button id="editarConvenio">Editar</button>
+        <button id="eliminarConvenio">Eliminar</button>
+    </div>
+
+    <!-- Agrega scripts JavaScript para manejar la funcionalidad -->
+</body>
+
+</html>

@@ -19,6 +19,19 @@ $(document).ready(function () {
 
 });
 
+var filtros = $("#filtros");
+var navbarHeight = $(".navbar").outerHeight(); // Altura de la barra de navegación
+
+$(window).scroll(function () {
+    if ($(this).scrollTop() > navbarHeight) {
+        // filtros.removeClass('filtros');
+        filtros.addClass("fixed-top"); // Agrega la clase para fijar el menú de filtros en la parte superior
+    } else {
+        // filtros.addClass('filtros');
+        filtros.removeClass("fixed-top"); // Quita la clase cuando el usuario se desplaza hacia arriba
+    }
+});
+
 // Select de convenio
 $.ajax({
     url: '/convenios',
@@ -219,13 +232,11 @@ llenarTabla = function (rawData) {
                 } else {
                     row.append('<td>' + proceso.Version + '</td>')
                 }
-                // Archivo de configuración
                 row.append(`<td title="${proceso.Nombre_control}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
-                row.append('<td>' + proceso.Ultima_ejecucion_control + '</td>');
-                // Archivo de pago
+                row.append(`<td title="${proceso.Nombre_nomina}"><a href="${proceso.Nombre_nomina.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
                 row.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
-                row.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton_salida, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
+                row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
 
                 tbody.append(row);
             } else {
@@ -236,7 +247,7 @@ llenarTabla = function (rawData) {
                 subRow.append('<td></td>');
                 subRow.append('<td>' + proceso.Version + '</td>');
                 subRow.append(`<td title="${proceso.Nombre_control}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
-                subRow.append('<td>' + proceso.Ultima_ejecucion_control + '</td>');
+                subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${proceso.Nombre_nomina.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
                 subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
                 subRow.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
                 subRow.append('<td></td>');
@@ -246,10 +257,15 @@ llenarTabla = function (rawData) {
         });
     });
 
-    $('table th:nth-child(7), table td:nth-child(7)').css('border-right', '1px solid black');
-    $('table th:nth-child(9), table td:nth-child(9)').css('border-right', '1px solid black');
-    $('table th:nth-child(6), table td:nth-child(6)').css('border-left', '1px solid black');
-    
+    $('table th:nth-child(6), table td:nth-child(6)').css({
+        'border-left': '1px solid black',
+        'border-right': '1px solid black'
+    });
+    $('table th:nth-child(8), table td:nth-child(8)').css({
+        'border-left': '1px solid black',
+        'border-right': '1px solid black'
+    });
+
     $("tr.accordion-toggle .openOculto").on('click', function () {
         id = $(this).attr("data-target");
         $(id).toggleClass("collapse");
@@ -264,11 +280,6 @@ llenarTabla = function (rawData) {
             Fecha: $("#filtroFechaInicio").val(),
             Fecha2: $("#filtroFechaFin").val()
         };
-
-        let idProcesado = Number($(this).attr('procesado'));
-        if (idProcesado) {
-            json.Id_procesado = idProcesado;
-        }
 
         $.ajax({
             url: '/send',
@@ -321,9 +332,9 @@ obtenerNombreArchivo = function (nombre) {
 
 generarBoton = function (boton, id, idProcesado, tipo) {
     if (boton === "lanzar") {
-        return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" procesado="${idProcesado}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
+        return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
     }
-    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" procesado="${idProcesado}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
+    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
 }
 
 // Botón Generar documentos
@@ -421,7 +432,7 @@ function agregarClientes() {
         const cuit = fila.find('td:nth-child(2)').text();
         const razonSocial = fila.find('td:nth-child(3)').text();
         const cliente = { cuit: cuit, razonSocial: razonSocial };
-        if(!clientesAgregados.some(c => c.cuit === cliente.cuit && c.razonSocial === cliente.razonSocial)) {
+        if (!clientesAgregados.some(c => c.cuit === cliente.cuit && c.razonSocial === cliente.razonSocial)) {
             clientesAgregados.push(cliente);
         }
     });
