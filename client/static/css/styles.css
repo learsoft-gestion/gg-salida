@@ -3,6 +3,34 @@ body {
   padding: 0;
 }
 
+/* #menu {
+  position: relative;
+
+} */
+
+#logo {
+  width: 180px;
+}
+
+.submenu {
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 35px;
+  visibility: hidden;
+  z-index: 1;
+}
+
+li:hover ul .submenu {
+  opacity: 1;
+  top: 40px;
+  visibility: visible;
+}
+
+#home {
+  overflow-x: hidden;
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -64,12 +92,12 @@ tbody td {
 }
 
 #mensajeFaltantes {
-  position: relative;
-  top: 80px;
+  /* position: relative;
+  top: 80px; */
   padding: 5px;
 }
 
-#filtros {
+.filtros {
   z-index: 10;
   width: 100%;
 }
@@ -116,10 +144,10 @@ tbody td {
   border: solid 2px;
 }
 
-#colConfig {
+/* #colConfig {
   background-color: antiquewhite;
 }
 
 #colPago {
   background-color: aquamarine;
-}
+} */
