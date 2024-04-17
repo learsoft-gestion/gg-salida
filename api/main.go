@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 	"time"
@@ -713,9 +714,11 @@ func main() {
 	// Carga de archivos estaticos
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../client/static"))))
 	router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("../salida"))))
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../client/index.html")
-	})
+	// router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../client/index.html")
+	// })
+	router.HandleFunc("/", indexHandler)
+	router.HandleFunc("/a-convenios", conveniosHandler)
 
 	router.HandleFunc("/convenios", getConvenios(db))
 	router.HandleFunc("/empresas", getEmpresas(db))
@@ -738,4 +741,29 @@ func main() {
 
 	fmt.Println("Listening...")
 	srv.ListenAndServe()
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	// Puedes usar plantillas si deseas
+	renderTemplate(w, "../client/templates/index.html", nil)
+}
+
+func conveniosHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "../client/templates/convenios.html", nil)
+}
+
+// func pagina2Handler(w http.ResponseWriter, r *http.Request) {
+//     renderTemplate(w, "templates/pagina2.html", nil)
+// }
+
+func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
+	t, err := template.ParseFiles(tmpl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = t.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
