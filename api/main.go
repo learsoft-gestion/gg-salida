@@ -333,6 +333,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 				resultado = append(resultado, result)
 			}
 			datos.Id_procesado = id_procesado
+			procesos[0].Id_procesado = id_procesado
 			if errFormateado.Mensaje != "" {
 				errString := "Error en " + procesos[0].Nombre + ": " + errFormateado.Mensaje
 				// http.Error(w, errString, http.StatusBadRequest)

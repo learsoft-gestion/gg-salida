@@ -37,6 +37,7 @@ func ProcesadosSalida(db *sql.DB, id_modelo int, fecha1 string, fecha2 string, v
 
 func ProcesadosNomina(db *sql.DB, id_proceso int, cant_registros int, nombre_nomina string) error {
 
+	println("nomina: ", id_proceso)
 	fecha_completa := time.Now()
 	fecha_actual := fecha_completa.Format("2006-01-02 15:04:05")
 
@@ -49,7 +50,7 @@ func ProcesadosNomina(db *sql.DB, id_proceso int, cant_registros int, nombre_nom
 }
 
 func ProcesadosControl(db *sql.DB, id_proceso int, nombre_control string) error {
-
+	println("control: ", id_proceso)
 	_, err := db.Exec("update extractor.ext_procesados ep set archivo_control = $1 where ep.id_proceso = $2", nombre_control, id_proceso)
 	if err != nil {
 		return err
