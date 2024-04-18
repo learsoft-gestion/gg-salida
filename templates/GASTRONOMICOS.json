@@ -1,0 +1,25 @@
+{
+    "campo": [
+        {
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "APELLIDO Y NOMBRE",
+            "nombre": "cuil",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "REM BRUTA + NO REM",
+            "nombre": "",
+            "columna": "G",
+            "tipo": "suma",
+            "formato": "bruto_imp,total_norem"
+        }
+    ]
+}

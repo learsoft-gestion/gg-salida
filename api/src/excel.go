@@ -162,7 +162,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				// cell := "B" + campo.Columna
 				if strings.ToLower(campo.Tipo) == "moneda" {
 					valor, _ := strconv.ParseFloat(value, 64)
-					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleMoneda)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, styleMoneda)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
 				} else if strings.ToLower(campo.Tipo) == "numero" {
 					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumero)
