@@ -64,9 +64,9 @@
         {
             "nombre": "categoria",
             "datos": [
-                {"id": 1, "nombre": "Apuntador"},
-                {"id": 2, "nombre": "Maquinista"},
-                {"id": 2, "nombre": "Guinchero"}
+                {"id": "1", "nombre": "Apuntador"},
+                {"id": "2", "nombre": "Maquinista"},
+                {"id": "2", "nombre": "Guinchero"}
             ]
         }
     ]

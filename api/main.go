@@ -9,12 +9,15 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
+var models []modelos.Modelo
 var convenios []modelos.Option
 var empresas []modelos.Option
 var DTOprocesos []modelos.DTOproceso
@@ -23,6 +26,67 @@ var clientes []modelos.Cliente
 
 // Almacena los registros restantes a ejecutar
 var restantes modelos.Restantes
+
+func getModelos(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		models = nil
+
+		id_convenio := r.URL.Query().Get("convenio")
+		vigente := r.URL.Query().Get("vigente")
+
+		query := "SELECT * FROM extractor.ext_modelos em "
+
+		if id_convenio != "" {
+			query += "where em.id_convenio = " + id_convenio
+		}
+		if vigente == "true" {
+			if id_convenio != "" {
+				query += " and vigente"
+			} else {
+				query += "where vigente"
+			}
+		} else if vigente == "false" {
+			if id_convenio != "" {
+				query += " and vigente = false"
+			} else {
+				query += "where vigente = false"
+			}
+		}
+
+		query += " order by em.id_modelo"
+
+		fmt.Println(query)
+
+		rows, err := db.Query(query)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for rows.Next() {
+			var modelo modelos.Modelo
+			var ult_ejecucion sql.NullTime
+
+			if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Nombre, &modelo.Filtro_personas, &modelo.Filtro_recibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &modelo.Filtro_having, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if ult_ejecucion.Valid {
+				modelo.Ultima_ejecucion = ult_ejecucion.Time.String()
+			}
+
+			models = append(models, modelo)
+
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if err := json.NewEncoder(w).Encode(models); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
 
 func getConvenios(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -353,7 +417,7 @@ func sender(db *sql.DB) http.HandlerFunc {
 			}
 
 			// Ejecutar nomina
-			respuesta_nomina := nomina(db, datos)
+			respuesta_nomina := nomina(datos)
 
 			// Ejecutar control
 			respuesta_control := control(datos)
@@ -465,7 +529,7 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 				// procesos = nil
 
 				// Ejecutar nomina
-				result_nomina := nomina(db, datos)
+				result_nomina := nomina(datos)
 
 				if result_nomina.Archivos_nomina != nil {
 					resultado_nomina = append(resultado_nomina, result_nomina.Archivos_nomina[0])
@@ -485,7 +549,7 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func nomina(db *sql.DB, datos modelos.DTOdatos) modelos.Respuesta {
+func nomina(datos modelos.DTOdatos) modelos.Respuesta {
 
 	// queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
 	// // fmt.Println("Query modelos: ", queryModelos)
@@ -740,6 +804,11 @@ func getClientes(db *sql.DB) http.HandlerFunc {
 
 func main() {
 
+	// Cargar variables de entorno
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Error: ", err.Error())
+	}
+
 	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
 	if err != nil {
 		fmt.Println("Error: ", err.Error())
@@ -755,6 +824,7 @@ func main() {
 	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/a-convenios", conveniosHandler)
 
+	router.HandleFunc("/modelos", getModelos(db))
 	router.HandleFunc("/convenios", getConvenios(db))
 	router.HandleFunc("/empresas", getEmpresas(db))
 	router.HandleFunc("/empresas/{id_convenio}", getEmpresas(db))
@@ -770,7 +840,7 @@ func main() {
 	// router.HandleFunc("/control", control(db))
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    os.Getenv("SV_ADDR"),
 		Handler: router,
 	}
 

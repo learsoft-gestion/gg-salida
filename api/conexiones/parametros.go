@@ -12,16 +12,6 @@ type Config struct {
 	DatabaseConfigs map[string]DbConfig `json:"databases"`
 }
 
-// // Config es la estructura que representa el JSON de configuración
-// type Config struct {
-// 	Recibos_test   DbConfig `json:"recibos_test"`
-// 	Recibos_prod   DbConfig `json:"recibos_prod"`
-// 	Analytics_test DbConfig `json:"analytics_test"`
-// 	Analytics_prod DbConfig `json:"analytics_prod"`
-// 	Postgres_test  DbConfig `json:"postgres_test"`
-// 	Postgres_prod  DbConfig `json:"postgres_prod"`
-// }
-
 // DbConfig es la estructura que representa la configuración de una base de datos
 type DbConfig struct {
 	Conectar string `json:"conectar"`

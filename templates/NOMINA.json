@@ -1,4 +1,7 @@
 {
+    "cabecera": {
+        "estilo": "nomina"
+    },
     "campo": [
         {
             "titulo": "Periodo",
@@ -11,7 +14,7 @@
             "titulo": "Legajo",
             "nombre": "numero_legajo",
             "columna": "B",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
@@ -19,7 +22,8 @@
             "nombre": "apellidoynombre",
             "columna": "C",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 30
         },
         {
             "titulo": "Cuil",
@@ -32,7 +36,7 @@
             "titulo": "Nro. Doc",
             "nombre": "nrodoc",
             "columna": "E",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
@@ -40,14 +44,16 @@
             "nombre": "apellidos",
             "columna": "F",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 20
         },
         {
             "titulo": "Nombre",
             "nombre": "nombre",
             "columna": "G",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 25
         },
         {
             "titulo": "Sexo",
@@ -75,7 +81,8 @@
             "nombre": "convenio",
             "columna": "K",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 30
         },
         {
             "titulo": "Categoria",
@@ -89,7 +96,8 @@
             "nombre": "cliente",
             "columna": "M",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 30
         },
         {
             "titulo": "Calificacion Profesional",
@@ -102,7 +110,7 @@
             "titulo": "O SOC CODIGO",
             "nombre": "osoccodigo",
             "columna": "O",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
@@ -110,13 +118,14 @@
             "nombre": "osocnombre",
             "columna": "P",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 30
         },
         {
             "titulo": "Sucursal",
             "nombre": "sucursal",
             "columna": "Q",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
@@ -130,267 +139,267 @@
             "titulo": "Jornada",
             "nombre": "jornada",
             "columna": "S",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Recibos",
             "nombre": "Recibos",
             "columna": "T",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Legajos",
             "nombre": "legajos",
             "columna": "U",
-            "tipo": "string",
+            "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Bruto",
             "nombre": "bruto_imp",
             "columna": "V",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Retenciones",
             "nombre": "retencion",
             "columna": "W",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Salario Familiar",
             "nombre": "salariofamiliar",
             "columna": "X",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Exento",
             "nombre": "exento",
             "columna": "Y",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Neto",
             "nombre": "neto_imp",
             "columna": "Z",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "870",
             "nombre": "total_870",
             "columna": "AA",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "871",
             "nombre": "total_871",
             "columna": "AB",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "872",
             "nombre": "total_872",
             "columna": "AC",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "873",
             "nombre": "total_873",
             "columna": "AD",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "874",
             "nombre": "total_874",
             "columna": "AE",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "875",
             "nombre": "total_875",
             "columna": "AF",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "880",
             "nombre": "total_880",
             "columna": "AG",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "900",
             "nombre": "total_900",
             "columna": "AH",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "901",
             "nombre": "total_901",
             "columna": "AI",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "903",
             "nombre": "total_903",
             "columna": "AJ",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "911",
             "nombre": "total_911",
             "columna": "AK",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "914",
             "nombre": "total_914",
             "columna": "AL",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "916",
             "nombre": "total_916",
             "columna": "AM",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "932",
             "nombre": "total_932",
             "columna": "AN",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "933",
             "nombre": "total_933",
             "columna": "AO",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "994",
             "nombre": "total_994",
             "columna": "AP",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "995",
             "nombre": "total_995",
             "columna": "AQ",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1200",
             "nombre": "total_1200",
             "columna": "AR",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1201",
             "nombre": "total_1201",
             "columna": "AS",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1202",
             "nombre": "total_1202",
             "columna": "AT",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1203",
             "nombre": "total_1203",
             "columna": "AU",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1204",
             "nombre": "total_1204",
             "columna": "AV",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1205",
             "nombre": "total_1205",
             "columna": "AW",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1206",
             "nombre": "total_1206",
             "columna": "AX",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1207",
             "nombre": "total_1207",
             "columna": "AY",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1212",
             "nombre": "total_1212",
             "columna": "AZ",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1213",
             "nombre": "total_1213",
             "columna": "BA",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "1208",
             "nombre": "total_1208",
             "columna": "BB",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "TOTAL",
             "nombre": "total_imp",
             "columna": "BC",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "NO REM",
             "nombre": "total_noRem",
             "columna": "BD",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         }
     ]
 }

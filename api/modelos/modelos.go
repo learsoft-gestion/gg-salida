@@ -1,5 +1,24 @@
 package modelos
 
+type Modelo struct {
+	Id_modelo        int
+	Id_empresa       int
+	Id_concepto      string
+	Id_convenio      int
+	Id_tipo          string
+	Nombre           string
+	Filtro_personas  string
+	Filtro_recibos   string
+	Formato_salida   string
+	Ultima_ejecucion string
+	Query            string
+	Archivo_modelo   string
+	Vigente          string
+	Filtro_having    string
+	Archivo_control  string
+	Archivo_nomina   string
+}
+
 type Proceso struct {
 	Id_modelo       int    `json:"id"`
 	Id_empresa      int    `json:"id_empresa"`
@@ -93,6 +112,7 @@ type Cabecera struct {
 	Tag                string
 	Children           string
 	Sentido_encabezado string
+	Estilo             string
 }
 
 type Campo struct {
@@ -105,11 +125,12 @@ type Campo struct {
 	Formato string
 	Option1 string
 	Option2 string
+	Ancho   int
 }
 
 type Variable struct {
 	Nombre string
-	Datos  []Option
+	Datos  []LookupJson
 }
 
 type Plantilla struct {
@@ -127,6 +148,11 @@ type Option struct {
 	Id     int    `json:"id"`
 	Nombre string `json:"nombre"`
 	Filtro string `json:"filtro"`
+}
+
+type LookupJson struct {
+	Id     string
+	Nombre string
 }
 
 type Respuesta struct {

@@ -35,32 +35,59 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	sheetName := "Hoja1"
 	fileNuevo.SetSheetName("Sheet1", sheetName)
 
-	styleMoneda, err := fileNuevo.NewStyle(&excelize.Style{NumFmt: 44})
-	if err != nil {
-		return "", err
-	}
-	styleNumero, err := fileNuevo.NewStyle(&excelize.Style{NumFmt: 1})
-	if err != nil {
-		return "", err
-	}
-	styleNumeroDecimal, err := fileNuevo.NewStyle(&excelize.Style{NumFmt: 2})
-	if err != nil {
-		return "", err
-	}
+	fileNuevo.SetColWidth(sheetName, "A", "CA", 15)
+
+	styleMoneda, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 177})
+	styleNumero, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 1})
+	styleNumeroDecimal, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 2})
+	// styleDefault, _ := fileNuevo.NewStyle(&excelize.Style{Alignment: al})
+	styleEncabezadoNomina, _ := fileNuevo.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Size:  10,
+			Color: "#FF0000",
+		},
+		Fill: excelize.Fill{
+			Type:    "pattern",
+			Color:   []string{"#a7a7a7"},
+			Pattern: 1,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "left",
+			Vertical:   "center",
+			WrapText:   true,
+		},
+	})
+	// styleColumnaControl, _ := fileNuevo.NewStyle(&excelize.Style{
+	// 	Font: &excelize.Font{
+	// 		Color: "#FFFFFF",
+	// 	},
+	// 	Fill: excelize.Fill{
+	// 		Type:    "pattern",
+	// 		Color:   []string{"#000000"},
+	// 		Pattern: 1,
+	// 	},
+	// 	Alignment: &excelize.Alignment{
+	// 		Horizontal: "center",
+	// 		Vertical:   "center",
+	// 		WrapText:   true,
+	// 	},
+	// })
 
 	if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
 		// Escribir verticalmente encabezados en el Excel
 		for _, campo := range plantilla.Campos {
-			cell := "A" + campo.Columna
-			// fmt.Println("Nombre del campo: ", campo.Titulo)
+			cell := "B" + campo.Columna
 			fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
 		}
 	} else {
 		// Escribir horizontalmente encabezados en el Excel
 		for _, campo := range plantilla.Campos {
 			cell := campo.Columna + "1"
-			// fmt.Println("Nombre del campo: ", campo.Titulo)
 			fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
+		}
+		if strings.ToLower(plantilla.Cabecera.Estilo) == "nomina" {
+			fileNuevo.SetRowStyle(sheetName, 1, 1, styleEncabezadoNomina)
+			fileNuevo.SetRowHeight(sheetName, 1, 50)
 		}
 	}
 
@@ -77,7 +104,6 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				campo.Nombre = strings.ToUpper(campo.Nombre)
 				val := registro.Valores[campo.Nombre]
 
-				// Validaciones
 				if campo.Columna == "" {
 					return "", fmt.Errorf("JSON: el campo %s no tiene columna", campo.Titulo)
 				}
@@ -94,35 +120,36 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						return "", fmt.Errorf("JSON: el campo %s debe ser de tipo fecha", campo.Titulo)
 					}
 				}
-				// if campo.Tipo != "string" && campo.Tipo != "float" && campo.Tipo != "fecha" && campo.Tipo != "fijo" && campo.Tipo != "condicional" {
-				// 	return "", fmt.Errorf("JSON: tipo desconocido para %s", campo.Titulo)
-				// }
 
 				switch v := val.(type) {
 				case int:
-					value += fmt.Sprintf("%d", v)
+					value += strings.TrimSpace(fmt.Sprintf("%d", v))
 				case float64:
-					value += fmt.Sprintf("%.2f", v)
+					value += strings.TrimSpace(fmt.Sprintf("%.2f", v))
 				case string:
-					if campo.Nombre == "CAT_REDUCIDO" {
-						fmt.Println("CAT_REDUCIDO: ", v)
-					}
 					if strings.ToLower(campo.Formato) == "cuil sin guion" {
-						value += strings.ReplaceAll(v, "-", "")
-					} else if campo.Formato == "DD/MM/YYYY" {
-						numRegex := regexp.MustCompile(`^\s{8}$`)
-						if len(v) == 8 {
-							if numRegex.MatchString(v) {
-								value += v
-							} else {
-								value += formatearFecha(v, campo.Formato)
+						value = strings.ReplaceAll(v, "-", "")
+					} else if strings.ToLower(campo.Tipo) == "lookup" {
+						// El dato lo saco del .json
+						for _, variable := range plantilla.Variables {
+							if strings.ToUpper(variable.Nombre) == campo.Nombre {
+								for _, element := range variable.Datos {
+									if element.Id == v[4:] {
+										value += fmt.Sprintf("%s-%v", element.Nombre, v[2:4])
+									}
+								}
 							}
 						}
-						// if v[0] > 0 {
-						// 	value += formatearFecha(v, campo.Formato)
-						// } else {
-						// 	value += v
-						// }
+					} else if campo.Formato == "DD/MM/YYYY" {
+						numRegex := regexp.MustCompile(`^\s{8}$`)
+						val := strings.TrimSpace(v)
+						if len(val) == 8 {
+							if numRegex.MatchString(v) {
+								value += strings.TrimSpace(v)
+							} else {
+								value = formatearFecha(v, campo.Formato)
+							}
+						}
 					} else if strings.ToLower(campo.Tipo) == "condicional" {
 						numRegex := regexp.MustCompile(`^\s{8}$`)
 						condiciones := strings.Split(campo.Formato, "/")
@@ -132,41 +159,40 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 							value = condiciones[0]
 						}
 					} else {
-						value += v
+						value += strings.TrimSpace(v)
 					}
 				case []int:
-					value += fmt.Sprintf("%v", v)
+					value += strings.TrimSpace(fmt.Sprintf("%v", v))
 				case []byte:
 					if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) == "coma" {
 						value += strings.Replace(string(v), ".", ",", -1)
 					} else if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) == "millares con coma" {
 						value += formatearFloat(string(v))
 					} else {
-						value += string(v)
+						value += strings.TrimSpace(string(v))
 					}
 				case nil:
-					value = " "
+					value = ""
 				default:
-					value = fmt.Sprintf("%v", v)
+					value = strings.TrimSpace(fmt.Sprintf("%v", v))
 				}
 				if campo.Tipo == "fijo" {
 					value = campo.Formato
 				}
 			}
-			// colLetter, _ := excelize.ColumnNumberToName(colIndex + 1)
-			// cell := colLetter + "1"
+			value = strings.TrimSpace(value)
+
 			if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
-				// cell := fmt.Sprintf("%v", i+2) + campo.Columna
-				colLetter := ObtenerLetra(i + 2)
+				colLetter := ObtenerLetra(i + 3)
 				cell := colLetter + campo.Columna
-				// cell := "B" + campo.Columna
 				if strings.ToLower(campo.Tipo) == "moneda" {
 					valor, _ := strconv.ParseFloat(value, 64)
-					fileNuevo.SetCellStyle(sheetName, cell, cell, styleMoneda)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
-				} else if strings.ToLower(campo.Tipo) == "numero" {
+					fileNuevo.SetCellStyle(sheetName, cell, cell, styleMoneda)
+				} else if strings.ToLower(campo.Tipo) == "int" {
+					valor, _ := strconv.Atoi(value)
+					fileNuevo.SetCellValue(sheetName, cell, valor)
 					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumero)
-					fileNuevo.SetCellValue(sheetName, cell, value)
 				} else if strings.ToLower(campo.Tipo) == "numero decimal" {
 					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumeroDecimal)
 					fileNuevo.SetCellValue(sheetName, cell, value)
@@ -175,7 +201,27 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				}
 			} else {
 				cell := campo.Columna + fmt.Sprintf("%v", i+2)
-				fileNuevo.SetCellValue(sheetName, cell, value)
+				if strings.ToLower(campo.Tipo) == "moneda" {
+					valor, _ := strconv.ParseFloat(value, 64)
+					fileNuevo.SetCellValue(sheetName, cell, valor)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, styleMoneda)
+				} else if strings.ToLower(campo.Tipo) == "int" {
+					if len(value) > 0 {
+						valor, err := strconv.ParseFloat(value, 64)
+						if err != nil {
+							return "", err
+						}
+						fileNuevo.SetCellValue(sheetName, cell, valor)
+					} else {
+						fileNuevo.SetCellValue(sheetName, cell, value)
+					}
+					fileNuevo.SetCellStyle(sheetName, cell, cell, styleNumero)
+				} else {
+					fileNuevo.SetCellValue(sheetName, cell, value)
+					if campo.Ancho > 0 {
+						fileNuevo.SetColWidth(sheetName, campo.Columna, campo.Columna, float64(campo.Ancho))
+					}
+				}
 			}
 		}
 	}
@@ -238,14 +284,6 @@ func formatearMillares(s string) string {
 func formatearFecha(s string, formato string) string {
 	var strFinal string
 	var partes []string
-
-	// Verificar si son caracteres vacios
-	numRegex := regexp.MustCompile(`^\d{8}$`)
-	if len(s) == 8 {
-		if numRegex.MatchString(s) {
-			return s
-		}
-	}
 
 	// Verificar formato y transformar
 	if formato == "DD/MM/YYYY" {

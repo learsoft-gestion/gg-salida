@@ -4,10 +4,10 @@
     },
     "campo": [
         {
-            "titulo": "Periodo",
+            "titulo": "",
             "nombre": "periodoliq",
             "columna": "1",
-            "tipo": "string",
+            "tipo": "lookup",
             "formato": ""
         },
         {
@@ -35,267 +35,286 @@
             "titulo": "Bruto",
             "nombre": "suma_bruto",
             "columna": "5",
-            "tipo": "string",
+            "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "Retencion",
             "nombre": "suma_retencion",
             "columna": "6",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Salario familiar",
             "nombre": "suma_salariofamiliar",
             "columna": "7",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Exento",
             "nombre": "suma_exento",
             "columna": "8",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Neto",
             "nombre": "suma_netos",
             "columna": "9",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_592",
             "nombre": "suma_592",
             "columna": "10",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_870",
             "nombre": "suma_870",
             "columna": "11",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_871",
             "nombre": "suma_871",
             "columna": "12",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_872",
             "nombre": "suma_872",
             "columna": "13",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_873",
             "nombre": "suma_873",
             "columna": "14",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_874",
             "nombre": "suma_874",
             "columna": "15",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_875",
             "nombre": "suma_875",
             "columna": "16",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_880",
             "nombre": "suma_880",
             "columna": "17",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_900",
             "nombre": "suma_900",
             "columna": "18",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_901",
             "nombre": "suma_901",
             "columna": "19",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_903",
             "nombre": "suma_903",
             "columna": "20",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_911",
             "nombre": "suma_911",
             "columna": "21",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_914",
             "nombre": "suma_914",
             "columna": "22",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_916",
             "nombre": "suma_916",
             "columna": "23",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_932",
             "nombre": "suma_932",
             "columna": "24",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_933",
             "nombre": "suma_933",
             "columna": "25",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_994",
             "nombre": "suma_994",
             "columna": "26",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_995",
             "nombre": "suma_995",
             "columna": "27",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1200",
             "nombre": "suma_1200",
             "columna": "28",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1201",
             "nombre": "suma_1201",
             "columna": "29",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1202",
             "nombre": "suma_1202",
             "columna": "30",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1203",
             "nombre": "suma_1203",
             "columna": "31",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1204",
             "nombre": "suma_1204",
             "columna": "32",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1205",
             "nombre": "suma_1205",
             "columna": "33",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1206",
             "nombre": "suma_1206",
             "columna": "34",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1207",
             "nombre": "suma_1207",
             "columna": "35",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1212",
             "nombre": "suma_1212",
             "columna": "36",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1213",
             "nombre": "suma_1213",
             "columna": "37",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "suma_1208",
             "nombre": "suma_1208",
             "columna": "38",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Importe",
             "nombre": "suma_imp",
             "columna": "39",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Basico",
             "nombre": "suma_basico",
             "columna": "40",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "SAC",
             "nombre": "suma_sac",
             "columna": "41",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "No remunerado",
             "nombre": "suma_noRem",
             "columna": "42",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         }
+    ],
+    "variables": [
+        {
+            "nombre": "periodoliq",
+            "datos": [
+                {"id": "1", "nombre": "ene"},
+                {"id": "2", "nombre": "feb"},
+                {"id": "3", "nombre": "mar"},
+                {"id": "4", "nombre": "abr"},
+                {"id": "5", "nombre": "may"},
+                {"id": "6", "nombre": "jun"},
+                {"id": "7", "nombre": "jul"},
+                {"id": "8", "nombre": "ago"},
+                {"id": "9", "nombre": "sep"},
+                {"id": "10", "nombre": "oct"},
+                {"id": "11", "nombre": "nov"},
+                {"id": "12", "nombre": "dic"}
+            ]
+        } 
     ]
 }
