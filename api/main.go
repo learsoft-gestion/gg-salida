@@ -127,7 +127,7 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.reducido as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.num_version, ep.archivo_salida, ep.fecha_ejecucion,	case when fecha_ejecucion is null then 'lanzar' when fecha_ejecucion = max(ep.fecha_ejecucion) over(partition by em.id_modelo) then 'relanzar' end boton, ep.archivo_nomina, ep.id_proceso from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", fechaFormateada, fechaFormateada2, id_convenio)
+		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.reducido as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.num_version, ep.archivo_salida, ep.fecha_ejecucion,	case when fecha_ejecucion is null then 'lanzar' when fecha_ejecucion = max(ep.fecha_ejecucion) over(partition by em.id_modelo) then 'relanzar' end boton, ep.archivo_nomina, ep.archivo_control, ep.id_proceso from extractor.ext_modelos em left join extractor.ext_procesados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.id_convenio = %v", fechaFormateada, fechaFormateada2, id_convenio)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and em.id_empresa_adm = %s", id_empresa)
@@ -163,9 +163,10 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			var ult_ejecucion sql.NullString
 			var boton sql.NullString
 			var nombre_nomina sql.NullString
+			var nombre_control sql.NullString
 			var id_proceso sql.NullInt32
 
-			if err := rows.Scan(&DTOproceso.Id_modelo, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &fecha_desde, &fecha_hasta, &version, &nombre_salida, &ult_ejecucion, &boton, &nombre_nomina, &id_proceso); err != nil {
+			if err := rows.Scan(&DTOproceso.Id_modelo, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &fecha_desde, &fecha_hasta, &version, &nombre_salida, &ult_ejecucion, &boton, &nombre_nomina, &nombre_control, &id_proceso); err != nil {
 				println("Fallo el scan", err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -193,6 +194,9 @@ func getProcesos(db *sql.DB) http.HandlerFunc {
 			}
 			if nombre_nomina.Valid {
 				DTOproceso.Nombre_nomina = nombre_nomina.String
+			}
+			if nombre_control.Valid {
+				DTOproceso.Nombre_control = nombre_control.String
 			}
 			if boton.Valid {
 				DTOproceso.Boton = boton.String
