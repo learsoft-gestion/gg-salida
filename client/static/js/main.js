@@ -3,6 +3,7 @@ $('[type=checkbox]').prop('checked', true);
 
 // Llenar fecha hasta = fecha desde
 $(document).ready(function () {
+    $('#menuContainer').load('/static/menu.html');
     // Filtro de fecha/período
     $('#filtroFechaInicio').on('change', function () {
         if ($("#filtroFechaFin").val() === '') {

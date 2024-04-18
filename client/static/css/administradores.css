@@ -1,0 +1,35 @@
+/* styles.css */
+
+/* Estilos para el encabezado */
+h1 {
+    color: #333; /* Color del texto */
+    text-align: center; /* Alineación del texto */
+}
+
+/* Estilos para los formularios */
+form {
+    margin-bottom: 20px; /* Margen inferior */
+}
+
+label {
+    font-weight: bold; /* Negrita */
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+    width: 100%; /* Ancho completo */
+    margin-bottom: 10px; /* Margen inferior */
+}
+
+button {
+    background-color: #007bff; /* Color de fondo */
+    color: #fff; /* Color del texto */
+    padding: 10px 20px; /* Relleno */
+    border: none; /* Sin borde */
+    cursor: pointer; /* Cursor de puntero */
+}
+
+button:hover {
+    background-color: #0056b3; /* Color de fondo al pasar el ratón */
+}

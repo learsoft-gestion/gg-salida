@@ -5,44 +5,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrador de Convenios</title>
-    <!-- Agrega enlaces a tus archivos CSS -->
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body>
-    <h1>Administrador de Convenios</h1>
+    <div id="menu"></div>
 
-    <!-- Formulario para agregar un nuevo convenio -->
-    <form id="formAgregarConvenio">
-        <h2>Agregar Nuevo Convenio</h2>
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
-        <label for="fechaInicio">Fecha de Inicio:</label>
-        <input type="date" id="fechaInicio" name="fechaInicio" required>
-        <label for="fechaFin">Fecha de Fin:</label>
-        <input type="date" id="fechaFin" name="fechaFin" required>
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" required></textarea>
-        <button type="submit">Agregar Convenio</button>
-    </form>
+    <div class="container">
+        <h2 class="text-center">Administrador de Convenios</h2>
 
-    <!-- Lista de convenios -->
-    <h2>Lista de Convenios</h2>
-    <ul id="listaConvenios">
-        <!-- Los convenios se cargarán aquí dinámicamente -->
-    </ul>
+        <!-- Formulario para agregar un nuevo convenio -->
+        <form id="formAgregarConvenio">
+            <h3>Agregar Nuevo Convenio</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtro" class="form-label">Filtro:</label>
+                    <textarea class="form-control" id="filtro" name="filtro" required></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+        </form>
 
-    <!-- Detalles del convenio seleccionado -->
-    <div id="detallesConvenio">
-        <h2>Detalles del Convenio</h2>
-        <p id="nombreConvenio"></p>
-        <p id="fechaInicioConvenio"></p>
-        <p id="fechaFinConvenio"></p>
-        <p id="descripcionConvenio"></p>
-        <button id="editarConvenio">Editar</button>
-        <button id="eliminarConvenio">Eliminar</button>
+        <!-- Lista de convenios -->
+        <h3 class="mt-5">Lista de Convenios</h3>
+        <ul id="listaConvenios" class="list-group"></ul>
+
+        <!-- Detalles del convenio seleccionado -->
+        <div id="detallesConvenio" class="mt-5">
+            <h3>Detalles del Convenio</h3>
+            <p id="nombreConvenio"></p>
+            <p id="filtroConvenio"></p>
+            <button id="editarConvenio" class="btn btn-primary">Editar</button>
+            <button id="eliminarConvenio" class="btn btn-danger">Eliminar</button>
+        </div>
     </div>
 
-    <!-- Agrega scripts JavaScript para manejar la funcionalidad -->
+    <script src="/static/js/administradores.js"></script>
 </body>
 
 </html>
