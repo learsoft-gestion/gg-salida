@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -27,63 +28,143 @@ var clientes []modelos.Cliente
 // Almacena los registros restantes a ejecutar
 var restantes modelos.Restantes
 
-func getModelos(db *sql.DB) http.HandlerFunc {
+func modelosHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		models = nil
+		if r.Method == "PATCH" {
+			var vigente bool
+			idURL := r.URL.Query().Get("id")
+			vigenteURL := r.URL.Query().Get("vigente")
 
-		id_convenio := r.URL.Query().Get("convenio")
-		vigente := r.URL.Query().Get("vigente")
-
-		query := "SELECT * FROM extractor.ext_modelos em "
-
-		if id_convenio != "" {
-			query += "where em.id_convenio = " + id_convenio
-		}
-		if vigente == "true" {
-			if id_convenio != "" {
-				query += " and vigente"
-			} else {
-				query += "where vigente"
+			id, err := strconv.Atoi(idURL)
+			if err != nil {
+				http.Error(w, "Debe enviar un ID numerico", http.StatusBadRequest)
+				return
 			}
-		} else if vigente == "false" {
-			if id_convenio != "" {
-				query += " and vigente = false"
+
+			if vigenteURL == "true" && idURL != "" {
+				vigente = true
+			} else if vigenteURL == "false" && idURL != "" {
+				vigente = false
 			} else {
-				query += "where vigente = false"
+				http.Error(w, "Debe enviar vigente en formato bool y un ID numerico", http.StatusBadRequest)
+				return
 			}
-		}
+			query := "UPDATE extractor.ext_modelos SET vigente = $1 where id_modelo = $2"
 
-		query += " order by em.id_modelo"
+			result, err := db.Exec(query, vigente, id)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Println("Error al ejecutar query: ", err.Error())
+				http.Error(w, "Error en el servidor", http.StatusBadRequest)
+				return
+			}
 
-		fmt.Println(query)
+			if cuenta, err := result.RowsAffected(); (err != nil) && (cuenta > 1) {
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				respuesta := "Modelo actualizado exitosamente"
+				jsonResp, _ := json.Marshal(respuesta)
+				w.Write(jsonResp)
+				return
+			} else {
+				fmt.Println("Error al actualizar modelo: " + err.Error())
+				w.WriteHeader(http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+			}
+		} else if r.Method == "POST" {
 
-		rows, err := db.Query(query)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+			var model modelos.Modelo
+			err := json.NewDecoder(r.Body).Decode(&model)
+			if err != nil {
+				fmt.Println(err.Error())
+				http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
+				return
+			}
 
-		for rows.Next() {
-			var modelo modelos.Modelo
-			var ult_ejecucion sql.NullTime
+			query := "INSERT INTO extractor.ext_modelos (id_empresa_adm, id_convenio, id_concepto, id_tipo, nombre, filtro_personas, filtro_recibos, filtro_having, formato_salida, archivo_control, archivo_modelo, archivo_nomina) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)"
 
-			if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Nombre, &modelo.Filtro_personas, &modelo.Filtro_recibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &modelo.Filtro_having, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
+			// fmt.Println(query)
+
+			result, err := db.Exec(query, model.Id_empresa, model.Id_convenio, model.Id_concepto, model.Id_tipo, model.Nombre, model.Filtro_personas, model.Filtro_recibos, model.Filtro_having, model.Formato_salida, model.Archivo_control, model.Archivo_modelo, model.Archivo_nomina)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Println("Error al ejecutar query: ", err.Error())
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				return
+			}
+
+			if cuenta, err := result.RowsAffected(); (err != nil) && (cuenta > 1) {
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				respuesta := fmt.Sprintf("Modelo %s creado exitosamente", model.Nombre)
+				jsonResp, _ := json.Marshal(respuesta)
+				w.Write(jsonResp)
+				return
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Println("No se han insertado registros: ", err.Error())
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+
+			}
+
+		} else {
+
+			models = nil
+
+			id_convenio := r.URL.Query().Get("convenio")
+			vigente := r.URL.Query().Get("vigente")
+
+			query := "SELECT * FROM extractor.ext_modelos em "
+
+			if id_convenio != "" {
+				query += "where em.id_convenio = " + id_convenio
+			}
+			if vigente == "true" {
+				if id_convenio != "" {
+					query += " and vigente"
+				} else {
+					query += "where vigente"
+				}
+			} else if vigente == "false" {
+				if id_convenio != "" {
+					query += " and vigente = false"
+				} else {
+					query += "where vigente = false"
+				}
+			}
+
+			query += " order by em.id_modelo"
+
+			// fmt.Println(query)
+
+			rows, err := db.Query(query)
+			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if ult_ejecucion.Valid {
-				modelo.Ultima_ejecucion = ult_ejecucion.Time.String()
+
+			for rows.Next() {
+				var modelo modelos.Modelo
+				var ult_ejecucion sql.NullTime
+
+				if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Nombre, &modelo.Filtro_personas, &modelo.Filtro_recibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &modelo.Filtro_having, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				if ult_ejecucion.Valid {
+					modelo.Ultima_ejecucion = ult_ejecucion.Time.String()
+				}
+
+				models = append(models, modelo)
+
 			}
 
-			models = append(models, modelo)
+			w.Header().Set("Content-Type", "application/json")
 
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-
-		if err := json.NewEncoder(w).Encode(models); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			if err := json.NewEncoder(w).Encode(models); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 }
@@ -551,34 +632,6 @@ func multipleSend(db *sql.DB) http.HandlerFunc {
 
 func nomina(datos modelos.DTOdatos) modelos.Respuesta {
 
-	// queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
-	// // fmt.Println("Query modelos: ", queryModelos)
-	// stmt, err := db.Prepare(queryModelos)
-	// if err != nil {
-
-	// 	return modelos.Respuesta{Mensaje: err.Error()}
-	// }
-	// defer stmt.Close()
-	// var args []interface{}
-	// args = append(args, datos.Id_modelo)
-	// rows, err := stmt.Query(args...)
-	// if err != nil {
-
-	// 	return modelos.Respuesta{Mensaje: "Error al ejecutar el query"}
-	// }
-	// defer rows.Close()
-	// for rows.Next() {
-	// 	var proceso modelos.Proceso
-	// 	err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina)
-	// 	if err != nil {
-	// 		fmt.Println(err.Error())
-
-	// 		return modelos.Respuesta{Mensaje: "Error al escanear proceso"}
-	// 	}
-	// 	proceso.Id_procesado = datos.Id_procesado
-	// 	procesos = append(procesos, proceso)
-	// }
-
 	var resultado []string
 	result, errFormateado := src.ProcesadorNomina(procesos[0], datos.Fecha, datos.Fecha2, datos.Version)
 	if result != "" {
@@ -824,7 +877,7 @@ func main() {
 	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/a-convenios", conveniosHandler)
 
-	router.HandleFunc("/modelos", getModelos(db))
+	router.HandleFunc("/modelos", modelosHandler(db))
 	router.HandleFunc("/convenios", getConvenios(db))
 	router.HandleFunc("/empresas", getEmpresas(db))
 	router.HandleFunc("/empresas/{id_convenio}", getEmpresas(db))
