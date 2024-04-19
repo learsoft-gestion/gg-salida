@@ -1,7 +1,5 @@
 $(document).ready(function () {
     $('#menu').load('/static/menu.html');
-
-    // $("#home").attr('href', "/");
 });
 
 $.ajax({

@@ -3,32 +3,16 @@ body {
   padding: 0;
 }
 
-/* #menu {
-  position: relative;
-
-} */
-
 #logo {
   width: 180px;
 }
 
-.submenu {
-  left: 0;
-  opacity: 0;
-  position: absolute;
-  top: 35px;
-  visibility: hidden;
-  z-index: 1;
-}
-
-li:hover ul .submenu {
-  opacity: 1;
-  top: 40px;
-  visibility: visible;
-}
-
 #home {
   overflow-x: hidden;
+}
+
+label {
+  font-weight: bold;
 }
 
 .form-group {

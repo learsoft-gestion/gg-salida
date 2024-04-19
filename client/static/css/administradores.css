@@ -1,35 +1,79 @@
 /* styles.css */
+#logo {
+    width: 180px;
+}
 
 /* Estilos para el encabezado */
 h1 {
-    color: #333; /* Color del texto */
-    text-align: center; /* Alineación del texto */
+    color: #333;
+    /* Color del texto */
+    text-align: center;
+    /* Alineación del texto */
 }
 
 /* Estilos para los formularios */
 form {
-    margin-bottom: 20px; /* Margen inferior */
+    margin-bottom: 20px;
+    /* Margen inferior */
 }
 
 label {
-    font-weight: bold; /* Negrita */
+    font-weight: bold;
+    /* Negrita */
 }
 
 input[type="text"],
 input[type="date"],
 textarea {
-    width: 100%; /* Ancho completo */
-    margin-bottom: 10px; /* Margen inferior */
+    width: 100%;
+    /* Ancho completo */
+    margin-bottom: 10px;
+    /* Margen inferior */
 }
 
 button {
-    background-color: #007bff; /* Color de fondo */
-    color: #fff; /* Color del texto */
-    padding: 10px 20px; /* Relleno */
-    border: none; /* Sin borde */
-    cursor: pointer; /* Cursor de puntero */
+    background-color: #007bff;
+    /* Color de fondo */
+    color: #fff;
+    /* Color del texto */
+    padding: 10px 20px;
+    /* Relleno */
+    border: none;
+    /* Sin borde */
+    cursor: pointer;
+    /* Cursor de puntero */
 }
 
 button:hover {
-    background-color: #0056b3; /* Color de fondo al pasar el ratón */
+    background-color: #0056b3;
+    /* Color de fondo al pasar el ratón */
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.btn-buscar {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+th {
+    text-align: center;
+}
+
+tbody td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+textarea {
+    margin-bottom: 0;
+}
+
+.form-check {
+    display: flex;
+    justify-content: center;
 }
