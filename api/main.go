@@ -146,13 +146,25 @@ func modelosHandler(db *sql.DB) http.HandlerFunc {
 			for rows.Next() {
 				var modelo modelos.Modelo
 				var ult_ejecucion sql.NullTime
+				var filtroPersonas sql.NullString
+				var filtroRecibos sql.NullString
+				var filtroHaving sql.NullString
 
-				if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Nombre, &modelo.Filtro_personas, &modelo.Filtro_recibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &modelo.Filtro_having, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
+				if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Nombre, &filtroPersonas, &filtroRecibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &filtroHaving, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
 				if ult_ejecucion.Valid {
 					modelo.Ultima_ejecucion = ult_ejecucion.Time.String()
+				}
+				if filtroPersonas.Valid {
+					modelo.Filtro_personas = filtroPersonas.String
+				}
+				if filtroRecibos.Valid {
+					modelo.Filtro_recibos = filtroRecibos.String
+				}
+				if ult_ejecucion.Valid {
+					modelo.Filtro_having = filtroHaving.String
 				}
 
 				models = append(models, modelo)
