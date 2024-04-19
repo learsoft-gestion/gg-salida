@@ -6,6 +6,10 @@ type Modelo struct {
 	Id_concepto      string
 	Id_convenio      int
 	Id_tipo          string
+	Empresa          string
+	Concepto         string
+	Convenio         string
+	Tipo             string
 	Nombre           string
 	Filtro_personas  string
 	Filtro_recibos   string
