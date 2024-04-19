@@ -1,5 +1,7 @@
 package modelos
 
+import "database/sql"
+
 type Modelo struct {
 	Id_modelo        int
 	Id_empresa       int
@@ -40,6 +42,21 @@ type Proceso struct {
 	Archivo_control string `json:"archivo_control"`
 	Archivo_nomina  string `json:"archivo_nomina"`
 	Id_procesado    int
+}
+
+type Migrador struct {
+	ID             int
+	Procesado      bool
+	FechaProcesado sql.NullTime
+	ArchivoEntrada string
+	ArchivoFinal   string
+	Empresa        string
+	Periodo        string
+	Convenio       string
+	Estado         sql.NullString
+	Descripcion    sql.NullString
+	RutaEntrada    sql.NullString
+	RutaFinal      sql.NullString
 }
 
 type Empresa struct {

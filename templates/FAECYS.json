@@ -4,8 +4,8 @@
             "titulo": "Sucursal",
             "nombre": "sucursal",
             "columna": "A",
-            "tipo": "string",
-            "formato": ""
+            "tipo": "fijo",
+            "formato": "1"
         },
         {
             "titulo": "Cuil",
@@ -37,17 +37,17 @@
         },
         {
             "titulo": "Categoria",
-            "nombre": "cat_reducido",
+            "nombre": "",
             "columna": "F",
-            "tipo": "string",
-            "formato": ""
+            "tipo": "fijo",
+            "formato": "9"
         },
         {
             "titulo": "Remuneracion",
             "nombre": "bruto_imp",
             "columna": "G",
-            "tipo": "float",
-            "formato": "millares con coma"
+            "tipo": "moneda",
+            "formato": ""
         },
         {
             "titulo": "Media jornada",

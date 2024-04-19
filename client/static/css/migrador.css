@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+th {
+    text-align: center;
+}
+
+tbody td {
+    text-align: center;
+}
+
+.table td {
+    padding: 0;
+    vertical-align: middle;
+}
+
+.table th {
+    vertical-align: middle;
+}
+
+.btn-buscar {
+    display: flex;
+    align-items: center;
+}
+
+th i.material-icons {
+    vertical-align: middle;
+}
+
+.cancel-icon {
+    color: red;
+}
+
+.check-icon {
+    color: green;
+}
+
+.expand-icon {
+    color: blue;
+}
+
+#filtros {
+    width: 100%;
+    height: 80px;
+    z-index: 10;
+}
+
+#tablaDatos {
+    position: relative;
+    top: 80px;
+    display: none;
+    z-index: 1;
+}

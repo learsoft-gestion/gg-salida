@@ -1,0 +1,88 @@
+{
+    "campo": [
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "ApellidoNombre",
+            "nombre": "apellidoynombre",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "RemuneracionTotal",
+            "nombre": "bruto_imp",
+            "columna": "C",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "Categoria",
+            "nombre": "",
+            "columna": "D",
+            "tipo": "fijo",
+            "formato": "4"
+        },
+        {
+            "titulo": "DescuentaCuotaSindical",
+            "nombre": "",
+            "columna": "E",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "Sucursal",
+            "nombre": "",
+            "columna": "F",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "SituacionLaboral1",
+            "nombre": "bruto_imp",
+            "columna": "G",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "DiaDesde",
+            "nombre": "",
+            "columna": "H",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "SituacionLaboral2",
+            "nombre": "",
+            "columna": "I",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "DiaDesde2",
+            "nombre": "",
+            "columna": "J",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "SituacionLaboral3",
+            "nombre": "",
+            "columna": "K",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "DiaDesde3",
+            "nombre": "",
+            "columna": "L",
+            "tipo": "fijo",
+            "formato": ""
+        }
+    ]
+}
