@@ -14,6 +14,7 @@ type Modelo struct {
 	Convenio         string
 	Tipo             string
 	Nombre           string
+	Filtro_convenio  string
 	Filtro_personas  string
 	Filtro_recibos   string
 	Formato_salida   string

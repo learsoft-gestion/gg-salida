@@ -105,7 +105,7 @@ func ModelosHandler(db *sql.DB) http.HandlerFunc {
 			id_convenio := r.URL.Query().Get("convenio")
 			vigente := r.URL.Query().Get("vigente")
 
-			query := "select em.id_modelo, em.id_empresa_adm, em.id_concepto, em.id_convenio, em.id_tipo, ea.razon_social, ea.reducido, ec.nombre as nombre_concepto, c.nombre as nombre_convenio, et.nombre as nombre_tipo, em.nombre, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.ult_ejecucion, em.id_query, em.archivo_modelo, em.vigente, em.filtro_having, em.archivo_control, em.archivo_nomina from extractor.ext_modelos em join extractor.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo "
+			query := "select em.id_modelo, em.id_empresa_adm, em.id_concepto, em.id_convenio, em.id_tipo, ea.razon_social, ea.reducido, ec.nombre as nombre_concepto, c.nombre as nombre_convenio, et.nombre as nombre_tipo, em.nombre, c.filtro, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.ult_ejecucion, em.id_query, em.archivo_modelo, em.vigente, em.filtro_having, em.archivo_control, em.archivo_nomina from extractor.ext_modelos em join extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo "
 
 			if id_convenio != "" {
 				query += "where em.id_convenio = " + id_convenio
@@ -141,7 +141,7 @@ func ModelosHandler(db *sql.DB) http.HandlerFunc {
 				var filtroRecibos sql.NullString
 				var filtroHaving sql.NullString
 
-				if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Empresa, &modelo.EmpReducido, &modelo.Concepto, &modelo.Convenio, &modelo.Tipo, &modelo.Nombre, &filtroPersonas, &filtroRecibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &filtroHaving, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
+				if err = rows.Scan(&modelo.Id_modelo, &modelo.Id_empresa, &modelo.Id_concepto, &modelo.Id_convenio, &modelo.Id_tipo, &modelo.Empresa, &modelo.EmpReducido, &modelo.Concepto, &modelo.Convenio, &modelo.Tipo, &modelo.Nombre, &modelo.Filtro_convenio, &filtroPersonas, &filtroRecibos, &modelo.Formato_salida, &ult_ejecucion, &modelo.Query, &modelo.Archivo_modelo, &modelo.Vigente, &filtroHaving, &modelo.Archivo_control, &modelo.Archivo_nomina); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
