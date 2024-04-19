@@ -9,6 +9,7 @@ type Modelo struct {
 	Id_convenio      int
 	Id_tipo          string
 	Empresa          string
+	EmpReducido      string
 	Concepto         string
 	Convenio         string
 	Tipo             string
@@ -57,6 +58,11 @@ type Migrador struct {
 	Descripcion    sql.NullString
 	RutaEntrada    sql.NullString
 	RutaFinal      sql.NullString
+}
+
+type PatchModelo struct {
+	Id      int
+	Vigente bool
 }
 
 type Empresa struct {
