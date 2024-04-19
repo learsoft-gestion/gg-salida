@@ -32,6 +32,7 @@ func main() {
 
 	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/a-convenios", conveniosHandler)
+	router.HandleFunc("/a-modelos", aModelosHandler)
 	router.HandleFunc("/migrador", migradorHandler)
 
 	router.HandleFunc("/modelos", handlers.ModelosHandler(db))
@@ -65,6 +66,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func conveniosHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "../client/templates/convenios.html", nil)
+}
+
+func aModelosHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "../client/templates/modelos.html", nil)
 }
 
 func migradorHandler(w http.ResponseWriter, r *http.Request) {
