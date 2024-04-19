@@ -32,9 +32,7 @@ func main() {
 
 	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/a-convenios", conveniosHandler)
-	router.HandleFunc("/migrador", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "migrador.html")
-	})
+	router.HandleFunc("/migrador", migradorHandler)
 
 	router.HandleFunc("/modelos", handlers.ModelosHandler(db))
 	router.HandleFunc("/convenios", handlers.GetConvenios(db))
@@ -69,9 +67,9 @@ func conveniosHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "../client/templates/convenios.html", nil)
 }
 
-// func pagina2Handler(w http.ResponseWriter, r *http.Request) {
-//     renderTemplate(w, "templates/pagina2.html", nil)
-// }
+func migradorHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "../client/templates/migrador.html", nil)
+}
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	t, err := template.ParseFiles(tmpl)

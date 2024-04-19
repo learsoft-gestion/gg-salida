@@ -77,14 +77,14 @@ func ModelosHandler(db *sql.DB) http.HandlerFunc {
 				return
 			}
 
-			if cuenta, err := result.RowsAffected(); (err != nil) && (cuenta > 1) {
+			if cuenta, err := result.RowsAffected(); cuenta > 1 {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := fmt.Sprintf("Modelo %s creado exitosamente", model.Nombre)
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
 				return
-			} else {
+			} else if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("No se han insertado registros: ", err.Error())
 				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
