@@ -53,7 +53,7 @@ $(document).ready(function () {
     }
 
     function getFilters() {
-        json = {
+        var json = {
             "idDesde": $('#idDesde').val(),
             "idHasta": $('#idHasta').val(),
             "fechaDesde": $('#fechaInicio').val(),

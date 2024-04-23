@@ -149,7 +149,7 @@ $("#btnBuscar").click(function () {
 });
 
 // Función para llenar la tabla
-llenarTabla = function (data) {
+var llenarTabla = function (data) {
     $("#tablaDatos").show();
     var tbody = $('table tbody');
     tbody.empty();

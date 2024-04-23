@@ -193,7 +193,7 @@ $("#btnBuscar").click(function () {
     });
 });
 
-mostrarMensaje = function (json) {
+var mostrarMensaje = function (json) {
     $.ajax({
         url: prefijoURL + '/restantes',
         method: 'GET',
@@ -219,7 +219,7 @@ mostrarMensaje = function (json) {
 }
 
 // Función para llenar la tabla
-llenarTabla = function (rawData) {
+var llenarTabla = function (rawData) {
     data = reordenarData(rawData);
     $("#tablaDatos").show();
     var tbody = $('table tbody');
@@ -317,7 +317,7 @@ llenarTabla = function (rawData) {
     });
 }
 
-reordenarData = function (rawData) {
+var reordenarData = function (rawData) {
     const data = {};
 
     rawData.forEach(item => {
@@ -330,12 +330,12 @@ reordenarData = function (rawData) {
     return data;
 }
 
-obtenerNombreArchivo = function (nombre) {
+var obtenerNombreArchivo = function (nombre) {
     nombre = nombre.split("\\");
     return nombre[nombre.length - 1];
 }
 
-generarBoton = function (boton, id, idProcesado, tipo) {
+var generarBoton = function (boton, id, idProcesado, tipo) {
     if (boton === "lanzar") {
         return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
     }
