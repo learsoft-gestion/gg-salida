@@ -4,11 +4,19 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	// Cargar variables de entorno
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Error: ", err.Error())
+	}
+
 	router := mux.NewRouter()
 
 	// Carga de archivos estaticos
@@ -21,11 +29,11 @@ func main() {
 	router.HandleFunc("/migrador", migradorHandler)
 
 	srv := &http.Server{
-		Addr:    ":8000",
+		Addr:    os.Getenv("SV_ADDR"),
 		Handler: router,
 	}
 
-	fmt.Println("Listening at :8000 port")
+	fmt.Println("Listening at ", os.Getenv("SV_ADDR"))
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Println(err.Error())
 	}

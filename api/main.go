@@ -56,7 +56,7 @@ func main() {
 
 	router.Use(corsHandler)
 
-	fmt.Println("Listening...")
+	fmt.Println("Listening at ", os.Getenv("SV_ADDR"))
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Println(err.Error())
 	}
