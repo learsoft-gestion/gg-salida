@@ -33,8 +33,8 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	var query string
 	var queryFinal string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
-	if proceso.Select_query != "" {
-		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_query, 1)
+	if proceso.Select_control != "" {
+		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
 	} else {
 		var queryReplace string
 		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
@@ -171,8 +171,8 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	var query string
 	var queryFinal string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
-	if proceso.Select_query != "" {
-		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_query, 1)
+	if proceso.Select_control != "" {
+		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
 	} else {
 		var queryReplace string
 		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
@@ -291,8 +291,8 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	var query string
 	var queryFinal string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
-	if proceso.Select_query != "" {
-		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_query, 1)
+	if proceso.Select_control != "" {
+		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
 	} else {
 		var queryReplace string
 		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'CONTROL'").Scan(&queryReplace)

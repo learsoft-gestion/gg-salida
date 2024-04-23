@@ -25,7 +25,7 @@ type Modelo struct {
 	Filtro_having    string
 	Archivo_control  string
 	Archivo_nomina   string
-	Select_query     string
+	Select_control   string
 }
 
 type Proceso struct {
@@ -47,7 +47,7 @@ type Proceso struct {
 	Id_procesado    int
 	Columna_estado  string
 	Id_query        int
-	Select_query    string
+	Select_control  string
 }
 
 type Migrador struct {
