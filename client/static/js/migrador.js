@@ -1,6 +1,10 @@
 $(document).ready(function () {
     $('[type=checkbox]').prop('checked', true);
 
+    $('#menu').load('/static/menu.html', function() {
+        $('#titulo').append('Archivos');
+    });
+
     flatpickr('.flatpickr', {
         dateFormat: 'd-m-Y',
         locale: 'es',
@@ -28,7 +32,7 @@ $(document).ready(function () {
     function buscar() {
         var filters = getFilters();
         $.ajax({
-            url: '/procesos',
+            url: '/migrador/procesos',
             method: 'GET',
             dataType: 'json',
             data: filters,

@@ -1,4 +1,9 @@
-$('#menu').load('/static/menu.html');
+$('#menu').load('/static/menu.html', function() {
+    $('#titulo').append('Modelos');
+});
+
+// Chequear los checkbox
+$('[type=checkbox]').prop('checked', true);
 
 // Select de convenio
 $.ajax({
@@ -106,6 +111,15 @@ $("#btnBuscar").click(function () {
         tipo: $("#tipo").val(),
         jurisdiccion: $("#jurisdiccion").val(),
     }
+
+    var habilitadoTrue = $('#habilitadoTrue').is(':checked');
+    var habilitadoFalse = $('#habilitadoFalse').is(':checked');
+
+    if (!(habilitadoTrue && habilitadoFalse)) {
+        if (habilitadoTrue || habilitadoFalse) {
+            json.vigente = habilitadoTrue ? true : false;
+        }
+    }
     // Llamada al servidor para mostrar tabla
     $.ajax({
         url: `/modelos`,
@@ -138,23 +152,32 @@ llenarTabla = function (data) {
     var tbody = $('table tbody');
     tbody.empty();
     $.each(data, function (index, item) {
-        var row = $(`<tr>`);
+        var row = $(`<tr class="accordion-toggle">`);
         row.append(`<td>${item.Convenio}</td>`);
-        row.append(`<td>${item.Empresa}</td>`);
+        row.append(`<td>${item.EmpReducido}</td>`);
         row.append(`<td>${item.Concepto}</td>`);
         row.append(`<td>${item.Tipo}</td>`);
         row.append(`<td>${item.Nombre}</td>`);
-        row.append(`<td><textarea>${item.Filtro_personas}</textarea></td>`);
-        row.append(`<td><textarea>${item.Filtro_recibos}</textarea></td>`);
-        row.append(`<td><textarea>${item.Filtro_having}</textarea></td>`);
+        row.append(`<td><button class="btn btn-default btn-sm openOculto" data-target=".${item.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`);
+        row.append(`<td>${item.Archivo_control}</td>`);
+        row.append(`<td>${item.Archivo_modelo}</td>`);
+        row.append(`<td>${item.Archivo_nomina}</td>`);
         row.append(`<td><div class="form-check form-switch"><input type="checkbox" value="${item.Id_modelo}" class="form-check-input" ${item.Vigente === "true" ? "checked" : ""}></div></td>`);
 
         tbody.append(row);
+
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Convenio:</strong> ${item.Filtro_convenio}</td>`);
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Having:</strong> ${item.Filtro_having}</td>`);
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Personas:</strong> ${item.Filtro_personas}</td>`);
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Recibos:</strong> ${item.Filtro_recibos}</td>`);
+    });
+
+    $("tr.accordion-toggle .openOculto").on('click', function () {
+        id = $(this).attr("data-target");
+        $(id).toggleClass("collapse");
     });
 
     $('.form-check-input').change(function() {
-        // console.log($(this).val());
-        // console.log($(this).is(':checked'));
         var json = {
             id: Number($(this).val()),
             vigente: $(this).is(':checked')
@@ -163,28 +186,29 @@ llenarTabla = function (data) {
             url: `/modelos`,
             method: 'PATCH',
             dataType: 'json',
-            data: json,
+            data: JSON.stringify(json),
             success: function (data) {
-                $('#loadingOverlay').hide();
-                if (data) {
-                    Swal.fire({
-                        title: "Éxito!",
-                        text: data.mensaje,
-                        icon: "success"
-                    });
-                    $("#btnBuscar").trigger("click");
-                } else {
-                    console.log('No se recibieron datos del servidor.');
-                }
+                Swal.fire({
+                    title: "Éxito!",
+                    text: data.mensaje,
+                    icon: "success"
+                });
             },
             error: function (error) {
-                $('#loadingOverlay').hide();
-                Swal.fire({
-                    title: "Ocurrió un error",
-                    text: error.mensaje,
-                    icon: "error"
-                });
-                console.error('Error en la solicitud:', error);
+                if (error.status === 200) {
+                    Swal.fire({
+                        title: "Éxito!",
+                        text: error.statusText,
+                        icon: "success"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Ocurrió un error",
+                        text: error.mensaje,
+                        icon: "error"
+                    });
+                    console.error('Error en la solicitud:', error);
+                }
             }
         })
     });

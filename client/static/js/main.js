@@ -3,7 +3,9 @@ $('[type=checkbox]').prop('checked', true);
 
 // Llenar fecha hasta = fecha desde
 $(document).ready(function () {
-    $('#menuContainer').load('/static/menu.html');
+    $('#menuContainer').load('/static/menu.html', function() {
+        $('#titulo').append('Procesador');
+    });
     // Filtro de fecha/período
     $('#filtroFechaInicio').on('change', function () {
         if ($("#filtroFechaFin").val() === '') {
@@ -250,7 +252,7 @@ llenarTabla = function (rawData) {
                 subRow.append(`<td title="${proceso.Nombre_control}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
                 subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${proceso.Nombre_nomina.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
                 subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
-                subRow.append('<td>' + proceso.Ultima_ejecucion_salida + '</td>');
+                subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
                 subRow.append('<td></td>');
 
                 tbody.append(subRow);

@@ -3,6 +3,15 @@
     width: 180px;
 }
 
+.title-right {
+    margin-left: auto;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 50px;
+}
+
+/* hsta aquí */
+
 /* Estilos para el encabezado */
 h1 {
     color: #333;
@@ -69,8 +78,8 @@ tbody td {
     vertical-align: middle;
 }
 
-textarea {
-    margin-bottom: 0;
+.table td {
+    padding: 0;
 }
 
 .form-check {

@@ -1,3 +1,15 @@
+#logo {
+    width: 180px;
+}
+
+.title-right {
+    margin-left: auto;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 50px;
+}
+/* hsta aquí */
+
 body {
     font-family: Arial, sans-serif;
     padding: 0;
