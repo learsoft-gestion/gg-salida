@@ -1,3 +1,5 @@
+import { prefijoURL } from './variables.js';
+
 $('#menu').load('/static/menu.html', function() {
     $('#titulo').append('Modelos');
 });
@@ -7,7 +9,7 @@ $('[type=checkbox]').prop('checked', true);
 
 // Select de convenio
 $.ajax({
-    url: '/convenios',
+    url: prefijoURL + '/convenios',
     method: 'GET',
     dataType: 'json',
     success: function (data) {
@@ -32,7 +34,7 @@ $("#conv").change(function () {
     var convId = $("#conv").val();
 
     $.ajax({
-        url: `/empresas/${convId}`,
+        url: prefijoURL + `/empresas/${convId}`,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -64,7 +66,7 @@ $("#emp").change(function () {
     var empId = $("#emp").val();
 
     $.ajax({
-        url: `/conceptos/${convId}/${empId}`,
+        url: prefijoURL + `/conceptos/${convId}/${empId}`,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -122,7 +124,7 @@ $("#btnBuscar").click(function () {
     }
     // Llamada al servidor para mostrar tabla
     $.ajax({
-        url: `/modelos`,
+        url: prefijoURL + `/modelos`,
         method: 'GET',
         dataType: 'json',
         data: json,
@@ -183,7 +185,7 @@ llenarTabla = function (data) {
             vigente: $(this).is(':checked')
         }
         $.ajax({
-            url: `/modelos`,
+            url: prefijoURL + `/modelos`,
             method: 'PATCH',
             dataType: 'json',
             data: JSON.stringify(json),

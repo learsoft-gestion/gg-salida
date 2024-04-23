@@ -1,9 +1,11 @@
+import { prefijoURL } from './variables.js';
+
 $(document).ready(function () {
     $('#menu').load('/static/menu.html');
 });
 
 $.ajax({
-    url: '/convenios',
+    url: prefijoURL + '/convenios',
     method: 'GET',
     dataType: 'json',
     success: function (data) {

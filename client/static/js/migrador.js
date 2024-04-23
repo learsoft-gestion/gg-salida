@@ -1,3 +1,5 @@
+import { prefijoURL } from './variables.js';
+
 $(document).ready(function () {
     $('[type=checkbox]').prop('checked', true);
 
@@ -32,7 +34,7 @@ $(document).ready(function () {
     function buscar() {
         var filters = getFilters();
         $.ajax({
-            url: '/migrador/procesos',
+            url: prefijoURL + '/migrador/procesos',
             method: 'GET',
             dataType: 'json',
             data: filters,

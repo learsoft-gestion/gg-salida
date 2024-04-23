@@ -1,4 +1,4 @@
-const prefijoURL = "http://localhost:8080"
+import { prefijoURL } from './variables.js';
 
 // Chequear los checkbox
 $('[type=checkbox]').prop('checked', true);
