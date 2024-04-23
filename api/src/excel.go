@@ -73,6 +73,31 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	// 	},
 	// })
 
+	// Leer datos del excel de control
+	// f, err := excelize.OpenFile("../templates/GASTRONOMICOS.xlsx")
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// 	return "", err
+	// }
+	// // Fila a leer
+	// fila := 13
+
+	// rowData, err := f.Rows(sheetName)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// 	return "", err
+	// }
+
+	// for rowData.Next() {
+	// 	filaActual, err := rowData.Columns()
+	// 	if err != nil {
+	// 		fmt.Println(err.Error())
+	// 		return "", err
+	// 	}
+
+	// 	if rowData.C
+	// }
+
 	if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
 		// Escribir verticalmente encabezados en el Excel
 		for _, campo := range plantilla.Campos {

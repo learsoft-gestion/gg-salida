@@ -9,10 +9,17 @@ import (
 )
 
 // Ejecuta la query de ext_query y trae los registros que necesito para escribir los archivos de salida y control.
-func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, idLogDetalle int) ([]modelos.Registro, error) {
+func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, idLogDetalle int, tipo_ejecucion string) ([]modelos.Registro, error) {
 
 	// Reemplazo de fecha en query
-	queryFinal := strings.Replace(proceso.Query, "$PERIODO$", fecha, -1)
+	var queryFinal string
+	if proceso.Columna_estado != "" {
+		queryFinal = strings.Replace(proceso.Query, "$COLUMNA_ESTADO$", proceso.Columna_estado, -1)
+	} else {
+		queryFinal = strings.Replace(proceso.Query, "$COLUMNA_ESTADO$", "case when p.prdmesanio=p.prdmesanio then 'ok' end", -1)
+
+	}
+	queryFinal = strings.Replace(queryFinal, "$PERIODO$", fecha, -1)
 	queryFinal = strings.Replace(queryFinal, "$PERIODO2$", fecha2, -1)
 	queryFinal = strings.Replace(queryFinal, "$FILTRO_CONVENIO$", proceso.Filtro_convenio, -1)
 	queryFinal = strings.Replace(queryFinal, "$CONVENIO$", strconv.Itoa(proceso.Id_convenio), -1)
@@ -55,6 +62,7 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		return nil, err
 	}
 	columnasNum := len(columnas)
+	// fmt.Println(columnas)
 
 	var registros []modelos.Registro
 
@@ -73,17 +81,33 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		registroMapa := make(map[string]interface{})
 		for i, colNombre := range columnas {
 			colName := strings.ToUpper(colNombre)
+			// if colName == "OK" {
+			// 	fmt.Printf("%v", *(valores[i].(*interface{})))
+			// }
 			registroMapa[colName] = *(valores[i].(*interface{}))
 		}
 
 		id := *valores[0].(*interface{})
 		idString := fmt.Sprintf("%v", id)
 
-		registro := modelos.Registro{
-			Ids:     idString,
-			Valores: registroMapa,
+		if strings.ToLower(tipo_ejecucion) == "salida" {
+			if registroMapa["OK"] == "ok" {
+				fmt.Println(registroMapa["OK"])
+				registro := modelos.Registro{
+					Ids:     idString,
+					Valores: registroMapa,
+				}
+				registros = append(registros, registro)
+			} else {
+				fmt.Println(registroMapa["OK"])
+			}
+		} else {
+			registro := modelos.Registro{
+				Ids:     idString,
+				Valores: registroMapa,
+			}
+			registros = append(registros, registro)
 		}
-		registros = append(registros, registro)
 	}
 
 	return registros, nil

@@ -31,27 +31,24 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	}
 
 	var query string
-	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
-	var queryReplace string
-	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
-	queryFinal := strings.Replace(query, "$SELECT$", queryReplace, 1)
+	var queryFinal string
+	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
+	if proceso.Select_query != "" {
+		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_query, 1)
+	} else {
+		var queryReplace string
+		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
+		queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
+	}
 	proceso.Query = queryFinal
 
-	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
+	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "salida")
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return err.Error(), 0, modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
 
-	// if len(registros) == 0 {
-	// 	if id, err = ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, 0, ""); err != nil {
-	// 		fmt.Println(err.Error())
-	// 		return err.Error(), 0, modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
-	// 	}
-	// 	return "", 0, modelos.ErrorFormateado{Mensaje: "no se han encontrado registros"}
-	// } else {
 	fmt.Println("Cantidad de registros: ", len(registros))
-	// }
 
 	// Fecha para el nombre de salida
 	var fechaSalida string
@@ -172,13 +169,18 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	}
 
 	var query string
-	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
-	var queryReplace string
-	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
-	queryFinal := strings.Replace(query, "$SELECT$", queryReplace, 1)
+	var queryFinal string
+	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
+	if proceso.Select_query != "" {
+		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_query, 1)
+	} else {
+		var queryReplace string
+		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
+		queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
+	}
 	proceso.Query = queryFinal
 
-	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
+	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "nomina")
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -287,13 +289,18 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	}
 
 	var query string
-	db.QueryRow("SELECT texto_query FROM extractor.ext_query;").Scan(&query)
-	var queryReplace string
-	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'CONTROL'").Scan(&queryReplace)
-	queryFinal := strings.Replace(query, "$SELECT$", queryReplace, 1)
+	var queryFinal string
+	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
+	if proceso.Select_query != "" {
+		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_query, 1)
+	} else {
+		var queryReplace string
+		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'CONTROL'").Scan(&queryReplace)
+		queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
+	}
 	proceso.Query = queryFinal
 
-	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle)
+	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "control")
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}

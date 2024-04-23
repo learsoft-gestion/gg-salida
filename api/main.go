@@ -4,7 +4,6 @@ import (
 	"Nueva/conexiones"
 	"Nueva/handlers"
 	"fmt"
-	"html/template"
 	"net/http"
 	"os"
 
@@ -26,14 +25,14 @@ func main() {
 
 	router := mux.NewRouter()
 
-	// Carga de archivos estaticos
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../client/static"))))
-	router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("../salida"))))
+	// // Carga de archivos estaticos
+	// router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../client/static"))))
+	// router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("../salida"))))
 
-	router.HandleFunc("/", indexHandler)
-	router.HandleFunc("/a-convenios", conveniosHandler)
-	router.HandleFunc("/a-modelos", aModelosHandler)
-	router.HandleFunc("/migrador", migradorHandler)
+	// router.HandleFunc("/", indexHandler)
+	// router.HandleFunc("/a-convenios", conveniosHandler)
+	// router.HandleFunc("/a-modelos", aModelosHandler)
+	// router.HandleFunc("/migrador", migradorHandler)
 
 	router.HandleFunc("/modelos", handlers.ModelosHandler(db))
 	router.HandleFunc("/convenios", handlers.GetConvenios(db))
@@ -55,35 +54,56 @@ func main() {
 		Handler: router,
 	}
 
+	router.Use(corsHandler)
+
 	fmt.Println("Listening...")
-	srv.ListenAndServe()
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	// Puedes usar plantillas si deseas
-	renderTemplate(w, "../client/templates/index.html", nil)
-}
-
-func conveniosHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "../client/templates/convenios.html", nil)
-}
-
-func aModelosHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "../client/templates/modelos.html", nil)
-}
-
-func migradorHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "../client/templates/migrador.html", nil)
-}
-
-func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	t, err := template.ParseFiles(tmpl)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = t.Execute(w, data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := srv.ListenAndServe(); err != nil {
+		fmt.Println(err.Error())
 	}
 }
+
+// Middleware para manejar CORS
+func corsHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Permitir solicitudes desde cualquier origen
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		// Permitir ciertos métodos HTTP
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
+		// Permitir ciertos encabezados
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		// Continuar con el siguiente manejador
+		next.ServeHTTP(w, r)
+	})
+}
+
+// func indexHandler(w http.ResponseWriter, r *http.Request) {
+// 	// Puedes usar plantillas si deseas
+// 	renderTemplate(w, "../client/templates/index.html", nil)
+// }
+
+// func conveniosHandler(w http.ResponseWriter, r *http.Request) {
+// 	renderTemplate(w, "../client/templates/convenios.html", nil)
+// }
+
+// func aModelosHandler(w http.ResponseWriter, r *http.Request) {
+// 	renderTemplate(w, "../client/templates/modelos.html", nil)
+// }
+
+// func migradorHandler(w http.ResponseWriter, r *http.Request) {
+// 	renderTemplate(w, "../client/templates/migrador.html", nil)
+// }
+
+// func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
+// 	t, err := template.ParseFiles(tmpl)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// 	err = t.Execute(w, data)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 	}
+// }

@@ -1,3 +1,5 @@
+const prefijoURL = "http://localhost:8080"
+
 // Chequear los checkbox
 $('[type=checkbox]').prop('checked', true);
 
@@ -37,7 +39,7 @@ $(window).scroll(function () {
 
 // Select de convenio
 $.ajax({
-    url: '/convenios',
+    url: prefijoURL + '/convenios',
     method: 'GET',
     dataType: 'json',
     success: function (data) {
@@ -62,7 +64,7 @@ $("#conv").change(function () {
     var convId = $("#conv").val();
 
     $.ajax({
-        url: `/empresas/${convId}`,
+        url: prefijoURL + `/empresas/${convId}`,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -94,7 +96,7 @@ $("#emp").change(function () {
     var empId = $("#emp").val();
 
     $.ajax({
-        url: `/conceptos/${convId}/${empId}`,
+        url: prefijoURL + `/conceptos/${convId}/${empId}`,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -166,7 +168,7 @@ $("#btnBuscar").click(function () {
     mostrarMensaje(json);
     // Llamada al servidor para mostrar tabla
     $.ajax({
-        url: `/procesos`,
+        url: prefijoURL + `/procesos`,
         method: 'GET',
         dataType: 'json',
         data: json,
@@ -193,7 +195,7 @@ $("#btnBuscar").click(function () {
 
 mostrarMensaje = function (json) {
     $.ajax({
-        url: '/restantes',
+        url: prefijoURL + '/restantes',
         method: 'GET',
         dataType: 'json',
         data: json,
@@ -285,7 +287,7 @@ llenarTabla = function (rawData) {
         };
 
         $.ajax({
-            url: '/send',
+            url: prefijoURL + '/send',
             method: 'POST',
             dataType: 'json',
             data: JSON.stringify(json),
@@ -345,7 +347,7 @@ $("#btnGenerar").click(function () {
     $('#loadingOverlay').show();
 
     $.ajax({
-        url: '/multiple',
+        url: prefijoURL + '/multiple',
         method: 'POST',
         dataType: 'json',
         success: function (data) {
@@ -407,7 +409,7 @@ function buscarCientes() {
     const razonSocial = $('#razonSocial').val();
 
     $.ajax({
-        url: '/clientes',
+        url: prefijoURL + '/clientes',
         method: 'GET',
         dataType: 'json',
         data: {

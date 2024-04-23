@@ -4,23 +4,30 @@
     },
     "campo": [
         {
+            "titulo": "Estado",
+            "nombre": "ok",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
             "titulo": "Periodo",
             "nombre": "periodoliq",
-            "columna": "A",
+            "columna": "B",
             "tipo": "string",
             "formato": ""
         },
         {
             "titulo": "Legajo",
             "nombre": "numero_legajo",
-            "columna": "B",
+            "columna": "C",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Apellido y Nombre",
             "nombre": "apellidoynombre",
-            "columna": "C",
+            "columna": "D",
             "tipo": "string",
             "formato": "",
             "ancho": 30
@@ -28,21 +35,21 @@
         {
             "titulo": "Cuil",
             "nombre": "cuil",
-            "columna": "D",
+            "columna": "E",
             "tipo": "string",
             "formato": ""
         },
         {
             "titulo": "Nro. Doc",
             "nombre": "nrodoc",
-            "columna": "E",
+            "columna": "F",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Apellidos",
             "nombre": "apellidos",
-            "columna": "F",
+            "columna": "G",
             "tipo": "string",
             "formato": "",
             "ancho": 20
@@ -50,7 +57,7 @@
         {
             "titulo": "Nombre",
             "nombre": "nombre",
-            "columna": "G",
+            "columna": "H",
             "tipo": "string",
             "formato": "",
             "ancho": 25
@@ -58,28 +65,28 @@
         {
             "titulo": "Sexo",
             "nombre": "sexo",
-            "columna": "H",
+            "columna": "I",
             "tipo": "string",
             "formato": ""
         },
         {
             "titulo": "Ingreso",
             "nombre": "ingreso",
-            "columna": "I",
+            "columna": "J",
             "tipo": "fecha",
             "formato": "DD/MM/YYYY"
         },
         {
             "titulo": "Egreso",
             "nombre": "egreso",
-            "columna": "J",
+            "columna": "K",
             "tipo": "fecha",
             "formato": "DD/MM/YYYY"
         },
         {
             "titulo": "Convenio",
             "nombre": "convenio",
-            "columna": "K",
+            "columna": "L",
             "tipo": "string",
             "formato": "",
             "ancho": 30
@@ -87,14 +94,14 @@
         {
             "titulo": "Categoria",
             "nombre": "categoria",
-            "columna": "L",
+            "columna": "M",
             "tipo": "string",
             "formato": ""
         },
         {
             "titulo": "Cliente",
             "nombre": "cliente",
-            "columna": "M",
+            "columna": "N",
             "tipo": "string",
             "formato": "",
             "ancho": 30
@@ -102,21 +109,21 @@
         {
             "titulo": "Calificacion Profesional",
             "nombre": "calificacion_profesional",
-            "columna": "N",
+            "columna": "O",
             "tipo": "string",
             "formato": ""
         },
         {
             "titulo": "O SOC CODIGO",
             "nombre": "osoccodigo",
-            "columna": "O",
+            "columna": "P",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "O SOC NOMBRE",
             "nombre": "osocnombre",
-            "columna": "P",
+            "columna": "Q",
             "tipo": "string",
             "formato": "",
             "ancho": 30
@@ -124,280 +131,280 @@
         {
             "titulo": "Sucursal",
             "nombre": "sucursal",
-            "columna": "Q",
+            "columna": "R",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Lugar de Pago",
             "nombre": "lugar_pago",
-            "columna": "R",
+            "columna": "S",
             "tipo": "string",
             "formato": ""
         },
         {
             "titulo": "Jornada",
             "nombre": "jornada",
-            "columna": "S",
+            "columna": "T",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Recibos",
             "nombre": "Recibos",
-            "columna": "T",
+            "columna": "U",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Legajos",
             "nombre": "legajos",
-            "columna": "U",
+            "columna": "V",
             "tipo": "int",
             "formato": ""
         },
         {
             "titulo": "Bruto",
             "nombre": "bruto_imp",
-            "columna": "V",
+            "columna": "W",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "Retenciones",
             "nombre": "retencion",
-            "columna": "W",
+            "columna": "X",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "Salario Familiar",
             "nombre": "salariofamiliar",
-            "columna": "X",
+            "columna": "Y",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "Exento",
             "nombre": "exento",
-            "columna": "Y",
+            "columna": "Z",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "Neto",
             "nombre": "neto_imp",
-            "columna": "Z",
+            "columna": "AA",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "870",
             "nombre": "total_870",
-            "columna": "AA",
+            "columna": "AB",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "871",
             "nombre": "total_871",
-            "columna": "AB",
+            "columna": "AC",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "872",
             "nombre": "total_872",
-            "columna": "AC",
+            "columna": "AD",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "873",
             "nombre": "total_873",
-            "columna": "AD",
+            "columna": "AE",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "874",
             "nombre": "total_874",
-            "columna": "AE",
+            "columna": "AF",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "875",
             "nombre": "total_875",
-            "columna": "AF",
+            "columna": "AG",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "880",
             "nombre": "total_880",
-            "columna": "AG",
+            "columna": "AH",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "900",
             "nombre": "total_900",
-            "columna": "AH",
+            "columna": "AI",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "901",
             "nombre": "total_901",
-            "columna": "AI",
+            "columna": "AJ",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "903",
             "nombre": "total_903",
-            "columna": "AJ",
+            "columna": "AK",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "911",
             "nombre": "total_911",
-            "columna": "AK",
+            "columna": "AL",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "914",
             "nombre": "total_914",
-            "columna": "AL",
+            "columna": "AM",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "916",
             "nombre": "total_916",
-            "columna": "AM",
+            "columna": "AN",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "932",
             "nombre": "total_932",
-            "columna": "AN",
+            "columna": "AO",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "933",
             "nombre": "total_933",
-            "columna": "AO",
+            "columna": "AP",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "994",
             "nombre": "total_994",
-            "columna": "AP",
+            "columna": "AQ",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "995",
             "nombre": "total_995",
-            "columna": "AQ",
+            "columna": "AR",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1200",
             "nombre": "total_1200",
-            "columna": "AR",
+            "columna": "AS",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1201",
             "nombre": "total_1201",
-            "columna": "AS",
+            "columna": "AT",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1202",
             "nombre": "total_1202",
-            "columna": "AT",
+            "columna": "AU",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1203",
             "nombre": "total_1203",
-            "columna": "AU",
+            "columna": "AV",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1204",
             "nombre": "total_1204",
-            "columna": "AV",
+            "columna": "AW",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1205",
             "nombre": "total_1205",
-            "columna": "AW",
+            "columna": "AX",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1206",
             "nombre": "total_1206",
-            "columna": "AX",
+            "columna": "AY",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1207",
             "nombre": "total_1207",
-            "columna": "AY",
+            "columna": "AZ",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1212",
             "nombre": "total_1212",
-            "columna": "AZ",
+            "columna": "BA",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1213",
             "nombre": "total_1213",
-            "columna": "BA",
+            "columna": "BB",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "1208",
             "nombre": "total_1208",
-            "columna": "BB",
+            "columna": "BC",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "TOTAL",
             "nombre": "total_imp",
-            "columna": "BC",
+            "columna": "BD",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "NO REM",
             "nombre": "total_noRem",
-            "columna": "BD",
+            "columna": "BE",
             "tipo": "moneda",
             "formato": ""
         }

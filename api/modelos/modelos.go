@@ -25,25 +25,29 @@ type Modelo struct {
 	Filtro_having    string
 	Archivo_control  string
 	Archivo_nomina   string
+	Select_query     string
 }
 
 type Proceso struct {
-	Id_modelo       int    `json:"id"`
-	Id_empresa      int    `json:"id_empresa"`
-	Nombre_empresa  string `json:"nombre_empresa"`
-	Id_convenio     int    `json:"id_convenio"`
-	Nombre_convenio string `json:"nombre_convenio"`
-	Nombre          string `json:"nombre"`
-	Filtro_convenio string `json:"filtro_convenio"`
-	Filtro_personas string `json:"filtro_personas"`
-	Filtro_recibos  string `json:"filtro_recibos"`
-	Formato_salida  string `json:"formato_salida"`
-	Query           string `json:"query"`
-	Archivo_modelo  string `json:"archivo_modelo"`
-	Filtro_having   string `json:"filtro_having"`
-	Archivo_control string `json:"archivo_control"`
-	Archivo_nomina  string `json:"archivo_nomina"`
+	Id_modelo       int
+	Id_empresa      int
+	Nombre_empresa  string
+	Id_convenio     int
+	Nombre_convenio string
+	Nombre          string
+	Filtro_convenio string
+	Filtro_personas string
+	Filtro_recibos  string
+	Formato_salida  string
+	Query           string
+	Archivo_modelo  string
+	Filtro_having   string
+	Archivo_control string
+	Archivo_nomina  string
 	Id_procesado    int
+	Columna_estado  string
+	Id_query        int
+	Select_query    string
 }
 
 type Migrador struct {
