@@ -38,8 +38,8 @@ func GetProcesos(db *sql.DB) http.HandlerFunc {
 			procesado = false
 		}
 
-		if len(id_convenio) == 0 || len(fecha1) == 0 || len(fecha2) == 0 || len(id_empresa) == 0 {
-			http.Error(w, "Convenio o empresa, fecha1 y fecha2 son obligatorios", http.StatusInternalServerError)
+		if len(fecha1) == 0 || len(fecha2) == 0 {
+			http.Error(w, "Fecha desde y fecha hasta son obligatorios", http.StatusInternalServerError)
 			return
 		}
 
