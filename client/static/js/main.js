@@ -220,7 +220,7 @@ var mostrarMensaje = function (json) {
 
 // Función para llenar la tabla
 var llenarTabla = function (rawData) {
-    data = reordenarData(rawData);
+    var data = reordenarData(rawData);
     $("#tablaDatos").show();
     var tbody = $('table tbody');
     tbody.empty();
