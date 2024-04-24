@@ -92,19 +92,20 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 
 		if strings.ToLower(tipo_ejecucion) == "salida" {
 			if registroMapa["OK"] == "ok" {
-				fmt.Println(registroMapa["OK"])
+				// fmt.Println(registroMapa["OK"])
 				registro := modelos.Registro{
 					Ids:     idString,
 					Valores: registroMapa,
 				}
 				registros = append(registros, registro)
-			} else {
-				fmt.Println(registroMapa["OK"])
+				// } else {
+				// 	fmt.Println(registroMapa["OK"])
 			}
 		} else {
 			registro := modelos.Registro{
-				Ids:     idString,
-				Valores: registroMapa,
+				Ids:      idString,
+				Columnas: columnas,
+				Valores:  registroMapa,
 			}
 			registros = append(registros, registro)
 		}

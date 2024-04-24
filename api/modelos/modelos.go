@@ -133,8 +133,9 @@ type Page struct {
 
 // Modelos para lectura de tabla
 type Registro struct {
-	Ids     string
-	Valores map[string]interface{}
+	Ids      string
+	Columnas []string
+	Valores  map[string]interface{}
 }
 
 type Cabecera struct {

@@ -13,21 +13,24 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string) (string, error) {
-	// Leer archivo de plantilla
+func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string, tipo_ejecucion string) (string, error) {
+
 	var plantilla modelos.Plantilla
-	// path := "../templates/" + proceso.Archivo_control
-	fmt.Println("Path: ", path)
-	file, err := os.Open(path)
-	if err != nil {
-		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", err
-	}
-	defer file.Close()
-	err = json.NewDecoder(file).Decode(&plantilla)
-	if err != nil {
-		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return "", err
+
+	if tipo_ejecucion != "control" {
+
+		fmt.Println("Path: ", path)
+		file, err := os.Open(path)
+		if err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", err
+		}
+		defer file.Close()
+		err = json.NewDecoder(file).Decode(&plantilla)
+		if err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", err
+		}
 	}
 
 	fileNuevo := excelize.NewFile()
@@ -36,8 +39,65 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	fileNuevo.SetSheetName("Sheet1", sheetName)
 
 	fileNuevo.SetColWidth(sheetName, "A", "CA", 15)
+	// fuente_valores := &excelize.Font{
+	// 	Size: 9,
+	// }
+	// borde := []excelize.Border{
+	// 	{
+	// 		Type:  "top",
+	// 		Color: "000000",
+	// 		Style: 1,
+	// 	},
+	// 	{
+	// 		Type:  "bottom",
+	// 		Color: "000000",
+	// 		Style: 1,
+	// 	},
+	// 	{
+	// 		Type:  "left",
+	// 		Color: "000000",
+	// 		Style: 1,
+	// 	},
+	// 	{
+	// 		Type:  "right",
+	// 		Color: "000000",
+	// 		Style: 1,
+	// 	},
+	// },
 
-	styleMoneda, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 177})
+	styleMoneda, _ := fileNuevo.NewStyle(&excelize.Style{
+		NumFmt: 177,
+		Font: &excelize.Font{
+			Size: 9,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+			WrapText:   false,
+		},
+		Border: []excelize.Border{
+			{
+				Type:  "top",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "bottom",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "left",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "right",
+				Color: "000000",
+				Style: 1,
+			},
+		},
+	})
 	styleNumero, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 1})
 	styleNumeroDecimal, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 2})
 	// styleDefault, _ := fileNuevo.NewStyle(&excelize.Style{Alignment: al})
@@ -57,21 +117,92 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 			WrapText:   true,
 		},
 	})
-	// styleColumnaControl, _ := fileNuevo.NewStyle(&excelize.Style{
-	// 	Font: &excelize.Font{
-	// 		Color: "#FFFFFF",
-	// 	},
-	// 	Fill: excelize.Fill{
-	// 		Type:    "pattern",
-	// 		Color:   []string{"#000000"},
-	// 		Pattern: 1,
-	// 	},
-	// 	Alignment: &excelize.Alignment{
-	// 		Horizontal: "center",
-	// 		Vertical:   "center",
-	// 		WrapText:   true,
-	// 	},
-	// })
+	styleEncabezadoControl, _ := fileNuevo.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Size: 10,
+		},
+		Border: []excelize.Border{
+			{
+				Type:  "top",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "bottom",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "left",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "right",
+				Color: "000000",
+				Style: 1,
+			},
+		},
+		Fill: excelize.Fill{
+			Type:    "pattern",
+			Color:   []string{"#a7a7a7"},
+			Pattern: 1,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "left",
+			Vertical:   "center",
+			WrapText:   true,
+		},
+	})
+	styleColumnaControl, _ := fileNuevo.NewStyle(&excelize.Style{
+		Font: &excelize.Font{
+			Color: "#FFFFFF",
+		},
+		Fill: excelize.Fill{
+			Type:    "pattern",
+			Color:   []string{"#000000"},
+			Pattern: 1,
+		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "center",
+			Vertical:   "center",
+			WrapText:   true,
+		},
+	})
+	styleAligned, _ := fileNuevo.NewStyle(&excelize.Style{
+		Alignment: &excelize.Alignment{
+			Horizontal:     "center",
+			Vertical:       "center",
+			ReadingOrder:   0,
+			Indent:         0,
+			RelativeIndent: 0,
+			ShrinkToFit:    false,
+			TextRotation:   0,
+			WrapText:       false,
+		},
+		Border: []excelize.Border{
+			{
+				Type:  "top",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "bottom",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "left",
+				Color: "000000",
+				Style: 1,
+			},
+			{
+				Type:  "right",
+				Color: "000000",
+				Style: 1,
+			},
+		},
+	})
 
 	// Leer datos del excel de control
 	// f, err := excelize.OpenFile("../templates/GASTRONOMICOS.xlsx")
@@ -97,6 +228,57 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 	// 	if rowData.C
 	// }
+
+	if tipo_ejecucion == "control" {
+		// Escribir verticalmente encabezados en el Excel
+		for i, registro := range data {
+			for j, campo := range registro.Columnas {
+
+				cellKey := "B" + strconv.Itoa(j+2)
+				fileNuevo.SetCellValue(sheetName, cellKey, campo)
+				fileNuevo.SetCellStyle(sheetName, cellKey, cellKey, styleEncabezadoControl)
+
+				value := registro.Valores[strings.ToUpper(campo)]
+				colLetter := ObtenerLetra(i + 3)
+				cellValue := colLetter + strconv.Itoa(j+2)
+
+				if strings.ToUpper(campo) == "PERIODOLIQ" {
+					value = formatearPeriodoLiq(value.(string))
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleColumnaControl)
+				}
+
+				switch v := value.(type) {
+				case []uint8:
+					valueStr := string(v)
+					valueFloat, err := strconv.ParseFloat(valueStr, 64)
+					if err != nil {
+						fmt.Println(err.Error())
+					}
+					fileNuevo.SetCellValue(sheetName, cellValue, valueFloat)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleMoneda)
+				case string:
+					fileNuevo.SetCellValue(sheetName, cellValue, v)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleAligned)
+				case int64:
+					fileNuevo.SetCellValue(sheetName, cellValue, v)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleAligned)
+				default:
+					fileNuevo.SetCellValue(sheetName, cellValue, "defValue")
+					fmt.Printf("Tipo de dato en %s: %T\n", campo, value)
+
+				}
+
+			}
+		}
+
+		// Guardar archivo
+		if err := fileNuevo.SaveAs(nombreSalida); err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", err
+		}
+
+		return nombreSalida, nil
+	}
 
 	if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
 		// Escribir verticalmente encabezados en el Excel
@@ -252,7 +434,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	}
 
 	// Guardar archivo
-	if err = fileNuevo.SaveAs(nombreSalida); err != nil {
+	if err := fileNuevo.SaveAs(nombreSalida); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", err
 	}
@@ -319,4 +501,19 @@ func formatearFecha(s string, formato string) string {
 		strFinal = partes[1] + "/" + partes[0]
 	}
 	return strFinal
+}
+
+func formatearPeriodoLiq(s string) string {
+	strMes := s[4:]
+	intMes, err := strconv.Atoi(strMes)
+	if err != nil {
+		fmt.Println("Error en formatearPeriodoLiq: ", err.Error())
+	}
+	meses := []string{"ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"}
+	for i, mes := range meses {
+		if (intMes - 1) == i {
+			return fmt.Sprintf("%s-%s", mes, s[:4])
+		}
+	}
+	return s
 }

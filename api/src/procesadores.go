@@ -33,13 +33,13 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	var query string
 	var queryFinal string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
-	if proceso.Select_control != "" {
-		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
-	} else {
-		var queryReplace string
-		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
-		queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
-	}
+	// if proceso.Select_control != "" {
+	// 	queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
+	// } else {
+	var queryReplace string
+	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
+	queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
+	// }
 	proceso.Query = queryFinal
 
 	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "salida")
@@ -95,7 +95,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
 		plantilla := "../templates/" + proceso.Archivo_modelo
 
-		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla)
+		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "salida")
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -171,13 +171,13 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	var query string
 	var queryFinal string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
-	if proceso.Select_control != "" {
-		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
-	} else {
-		var queryReplace string
-		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
-		queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
-	}
+	// if proceso.Select_control != "" {
+	// 	queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
+	// } else {
+	var queryReplace string
+	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
+	queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
+	// }
 	proceso.Query = queryFinal
 
 	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "nomina")
@@ -240,7 +240,7 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
 	plantilla := "../templates/" + proceso.Archivo_nomina
 
-	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla)
+	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "nomina")
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -360,7 +360,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
 	plantilla := "../templates/" + proceso.Archivo_control
 
-	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla)
+	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "control")
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
