@@ -1,6 +1,6 @@
 import { prefijoURL } from './variables.js';
 
-$('#menu').load('/static/menu.html', function() {
+$('#menu').load('/static/menu.html', function () {
     $('#titulo').append('Modelos');
 });
 
@@ -30,77 +30,68 @@ $.ajax({
 });
 
 // Select de empresa
-$("#conv").change(function () {
-    var convId = $("#conv").val();
-
-    $.ajax({
-        url: prefijoURL + `/empresas/${convId}`,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            $("#emp").empty();
-            var selOption = document.createElement("option");
-            selOption.value = '';
-            selOption.textContent = 'Todas';
-            $("#emp").append(selOption);
-            if (data && data.length > 0) {
-                data.forEach(empresa => {
-                    const option = document.createElement("option");
-                    option.value = empresa.id;
-                    option.textContent = empresa.nombre;
-                    $("#emp").append(option);
-                });
-            } else {
-                console.log('No se recibieron datos del servidor.');
-            }
-        },
-        error: function (error) {
-            console.error('Error en la búsqueda:', error);
+$.ajax({
+    url: prefijoURL + `/empresas`,
+    method: 'GET',
+    dataType: 'json',
+    success: function (data) {
+        $("#emp").empty();
+        var selOption = document.createElement("option");
+        selOption.value = '';
+        selOption.textContent = 'Todas';
+        $("#emp").append(selOption);
+        if (data && data.length > 0) {
+            data.forEach(empresa => {
+                const option = document.createElement("option");
+                option.value = empresa.id;
+                option.textContent = empresa.nombre;
+                $("#emp").append(option);
+            });
+        } else {
+            console.log('No se recibieron datos del servidor.');
         }
-    });
+    },
+    error: function (error) {
+        console.error('Error en la búsqueda:', error);
+    }
 });
 
 // Select de concepto y tipo
-$("#emp").change(function () {
-    var convId = $("#conv").val();
-    var empId = $("#emp").val();
-
-    $.ajax({
-        url: prefijoURL + `/conceptos/${convId}/${empId}`,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            $("#conc").empty();
-            $("#tipo").empty();
-            var selOption = document.createElement("option");
-            selOption.value = '';
-            selOption.textContent = 'Todos';
-            $("#conc").append(selOption);
-            var selOption2 = document.createElement("option");
-            selOption2.value = '';
-            selOption2.textContent = 'Todos';
-            $("#tipo").append(selOption2);
-            if (data) {
-                data.Conceptos.forEach(concepto => {
-                    const option = document.createElement("option");
-                    option.value = concepto.Id;
-                    option.textContent = concepto.Nombre;
-                    $("#conc").append(option);
-                });
-                data.Tipos.forEach(tipo => {
-                    const option = document.createElement("option");
-                    option.value = tipo.Id;
-                    option.textContent = tipo.Nombre;
-                    $("#tipo").append(option);
-                });
-            } else {
-                console.log('No se recibieron datos del servidor.');
-            }
-        },
-        error: function (error) {
-            console.error('Error en la búsqueda:', error);
+$.ajax({
+    url: prefijoURL + `/conceptos`,
+    method: 'GET',
+    dataType: 'json',
+    success: function (data) {
+        $("#conc").empty();
+        $("#tipo").empty();
+        var selOption = document.createElement("option");
+        selOption.value = '';
+        selOption.textContent = 'Todos';
+        $("#conc").append(selOption);
+        var selOption2 = document.createElement("option");
+        selOption2.value = '';
+        selOption2.textContent = 'Todos';
+        $("#tipo").append(selOption2);
+        if (data) {
+            data.Conceptos.forEach(concepto => {
+                const option = document.createElement("option");
+                option.value = concepto.Id;
+                option.textContent = concepto.Nombre;
+                $("#conc").append(option);
+            });
+            data.Tipos.forEach(tipo => {
+                const option = document.createElement("option");
+                option.value = tipo.Id;
+                option.textContent = tipo.Nombre;
+                $("#tipo").append(option);
+            });
+        } else {
+            console.log('No se recibieron datos del servidor.');
         }
-    });
+    },
+    error: function (error) {
+        console.error('Error en la búsqueda:', error);
+    }
 });
 
 // Botón buscar
@@ -179,7 +170,7 @@ var llenarTabla = function (data) {
         $(id).toggleClass("collapse");
     });
 
-    $('.form-check-input').change(function() {
+    $('.form-check-input').change(function () {
         var json = {
             id: Number($(this).val()),
             vigente: $(this).is(':checked')
