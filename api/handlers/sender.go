@@ -23,7 +23,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			datos.Fecha = src.FormatoFecha(datos.Fecha)
 			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
 
-			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina, em.archivo_control, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
+			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN datos.empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
 			// fmt.Println("Query modelos: ", queryModelos)
 			stmt, err := db.Prepare(queryModelos)
 			if err != nil {
@@ -44,7 +44,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				var proceso modelos.Proceso
 				var estado sql.NullString
 				var select_control sql.NullString
-				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina, &proceso.Archivo_control, &estado, &proceso.Id_query, &select_control)
+				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)

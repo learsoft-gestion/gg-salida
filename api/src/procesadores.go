@@ -358,9 +358,9 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	// Ruta completa del archivo
 	nombreControl += ".xlsx"
 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
-	plantilla := "../templates/" + proceso.Archivo_control
+	// plantilla := "../templates/" + proceso.Archivo_control
 
-	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "control")
+	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, "plantilla", "control")
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}

@@ -23,7 +23,6 @@ type Modelo struct {
 	Archivo_modelo   string
 	Vigente          string
 	Filtro_having    string
-	Archivo_control  string
 	Archivo_nomina   string
 	Select_control   string
 }
@@ -42,7 +41,6 @@ type Proceso struct {
 	Query           string
 	Archivo_modelo  string
 	Filtro_having   string
-	Archivo_control string
 	Archivo_nomina  string
 	Id_procesado    int
 	Columna_estado  string
