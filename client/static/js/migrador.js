@@ -195,14 +195,14 @@ $(document).ready(function () {
             };
 
             $.ajax({
-                url: prefijoURL + `/archivos`,
+                url: prefijoURL + `/migrador/archivos`,
                 method: 'POST',
                 dataType: 'json',
                 data: JSON.stringify(json),
                 success: function (data) {
                     if (data) {
                         Swal.fire({
-                            title: "Éxito!",
+                            title: "Éxito",
                             text: data.mensaje,
                             icon: "success"
                         });
