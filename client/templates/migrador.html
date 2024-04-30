@@ -8,8 +8,7 @@
     <title>Proceso de Archivos</title>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -18,6 +17,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script type="module" src="/static/js/migrador.js"></script>
     <link rel="stylesheet" href="/static/css/migrador.css">
@@ -28,51 +28,63 @@
 
     <div class="container-fluid">
         <div class="row bg-dark bg-gradient text-white position-fixed" id="filtros">
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col">
-                        <label for="fechaInicio">Fecha desde:</label>
-                        <input type="text" id="fechaInicio" class="form-control flatpickr">
-                    </div>
-                    <div class="col">
-                        <label for="fechaFin">Fecha hasta:</label>
-                        <input type="text" id="fechaFin" class="form-control flatpickr">
-                    </div>
-                    <div class="col">
-                        <label for="idDesde">ID desde:</label>
-                        <input type="text" id="idDesde" class="form-control" placeholder="ID número desde">
-                    </div>
-                    <div class="col">
-                        <label for="idHasta">ID hasta:</label>
-                        <input type="text" id="idHasta" class="form-control" placeholder="ID número hasta">
-                    </div>
-                    
-                </div>
+            <div class="col form-group">
+                <label for="empresa">Empresa</label>
+                <select id="emp" class="form-control">
+                    <option value="-1" selected>Todas</option>
+                </select>
             </div>
-            <div class="col-md-4" style="display: grid;">
-                <div class="row">
-                    <div class="col">
-                        <label>Procesado:</label><br>
-                        <input type="checkbox" id="procesadoTrue"> Sí
-                        <input type="checkbox" id="procesadoFalse"> No
-                    </div>
-                    <div class="col">
-                        <label>Archivo Encontrado:</label><br>
-                        <input type="checkbox" id="correctoTrue"> Sí
-                        <input type="checkbox" id="correctoFalse"> No
-                    </div>
-                    <div class="col-auto btn-buscar">
-                        <button type="button" class="btn btn-outline-light" id="btnBuscar" title="Buscar">
-                            <i class="material-symbols-outlined">search</i>
-                        </button>
-                    </div>
-                </div>
+            <div class="col form-group">
+                <label for="convenio">Convenio</label>
+                <select id="conv" class="form-control">
+                    <option value="-1" selected>Todos</option>
+                </select>
+            </div>
+            <div class="col form-group">
+                <label for="periodoDesde">Período</label>
+                <select id="periodo" class="form-control">
+                    <option value="-1" selected>Todos</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="fechaInicio">Procesado D</label>
+                <input type="text" id="fechaInicio" class="form-control flatpickr">
+            </div>
+            <div class="col">
+                <label for="fechaFin">Procesado H</label>
+                <input type="text" id="fechaFin" class="form-control flatpickr">
+            </div>
+            <div class="col">
+                <label for="idDesde">ID desde</label>
+                <input type="text" id="idDesde" class="form-control" placeholder="ID número desde">
+            </div>
+            <div class="col">
+                <label for="idHasta">ID hasta</label>
+                <input type="text" id="idHasta" class="form-control" placeholder="ID número hasta">
+            </div>
+            <div class="col">
+                <label>Procesado</label><br>
+                <input type="checkbox" id="procesadoTrue"> Sí
+                <input type="checkbox" id="procesadoFalse"> No
+            </div>
+            <div class="col">
+                <label>Archivo Encontrado</label><br>
+                <input type="checkbox" id="correctoTrue"> Sí
+                <input type="checkbox" id="correctoFalse"> No
+            </div>
+            <div class="col-auto btn-buscar">
+                <button type="button" class="btn btn-outline-light" id="btnBuscar" title="Buscar">
+                    <i class="material-symbols-outlined">search</i>
+                </button>
             </div>
         </div>
         <table class="table table-striped" id="tablaDatos">
             <thead>
                 <tr>
                     <th>ID Número</th>
+                    <th>Empresa</th>
+                    <th>Período</th>
+                    <th>Convenio</th>
                     <th>Procesado</th>
                     <th>Fecha Procesado</th>
                     <th>Archivo Entrada</th>

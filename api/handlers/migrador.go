@@ -51,6 +51,9 @@ func Migrador(db *sql.DB) http.HandlerFunc {
 func getQueryExtArchivos(r *http.Request) (string, error) {
 	query := `SELECT * FROM extractor.ext_archivos WHERE 1 = 1 `
 
+	empresa := r.FormValue("empresa")
+	convenio := r.FormValue("convenio")
+	periodo := r.FormValue("periodo")
 	idDesde := r.FormValue("idDesde")
 	idHasta := r.FormValue("idHasta")
 	procesado := r.FormValue("procesado")
@@ -58,6 +61,15 @@ func getQueryExtArchivos(r *http.Request) (string, error) {
 	fechaHasta := r.FormValue("fechaHasta")
 	descripcion := r.FormValue("descripcion")
 
+	if empresa != "" {
+		query += fmt.Sprintf(" and empresa = '%s' ", empresa)
+	}
+	if convenio != "" {
+		query += fmt.Sprintf(" and convenio = '%s' ", convenio)
+	}
+	if periodo != "" {
+		query += fmt.Sprintf(" and periodo = '%s' ", periodo)
+	}
 	if idDesde != "" && idHasta != "" {
 		idDesde, err1 := strconv.Atoi(idDesde)
 		idHasta, err2 := strconv.Atoi(idHasta)
