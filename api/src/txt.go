@@ -18,7 +18,7 @@ type Formato struct {
 func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string) (string, error) {
 	// Leer archivo de plantilla
 	var plantilla modelos.Plantilla
-	path := "../templates/" + proceso.Archivo_modelo
+	path := "./templates/" + proceso.Archivo_modelo
 	file, err := os.Open(path)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
@@ -104,13 +104,19 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 						value += string(v)
 					} else if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) == "coma" {
 						value += strings.Replace(string(v), ".", ",", -1)
-					} else if strings.ToLower(campo.Formato) == "condicional" {
+					} else if strings.ToLower(campo.Tipo) == "condicional" {
 
+						condiciones := strings.Split(campo.Formato, "/")
 						if string(v) != "0.00" {
-							value = campo.Option1
+							value = condiciones[0]
 						} else {
-							value = campo.Option2
+							value = condiciones[1]
 						}
+						// if string(v) != "0.00" {
+						// 	value = campo.Option1
+						// } else {
+						// 	value = campo.Option2
+						// }
 					}
 				default:
 					value = fmt.Sprintf("##%s##", campo.Nombre)

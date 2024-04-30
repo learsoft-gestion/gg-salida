@@ -1,0 +1,33 @@
+{
+    "cabecera": {
+        "formato": "variable",
+        "separador": ";"
+    },
+    "campo": [
+        {
+            "nombre": "cuil",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "nombre": "periodoLiq",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "apellidoynombre",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "total_870",
+            "tipo": "condicional",
+            "formato": "2/5"
+        },
+        {
+            "nombre": "bruto_imp",
+            "tipo": "float",
+            "formato": "punto"
+        }
+    ]
+}

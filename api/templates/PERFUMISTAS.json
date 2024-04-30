@@ -1,0 +1,116 @@
+{
+    "campo": [
+        {
+            "titulo": "Legajo",
+            "nombre": "numero_legajo",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Apellido y Nombre",
+            "nombre": "apellidoynombre",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "C",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "RAZON SOCIAL - EMPLEADOR",
+            "nombre": "cliente",
+            "columna": "D",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Lugar de trabajo",
+            "nombre": "laboral_localidad",
+            "columna": "E",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "CATEGORIA",
+            "nombre": "categoria",
+            "columna": "F",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "SUELDO BRUTO",
+            "nombre": "bruto_imp",
+            "columna": "G",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "SUELDO BASICO",
+            "nombre": "total_basico",
+            "columna": "H",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "ANTIGÜEDAD",
+            "nombre": "",
+            "columna": "I",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "Cuota Sindical $",
+            "nombre": "",
+            "columna": "J",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "Cuota Solidaria $",
+            "nombre": "total_871",
+            "columna": "K",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "Contribucion Empresa $",
+            "nombre": "total_1200",
+            "columna": "L",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "Financiación Proveeduría $",
+            "nombre": "",
+            "columna": "M",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "Vacaciones",
+            "nombre": "",
+            "columna": "O",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "SAC",
+            "nombre": "TOTAL_SAC",
+            "columna": "N",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "Observaciones",
+            "nombre": "",
+            "columna": "P",
+            "tipo": "fijo",
+            "formato": ""
+        }
+    ]
+}

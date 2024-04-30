@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>ARTAZA MARCOS ESTEBAN</Nombre>
+		<Cuil>20425857097</Cuil>
+		<RemuneracionBruta>943664.34</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>42585709</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>BARRETO GONZALEZ MELINA GISELLE</Nombre>
+		<Cuil>27413176595</Cuil>
+		<RemuneracionBruta>1196637.34</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>F</Sexo>
+		<NroDoc>41317659</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>BORBA RAMIREZ DAN ALEJANDRO</Nombre>
+		<Cuil>20332880641</Cuil>
+		<RemuneracionBruta>1225866.52</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>33288064</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>CEROVAZ CARLOS ALAN</Nombre>
+		<Cuil>20403079120</Cuil>
+		<RemuneracionBruta>1261145.14</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>40307912</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>CERVIN JUAN MANUEL</Nombre>
+		<Cuil>23289417109</Cuil>
+		<RemuneracionBruta>975202.80</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>28941710</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>CHAMORRO JORGE DANIEL</Nombre>
+		<Cuil>20325338114</Cuil>
+		<RemuneracionBruta>605800.87</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>32533811</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>ELLEMBERG AGUSTIN NAIM</Nombre>
+		<Cuil>23428298314</Cuil>
+		<RemuneracionBruta>908491.15</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>F</Sexo>
+		<NroDoc>42829831</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>JUAREZ JOSE LUIS</Nombre>
+		<Cuil>20352716503</Cuil>
+		<RemuneracionBruta>217761.07</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>35271650</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>PUYOL FABIAN ENRIQUE</Nombre>
+		<Cuil>20231521357</Cuil>
+		<RemuneracionBruta>589815.30</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>23152135</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>SCHLING BRAIAN DAVID</Nombre>
+		<Cuil>20359050543</Cuil>
+		<RemuneracionBruta>1167967.61</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>35905054</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+</Empleados>

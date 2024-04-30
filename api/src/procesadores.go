@@ -69,7 +69,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	var nombreSalida string
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
-	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, proceso.Nombre)
+	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, proceso.Nombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
@@ -93,7 +93,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		// Ruta completa del archivo
 		nombreSalida += ".xlsx"
 		rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
-		plantilla := "../templates/" + proceso.Archivo_modelo
+		plantilla := "./templates/" + proceso.Archivo_modelo
 
 		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "salida")
 		if err != nil {
@@ -216,7 +216,7 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
 	procesoNombre := proceso.Nombre + "-Nomina"
-	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
+	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
@@ -238,7 +238,7 @@ func ProcesadorNomina(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	// Ruta completa del archivo
 	nombreControl += ".xlsx"
 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
-	plantilla := "../templates/" + proceso.Archivo_nomina
+	plantilla := "./templates/" + proceso.Archivo_nomina
 
 	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "nomina")
 	if err != nil {
@@ -336,7 +336,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
 	procesoNombre := proceso.Nombre + "-Control"
-	rutaCarpeta := filepath.Join(directorioActual, "..", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
+	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
@@ -358,7 +358,7 @@ func ProcesadorControl(proceso modelos.Proceso, fecha string, fecha2 string, ver
 	// Ruta completa del archivo
 	nombreControl += ".xlsx"
 	rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
-	// plantilla := "../templates/" + proceso.Archivo_control
+	// plantilla := "./templates/" + proceso.Archivo_control
 
 	name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, "plantilla", "control")
 	if err != nil {

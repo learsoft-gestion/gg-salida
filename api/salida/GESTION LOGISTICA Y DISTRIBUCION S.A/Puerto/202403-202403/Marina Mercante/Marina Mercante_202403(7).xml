@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>CISNEROS CLEMENTE GABRIEL</Nombre>
+		<Cuil>20328931452</Cuil>
+		<RemuneracionBruta>1604078.86</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>32893145</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>COSTA GABRIEL ALBERTO</Nombre>
+		<Cuil>20279344759</Cuil>
+		<RemuneracionBruta>1278400.12</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>27934475</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>COSTA MAXIMILIANO ADRIAN</Nombre>
+		<Cuil>20252316346</Cuil>
+		<RemuneracionBruta>1358168.82</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>25231634</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>FARIAS NICOLAS EZEQUIEL</Nombre>
+		<Cuil>20423117606</Cuil>
+		<RemuneracionBruta>1338476.50</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>42311760</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>GOMEZ ALAN EZEQUIEL</Nombre>
+		<Cuil>20412014066</Cuil>
+		<RemuneracionBruta>1261513.65</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>41201406</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>GONZALEZ MARTIN ARIEL</Nombre>
+		<Cuil>20281194330</Cuil>
+		<RemuneracionBruta>1150849.78</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>28119433</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>LOPEZ ARRUA ANGEL EDUARDO</Nombre>
+		<Cuil>20926818776</Cuil>
+		<RemuneracionBruta>1444116.62</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>92681877</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>NAVARRO NICOLAS EDUARDO</Nombre>
+		<Cuil>20417860690</Cuil>
+		<RemuneracionBruta>1257625.98</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>41786069</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>PANOZZO ZUBIRIA NICOLAS</Nombre>
+		<Cuil>20422036610</Cuil>
+		<RemuneracionBruta>1686489.31</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>42203661</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>PEÑALOZA LEANDRO JULIAN</Nombre>
+		<Cuil>23378191319</Cuil>
+		<RemuneracionBruta>1252854.56</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>37819131</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>PIATTI GUSTAVO GABRIEL</Nombre>
+		<Cuil>20316835741</Cuil>
+		<RemuneracionBruta>1325400.30</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>31683574</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>PIGHIN TOBIAS LEANDRO</Nombre>
+		<Cuil>20376994733</Cuil>
+		<RemuneracionBruta>1744531.16</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>37699473</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>SUAREZ FEDULO ENZO DANIEL</Nombre>
+		<Cuil>20258391951</Cuil>
+		<RemuneracionBruta>1432978.47</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>25839195</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+</Empleados>

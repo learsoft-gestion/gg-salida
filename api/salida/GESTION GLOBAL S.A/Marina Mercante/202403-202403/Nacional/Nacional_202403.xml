@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>ALDERETE BENITEZ WILSON HEVERT</Nombre>
+		<Cuil>20941738487</Cuil>
+		<RemuneracionBruta>2222660.17</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>94173848</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>BESSON MENGEN MARCO ANTONIO</Nombre>
+		<Cuil>20348454677</Cuil>
+		<RemuneracionBruta>195840.02</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>34845467</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>CASTAGNINO EZEQUIEL</Nombre>
+		<Cuil>20289846191</Cuil>
+		<RemuneracionBruta>2134991.12</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>28984619</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>CESPEDES MEDINA PAUL OSCAR</Nombre>
+		<Cuil>20227500787</Cuil>
+		<RemuneracionBruta>224604.33</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>22750078</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>CORDIDO ARIEL ALBERTO</Nombre>
+		<Cuil>20253620774</Cuil>
+		<RemuneracionBruta>2255738.81</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>25362077</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>EIRIZ FEDERICO AGUSTIN</Nombre>
+		<Cuil>20385549394</Cuil>
+		<RemuneracionBruta>2248074.07</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>38554939</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>FLORES CHRISTIAN DAMIAN</Nombre>
+		<Cuil>20250607270</Cuil>
+		<RemuneracionBruta>1933829.69</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>25060727</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>FRIAS AGUSTIN DANIEL</Nombre>
+		<Cuil>20430148584</Cuil>
+		<RemuneracionBruta>1902939.02</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>43014858</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>GAFARDO JAVIER ERNESTO</Nombre>
+		<Cuil>23296004499</Cuil>
+		<RemuneracionBruta>1927863.81</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>29600449</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>GATTI ALEJANDRO ARIEL</Nombre>
+		<Cuil>20390997168</Cuil>
+		<RemuneracionBruta>2166751.18</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>39099716</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>GUEVARA CANOZA MATIAS ALEJANDRO</Nombre>
+		<Cuil>23302108889</Cuil>
+		<RemuneracionBruta>2228576.31</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>30210888</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>LOZA RODRIGO ERNESTO</Nombre>
+		<Cuil>20417053442</Cuil>
+		<RemuneracionBruta>1956056.13</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>41705344</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>LOZA TOMASELLI PABLO MARCELO</Nombre>
+		<Cuil>20254007286</Cuil>
+		<RemuneracionBruta>0.00</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>25400728</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>MAIDANA NICOMEDDES ANDRES GASTON</Nombre>
+		<Cuil>24276160237</Cuil>
+		<RemuneracionBruta>2255738.81</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>27616023</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>MIGUENS GASTON MAXIMILIANO</Nombre>
+		<Cuil>20296617548</Cuil>
+		<RemuneracionBruta>2025331.60</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>29661754</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>ORREGO DIEGO HERNAN</Nombre>
+		<Cuil>23319728759</Cuil>
+		<RemuneracionBruta>2017128.70</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>31972875</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>QUINTANA HORACIO AUGUSTO</Nombre>
+		<Cuil>20296473341</Cuil>
+		<RemuneracionBruta>2103231.73</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>29647334</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>ROZENCWAIG BRAULIO ALAN</Nombre>
+		<Cuil>20335560273</Cuil>
+		<RemuneracionBruta>2228576.31</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>33556027</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>RUIZ CARLOS ALBERTO</Nombre>
+		<Cuil>20378376719</Cuil>
+		<RemuneracionBruta>2248074.07</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>37837671</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>SALINA MARCOS EDUARDO</Nombre>
+		<Cuil>20328782589</Cuil>
+		<RemuneracionBruta>134171.62</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>32878258</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>SUAREZ ALEXIS JOAQUIN</Nombre>
+		<Cuil>20409175105</Cuil>
+		<RemuneracionBruta>2228576.31</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>40917510</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>TATASCIORE PATRICIO MARTIN</Nombre>
+		<Cuil>20389309762</Cuil>
+		<RemuneracionBruta>2680641.58</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>38930976</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>TORREZ CUETO CESAR JAIME</Nombre>
+		<Cuil>20273864637</Cuil>
+		<RemuneracionBruta>407100.77</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>27386463</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>ZARATE CESAR JAVIER</Nombre>
+		<Cuil>20357193703</Cuil>
+		<RemuneracionBruta>2142469.84</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>35719370</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+</Empleados>

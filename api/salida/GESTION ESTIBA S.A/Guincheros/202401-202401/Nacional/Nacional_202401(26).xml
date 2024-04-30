@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>CASTILLO CRISTIAN DANIEL</Nombre>
+		<Cuil>20324485407</Cuil>
+		<RemuneracionBruta>1530132.48</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>32448540</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>CERVIN JUAN MANUEL</Nombre>
+		<Cuil>23289417109</Cuil>
+		<RemuneracionBruta>1032559.00</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>28941710</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>PUCHETA GERARDO RAFAEL</Nombre>
+		<Cuil>20306672097</Cuil>
+		<RemuneracionBruta>2451678.81</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>30667209</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>PUYOL FABIAN ENRIQUE</Nombre>
+		<Cuil>20231521357</Cuil>
+		<RemuneracionBruta>1267551.49</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>23152135</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>SILVA TOMAS GONZALO</Nombre>
+		<Cuil>20394854884</Cuil>
+		<RemuneracionBruta>841879.61</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>39485488</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>SORIA CARLOS ANDRES</Nombre>
+		<Cuil>20386602264</Cuil>
+		<RemuneracionBruta>2352358.52</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>38660226</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+	<Empleado>
+		<Nombre>TORRES CARLOS PAULO</Nombre>
+		<Cuil>20371171011</Cuil>
+		<RemuneracionBruta>2332889.83</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>37117101</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+</Empleados>
