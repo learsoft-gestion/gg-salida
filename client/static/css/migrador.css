@@ -69,3 +69,28 @@ th i.material-icons {
     display: none;
     z-index: 1;
 }
+
+.procesar-button {
+    background-color: lightslategray; /* Color de fondo */
+    border: none; /* Sin borde */
+    color: white; /* Color del texto */
+    padding: 4px 5px; /* Espaciado interno */
+    font-size: 14px; /* Tamaño de fuente */
+    margin: -3px 2px; /* Margen */
+    border-radius: 4px; /* Bordes redondeados */
+    position: relative;
+    top: -4px;
+}
+
+.procesar-button:hover {
+    background-color: rgb(61, 70, 78); /* Cambiar color de fondo al pasar el mouse */
+}
+
+.procesar-btn {
+    padding: 0;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: -7px;
+    margin: -2px 3px;
+}

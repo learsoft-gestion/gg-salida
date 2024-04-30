@@ -152,7 +152,6 @@ var llenarTabla = function (data) {
         row.append(`<td>${item.Tipo}</td>`);
         row.append(`<td>${item.Nombre}</td>`);
         row.append(`<td><button class="btn btn-default btn-sm openOculto" data-target=".${item.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`);
-        row.append(`<td>${item.Archivo_control}</td>`);
         row.append(`<td>${item.Archivo_modelo}</td>`);
         row.append(`<td>${item.Archivo_nomina}</td>`);
         row.append(`<td><div class="form-check form-switch"><input type="checkbox" value="${item.Id_modelo}" class="form-check-input" ${item.Vigente === "true" ? "checked" : ""}></div></td>`);
