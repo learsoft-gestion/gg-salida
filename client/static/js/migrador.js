@@ -189,10 +189,16 @@ $(document).ready(function () {
         });
 
         $('.procesar-btn').click(function() {
+
+            var json = {
+                Id: Number($(this).val()),
+            };
+
             $.ajax({
-                url: prefijoURL + `/archivos/${$(this).val()}`,
-                method: 'PATCH',
+                url: prefijoURL + `/archivos`,
+                method: 'POST',
                 dataType: 'json',
+                data: JSON.stringify(json),
                 success: function (data) {
                     if (data) {
                         Swal.fire({

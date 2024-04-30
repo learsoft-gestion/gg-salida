@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"Nueva/config"
+	"Nueva/modelos"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -10,8 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type ExtArchivo struct {
@@ -34,11 +34,19 @@ func ProcesarArchivo(db *sql.DB) http.HandlerFunc {
 			log.Fatal(err)
 		}
 
-		vars := mux.Vars(r)
-		idNumero := vars["idNumero"]
+		// Traer body
+		var datos modelos.Option
+		err = json.NewDecoder(r.Body).Decode(&datos)
+		if err != nil {
+			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
+			return
+		}
 
-		query := fmt.Sprint("SELECT id_numero, procesado, fecha_procesado, archivo_entrada, archivo_final, empresa, periodo, convenio, estado, descripcion FROM extractor.ext_archivos WHERE id_numero = $1")
-		row := db.QueryRow(query, idNumero)
+		// vars := mux.Vars(r)
+		// idNumero := vars["idNumero"]
+
+		query := "SELECT id_numero, procesado, fecha_procesado, archivo_entrada, archivo_final, empresa, periodo, convenio, estado, descripcion FROM extractor.ext_archivos WHERE id_numero = $1"
+		row := db.QueryRow(query, datos.Id)
 
 		var extArchivo ExtArchivo
 		err = row.Scan(&extArchivo.IdNumero, &extArchivo.Procesado, &extArchivo.FechaProcesado, &extArchivo.ArchivoEntrada,

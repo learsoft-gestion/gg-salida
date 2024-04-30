@@ -24,6 +24,19 @@ func main() {
 	}
 
 	router := mux.NewRouter()
+	// Configura el middleware CORS
+	// corsHandler := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"},
+	// 	AllowedHeaders:   []string{"Origin", "Content-Length", "Content-Type"},
+	// 	AllowCredentials: false,
+	// 	MaxAge:           12000,
+	// })
+	// Agrega un manejador OPTIONS global
+	router.Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	router.Use(corsHandler)
 
 	// // Carga de archivos estaticos
 	// router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../client/static"))))
@@ -51,14 +64,12 @@ func main() {
 	router.HandleFunc("/migrador/empresas", handlers.MigradorGetEmpresas(db))
 	router.HandleFunc("/migrador/convenios", handlers.MigradorGetConvenios(db))
 	router.HandleFunc("/migrador/periodos", handlers.MigradorGetPeriodos(db))
-	router.HandleFunc("/migrador/archivos/{id_numero}", handlers.ProcesarArchivo(db))
+	router.HandleFunc("/migrador/archivos", handlers.ProcesarArchivo(db))
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),
 		Handler: router,
 	}
-
-	router.Use(corsHandler)
 
 	fmt.Println("Listening at ", os.Getenv("SV_ADDR"))
 	if err := srv.ListenAndServe(); err != nil {
@@ -69,6 +80,7 @@ func main() {
 // Middleware para manejar CORS
 func corsHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Request Reached")
 		// Permitir solicitudes desde cualquier origen
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -77,6 +89,12 @@ func corsHandler(next http.Handler) http.Handler {
 
 		// Permitir ciertos encabezados
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		// Si la solicitud es de tipo OPTIONS, responder con éxito y terminar la cadena de middleware
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
 		// Continuar con el siguiente manejador
 		next.ServeHTTP(w, r)
