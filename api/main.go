@@ -80,7 +80,7 @@ func main() {
 // Middleware para manejar CORS
 func corsHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Request Reached")
+
 		// Permitir solicitudes desde cualquier origen
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 

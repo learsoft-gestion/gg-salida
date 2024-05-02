@@ -407,6 +407,13 @@
             "columna": "BE",
             "tipo": "moneda",
             "formato": ""
+        },
+        {
+            "titulo": "Tipo de empleado",
+            "nombre": "tipo_empleado",
+            "columna": "BF",
+            "tipo": "string",
+            "formato": ""
         }
     ]
 }

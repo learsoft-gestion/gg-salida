@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>MORLINO NICOLAS</Nombre>
+		<Cuil>23418023619</Cuil>
+		<RemuneracionBruta>304232.50</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>41802361</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>VAZQUEZ MARIO ALBERTO</Nombre>
+		<Cuil>23392089209</Cuil>
+		<RemuneracionBruta>386572.47</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>39208920</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+</Empleados>

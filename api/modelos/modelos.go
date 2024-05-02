@@ -3,28 +3,31 @@ package modelos
 import "database/sql"
 
 type Modelo struct {
-	Id_modelo        int
-	Id_empresa       int
-	Id_concepto      string
-	Id_convenio      int
-	Id_tipo          string
-	Empresa          string
-	EmpReducido      string
-	Concepto         string
-	Convenio         string
-	Tipo             string
-	Nombre           string
-	Filtro_convenio  string
-	Filtro_personas  string
-	Filtro_recibos   string
-	Formato_salida   string
-	Ultima_ejecucion string
-	Query            string
-	Archivo_modelo   string
-	Vigente          string
-	Filtro_having    string
-	Archivo_nomina   string
-	Select_control   string
+	Id_modelo           int
+	Id_empresa          int
+	Id_concepto         string
+	Id_convenio         int
+	Id_tipo             string
+	Empresa             string
+	EmpReducido         string
+	Concepto            string
+	Convenio            string
+	Tipo                string
+	Nombre              string
+	Filtro_convenio     string
+	Filtro_personas     string
+	Filtro_recibos      string
+	Formato_salida      string
+	Ultima_ejecucion    string
+	Query               string
+	Ruta_archivo_modelo string
+	Archivo_modelo      string
+	Vigente             string
+	Filtro_having       string
+	Ruta_archivo_nomina string
+	Archivo_nomina      string
+	Columna_estado      string
+	Select_control      string
 }
 
 type Proceso struct {

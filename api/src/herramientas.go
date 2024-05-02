@@ -36,6 +36,10 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", proceso.Filtro_recibos, -1)
 	} else {
 		parts := strings.Split(queryFinal, "$FILTRO_RECIBOS$")
+		if len(parts) == 1 && tipo_ejecucion == "salida" {
+			fmt.Println("QUERY: ", queryFinal)
+			fmt.Println("Proceso Query: ", proceso.Query)
+		}
 		queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
 		// queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", "", -1)
 	}

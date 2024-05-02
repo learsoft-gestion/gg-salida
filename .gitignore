@@ -6,3 +6,7 @@ config.json
 
 # Ignorar dotenv
 .env
+
+/client/Dockerfile
+/client/docker-compose.yml
+/client/.github

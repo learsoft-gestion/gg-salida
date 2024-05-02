@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>BARRETO GONZALEZ MELINA GISELLE</Nombre>
+		<Cuil>27413176595</Cuil>
+		<RemuneracionBruta>1414313.56</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>F</Sexo>
+		<NroDoc>41317659</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>BORBA RAMIREZ DAN ALEJANDRO</Nombre>
+		<Cuil>20332880641</Cuil>
+		<RemuneracionBruta>1357866.97</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>33288064</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>CEROVAZ CARLOS ALAN</Nombre>
+		<Cuil>20403079120</Cuil>
+		<RemuneracionBruta>1423507.94</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>M</Sexo>
+		<NroDoc>40307912</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+	<Empleado>
+		<Nombre>ELLEMBERG AGUSTIN NAIM</Nombre>
+		<Cuil>23428298314</Cuil>
+		<RemuneracionBruta>475138.75</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<AporteNoRemunerativo>0.00</AporteNoRemunerativo>
+		<Sexo>F</Sexo>
+		<NroDoc>42829831</NroDoc>
+		<TipDoc>DU</TipDoc>
+		<Categoria>1</Categoria>
+	</Empleado>
+</Empleados>

@@ -40,9 +40,17 @@ func ProcesadosNomina(db *sql.DB, id_proceso int, cant_registros int, nombre_nom
 	fecha_completa := time.Now()
 	fecha_actual := fecha_completa.Format("2006-01-02 15:04:05")
 
-	_, err := db.Exec("update extractor.ext_procesados ep set cant_registros_nomina = $1, archivo_nomina = $2, fecha_ejecucion = $3 where ep.id_proceso = $4", cant_registros, nombre_nomina, fecha_actual, id_proceso)
+	res, err := db.Exec("update extractor.ext_procesados ep set cant_registros_nomina = $1, archivo_nomina = $2, fecha_ejecucion = $3 where ep.id_proceso = $4", cant_registros, nombre_nomina, fecha_actual, id_proceso)
 	if err != nil {
 		return err
+	} else {
+		actualizados, err := res.RowsAffected()
+		if err != nil {
+			return err
+		} else if actualizados < 1 {
+			fmt.Println("Id_procesado: ", id_proceso)
+			return fmt.Errorf("no actualizó ningun registro en ext_procesados para el procesamiento de nomina")
+		}
 	}
 
 	return nil

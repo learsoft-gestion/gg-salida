@@ -19,7 +19,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 	if tipo_ejecucion != "control" {
 
-		fmt.Println("Path: ", path)
+		// fmt.Println("Path: ", path)
 		file, err := os.Open(path)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)

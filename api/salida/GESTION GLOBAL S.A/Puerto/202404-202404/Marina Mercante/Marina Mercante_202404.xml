@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Empleados>
+	<Empleado>
+		<Nombre>SUAREZ ALEXIS JOAQUIN</Nombre>
+		<Cuil>20409175105</Cuil>
+		<RemuneracionBruta>511698.31</RemuneracionBruta>
+		<SueldoBasico>0.00</SueldoBasico>
+		<Sexo>M</Sexo>
+		<NroDoc>40917510</NroDoc>
+		<TipDoc>DU</TipDoc>
+	</Empleado>
+</Empleados>

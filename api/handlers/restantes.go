@@ -31,7 +31,7 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 			procesado = false
 		}
 
-		query := fmt.Sprintf("select modelo.id_modelo from extractor.ext_modelos modelo where modelo.id_convenio = %v and not exists  (select 1 from extractor.ext_procesados ep where ep.id_modelo = modelo.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s')", id_convenio, fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("select modelo.id_modelo from extractor.ext_modelos modelo where modelo.id_convenio = %v and vigente and not exists  (select 1 from extractor.ext_procesados ep where ep.id_modelo = modelo.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s')", id_convenio, fechaFormateada, fechaFormateada2)
 
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and modelo.id_empresa_adm = %s", id_empresa)
