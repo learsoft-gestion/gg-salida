@@ -152,16 +152,18 @@ var llenarTabla = function (data) {
         row.append(`<td>${item.Tipo}</td>`);
         row.append(`<td>${item.Nombre}</td>`);
         row.append(`<td><button class="btn btn-default btn-sm openOculto" data-target=".${item.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`);
-        row.append(`<td>${item.Archivo_modelo}</td>`);
-        row.append(`<td>${item.Archivo_nomina}</td>`);
+        row.append(`<td><a href="${item.Ruta_archivo_modelo}">${item.Archivo_modelo}</a></td>`);
+        row.append(`<td><a href="${item.Ruta_archivo_nomina}">${item.Archivo_nomina}</a></td>`);
         row.append(`<td><div class="form-check form-switch"><input type="checkbox" value="${item.Id_modelo}" class="form-check-input" ${item.Vigente === "true" ? "checked" : ""}></div></td>`);
 
         tbody.append(row);
 
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;">`);
         tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Convenio:</strong> ${item.Filtro_convenio}</td>`);
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Having:</strong> ${item.Filtro_having}</td>`);
         tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Personas:</strong> ${item.Filtro_personas}</td>`);
         tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Recibos:</strong> ${item.Filtro_recibos}</td>`);
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Columna Estado:</strong> ${item.Columna_estado}</td>`);
+        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Select Control:</strong> ${item.Select_control}</td>`);
     });
 
     $("tr.accordion-toggle .openOculto").on('click', function () {
