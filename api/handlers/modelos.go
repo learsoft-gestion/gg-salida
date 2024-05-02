@@ -199,8 +199,8 @@ func ModelosHandler(db *sql.DB) http.HandlerFunc {
 				if select_control.Valid {
 					modelo.Select_control = select_control.String
 				}
-				modelo.Ruta_archivo_modelo = "./templates/" + modelo.Archivo_modelo
-				modelo.Ruta_archivo_nomina = "./templates/" + modelo.Archivo_nomina
+				modelo.Ruta_archivo_modelo = "./api/templates/" + modelo.Archivo_modelo
+				modelo.Ruta_archivo_nomina = "./api/templates/" + modelo.Archivo_nomina
 
 				Models = append(Models, modelo)
 
