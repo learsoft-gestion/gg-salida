@@ -22,6 +22,7 @@ func main() {
 	// Carga de archivos estaticos
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	router.PathPrefix("/api/salida/").Handler(http.StripPrefix("/api/salida/", http.FileServer(http.Dir("../api/salida"))))
+	router.PathPrefix("/api/templates/").Handler(http.StripPrefix("/api/templates/", http.FileServer(http.Dir("../api/templates"))))
 
 	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/a-convenios", conveniosHandler)
