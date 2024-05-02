@@ -42,9 +42,6 @@ func ProcesarArchivo(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		// vars := mux.Vars(r)
-		// idNumero := vars["idNumero"]
-
 		query := "SELECT id_numero, procesado, fecha_procesado, archivo_entrada, archivo_final, empresa, periodo, convenio, estado, descripcion FROM extractor.ext_archivos WHERE id_numero = $1"
 		row := db.QueryRow(query, datos.Id)
 
@@ -63,7 +60,7 @@ func ProcesarArchivo(db *sql.DB) http.HandlerFunc {
 		}
 
 		// Procesar archivo dentro de la transacción
-		err = procesarArchivo(extArchivo, tx)
+		msg, err := procesarArchivo(extArchivo, tx)
 		if err != nil {
 			tx.Rollback()
 			log.Fatal(err)
@@ -74,38 +71,41 @@ func ProcesarArchivo(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		respuesta := modelos.Respuesta{
+			Mensaje: msg,
+		}
+		jsonResp, _ := json.Marshal(respuesta)
+		w.Write(jsonResp)
 	}
 }
 
-// 	err = configuracion.CargarConfiguracion()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-func procesarArchivo(registro ExtArchivo, tx *sql.Tx) error {
+func procesarArchivo(registro ExtArchivo, tx *sql.Tx) (string, error) {
 	rutaEntrada, err := buscarArchivo(registro.ArchivoEntrada)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if rutaEntrada == "" {
 		log.Printf("Archivo %s no encontrado\n", registro.ArchivoEntrada)
 		err = actualizarRegistroNoEncontrado(tx, registro.IdNumero)
 		if err != nil {
-			return err
+			return "", err
 		}
-		return nil
+		return "Archivo no encontrado", nil
 	}
 	rutaSalida, err := buscarOCrearDirectorio(registro)
 	rutaSalida = filepath.Join(rutaSalida, registro.ArchivoFinal)
 	moverArchivo(rutaEntrada, rutaSalida)
 	if err != nil {
-		return err
+		return "", err
 	}
 	err = actualizarRegistroEncontrado(tx, registro.IdNumero)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return "Archivo procesado exitosamente", nil
 }
 
 func buscarArchivo(nombreArchivo string) (string, error) {

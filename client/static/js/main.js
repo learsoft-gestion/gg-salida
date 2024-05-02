@@ -272,7 +272,7 @@ var llenarTabla = function (rawData) {
     });
 
     $("tr.accordion-toggle .openOculto").on('click', function () {
-        id = $(this).attr("data-target");
+        var id = $(this).attr("data-target");
         $(id).toggleClass("collapse");
     });
 
