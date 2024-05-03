@@ -237,9 +237,9 @@ var llenarTabla = function (rawData) {
                 } else {
                     row.append('<td>' + proceso.Version + '</td>')
                 }
-                row.append(`<td title="${proceso.Nombre_control}"><a href="${proceso.Nombre_control.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
-                row.append(`<td title="${proceso.Nombre_nomina}"><a href="${proceso.Nombre_nomina.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
-                row.append(`<td title="${proceso.Nombre_salida}"><a href="${proceso.Nombre_salida.split("gg-salida")[1]}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
+                row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
+                row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
+                row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
                 row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
                 row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
 
@@ -333,6 +333,10 @@ var reordenarData = function (rawData) {
 var obtenerNombreArchivo = function (nombre) {
     nombre = nombre.split("\\");
     return nombre[nombre.length - 1];
+}
+
+var obtenerLink = function(nombre) {
+    return nombre != "" ? nombre.includes("api") ? prefijoURL + nombre.split("api")[1].replace(/\\/g, "/") : prefijoURL + nombre.split("gg-salida")[1].replace(/\\/g, "/") : "";
 }
 
 var generarBoton = function (boton, id, idProcesado, tipo) {
