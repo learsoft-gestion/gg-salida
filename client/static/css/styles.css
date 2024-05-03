@@ -144,3 +144,20 @@ tbody td {
 #colPago {
   background-color: aquamarine;
 } */
+
+
+/* :: GG :: Login page styles */
+
+.formulario{
+  background: #89f4c2;
+}
+
+button {
+    background-color:#89f4c2;
+    border-color: white;
+    border-style: groove;
+}
+
+a {
+    text-decoration: none !important;
+}

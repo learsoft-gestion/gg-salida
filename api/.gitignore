@@ -1,0 +1,9 @@
+# Ignorar archivos json
+/config/config.json
+
+
+# Ignorar salida
+/salida
+
+# Ignorar dotenv
+.env

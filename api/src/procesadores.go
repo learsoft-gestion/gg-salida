@@ -8,11 +8,18 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, version int, procesado_salida bool) (string, int, modelos.ErrorFormateado, *sql.DB, *sql.DB) {
 
-	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
+	// Cargar variables de entorno
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Error: ", err.Error())
+	}
+
+	db, err := conexiones.ConectarBase("postgres", os.Getenv("ENTORNO"), "postgres")
 	if err != nil {
 		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil, nil
 	}
@@ -148,19 +155,6 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 
 func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
 
-	// db, err := conexiones.ConectarBase("postgres", "test", "postgres")
-	// if err != nil {
-	// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// }
-	// defer db.Close()
-
-	// // Conexion al origen de datos
-	// sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
-	// if err != nil {
-	// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// }
-	// defer sql.Close()
-
 	id_log, idLogDetalle, err := Logueo(db, proceso.Nombre)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
@@ -267,19 +261,6 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 }
 
 func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
-
-	// db, err := conexiones.ConectarBase("postgres", "test", "postgres")
-	// if err != nil {
-	// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// }
-	// defer db.Close()
-
-	// // Conexion al origen de datos
-	// sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
-	// if err != nil {
-	// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// }
-	// defer sql.Close()
 
 	id_log, idLogDetalle, err := Logueo(db, proceso.Nombre)
 	if err != nil {

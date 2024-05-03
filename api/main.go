@@ -18,20 +18,13 @@ func main() {
 		fmt.Println("Error: ", err.Error())
 	}
 
-	db, err := conexiones.ConectarBase("postgres", "test", "postgres")
+	db, err := conexiones.ConectarBase("postgres", "prod", "postgres")
 	if err != nil {
 		fmt.Println("Error: ", err.Error())
 	}
 
 	router := mux.NewRouter()
-	// Configura el middleware CORS
-	// corsHandler := cors.New(cors.Options{
-	// 	AllowedOrigins:   []string{"*"},
-	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"},
-	// 	AllowedHeaders:   []string{"Origin", "Content-Length", "Content-Type"},
-	// 	AllowCredentials: false,
-	// 	MaxAge:           12000,
-	// })
+
 	// Agrega un manejador OPTIONS global
 	router.Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -39,8 +32,8 @@ func main() {
 	router.Use(corsHandler)
 
 	// // Carga de archivos estaticos
-	// router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../client/static"))))
-	// router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("./salida"))))
+	router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("./salida"))))
+	router.PathPrefix("/templates/").Handler(http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 
 	// router.HandleFunc("/", indexHandler)
 	// router.HandleFunc("/a-convenios", conveniosHandler)

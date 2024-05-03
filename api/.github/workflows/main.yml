@@ -1,0 +1,31 @@
+name: Deploy Sindicatos API
+
+on:
+  push:
+    branches:
+      - test  # Branch to deploy TST
+      - prod  # Branch to deploy PRD
+
+env:
+  test_name: ${{ vars.TEST_NAME }}  # Project path to deploy TST
+  test_env: ${{ vars.TEST_ENV }}  # Branch to deploy TST
+  prod_name: ${{ vars.PROD_NAME }}  # Branch to deploy TST
+  prod_env: ${{ vars.PROD_ENV }}  # Branch to deploy TST
+
+jobs:
+  trigger_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Deployment Locally - TST
+        if: github.ref == 'refs/heads/test'
+        run:  |
+          curl -X POST http://201.212.0.166:5555/deploy \
+          -d '{"project_path": "${{ env.test_name }}", "branch": "${{ env.test_env }}"}' \
+          -H "Content-Type: application/json"
+
+      - name: Trigger Deployment Locally - PRD
+        if: github.ref == 'refs/heads/prod'
+        run:  |
+          curl -X POST http://201.212.0.166:5555/deploy \
+          -d '{"project_path": "${{ env.prod_name }}", "branch": "${{ env.prod_env }}"}' \
+          -H "Content-Type: application/json"
