@@ -31,24 +31,25 @@ type Modelo struct {
 }
 
 type Proceso struct {
-	Id_modelo       int
-	Id_empresa      int
-	Nombre_empresa  string
-	Id_convenio     int
-	Nombre_convenio string
-	Nombre          string
-	Filtro_convenio string
-	Filtro_personas string
-	Filtro_recibos  string
-	Formato_salida  string
-	Query           string
-	Archivo_modelo  string
-	Filtro_having   string
-	Archivo_nomina  string
-	Id_procesado    int
-	Columna_estado  string
-	Id_query        int
-	Select_control  string
+	Id_modelo               int
+	Id_empresa              int
+	Nombre_empresa          string
+	Nombre_empresa_reducido string
+	Id_convenio             int
+	Nombre_convenio         string
+	Nombre                  string
+	Filtro_convenio         string
+	Filtro_personas         string
+	Filtro_recibos          string
+	Formato_salida          string
+	Query                   string
+	Archivo_modelo          string
+	Filtro_having           string
+	Archivo_nomina          string
+	Id_procesado            int
+	Columna_estado          string
+	Id_query                int
+	Select_control          string
 }
 
 type Migrador struct {

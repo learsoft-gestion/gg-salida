@@ -18,7 +18,7 @@ func main() {
 		fmt.Println("Error: ", err.Error())
 	}
 
-	db, err := conexiones.ConectarBase("postgres", "prod", "postgres")
+	db, err := conexiones.ConectarBase("postgres", os.Getenv("CONN_POSTGRES"), "postgres")
 	if err != nil {
 		fmt.Println("Error: ", err.Error())
 	}
@@ -31,7 +31,7 @@ func main() {
 	})
 	router.Use(corsHandler)
 
-	// // Carga de archivos estaticos
+	// Carga de archivos estaticos
 	router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("./salida"))))
 	router.PathPrefix("/templates/").Handler(http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 

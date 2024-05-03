@@ -19,7 +19,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		fmt.Println("Error: ", err.Error())
 	}
 
-	db, err := conexiones.ConectarBase("postgres", os.Getenv("ENTORNO"), "postgres")
+	db, err := conexiones.ConectarBase("postgres", os.Getenv("CONN_POSTGRES"), "postgres")
 	if err != nil {
 		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil, nil
 	}
@@ -75,7 +75,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 	var nombreSalida string
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
-	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, proceso.Nombre)
+	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa_reducido, proceso.Nombre_convenio, proceso_periodo, proceso.Nombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
@@ -209,7 +209,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
 	procesoNombre := proceso.Nombre + "-Nomina"
-	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
+	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa_reducido, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
@@ -316,7 +316,7 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	proceso_periodo := fecha + "-" + fecha2
 	// Construir la ruta de la carpeta de salida
 	procesoNombre := proceso.Nombre + "-Control"
-	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
+	rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa_reducido, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
 
 	// Verificar si la carpeta de salida existe, si no, crearla
 	if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
