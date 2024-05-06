@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -32,8 +33,11 @@ func main() {
 	router.Use(corsHandler)
 
 	// Carga de archivos estaticos
-	router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("./salida"))))
+	// router.PathPrefix("/salida/").Handler(http.StripPrefix("/salida/", http.FileServer(http.Dir("./salida"))))
 	router.PathPrefix("/templates/").Handler(http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
+	router.PathPrefix("/salida/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		servirSalida(w, r)
+	})
 
 	// router.HandleFunc("/", indexHandler)
 	// router.HandleFunc("/a-convenios", conveniosHandler)
@@ -70,6 +74,48 @@ func main() {
 	}
 }
 
+func servirSalida(w http.ResponseWriter, r *http.Request) {
+	// Obtener la ruta del archivo solicitado
+	requestedPath := r.URL.Path
+
+	// Construir la ruta completa del archivo
+	filePath := filepath.Join(".", requestedPath)
+	filePathCorrect := filepath.Join(".", filepath.FromSlash(filePath))
+	// Comprobar si el archivo existe y es un archivo regular
+	fileInfo, err := os.Stat(filePathCorrect)
+	if err != nil || !fileInfo.Mode().IsRegular() {
+		fmt.Println(filePathCorrect)
+		http.Error(w, "Archivo no encontrado", http.StatusNotFound)
+		return
+	}
+
+	// Obtener el tipo de contenido basado en la extensión del archivo
+	contentType := getContentType(filePathCorrect)
+
+	// Agregar encabezados para forzar la descarga del archivo
+	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(filePathCorrect))
+	w.Header().Set("Content-Type", contentType)
+
+	// Agregar encabezado CORS (si es necesario)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	// Servir el archivo
+	http.ServeFile(w, r, filePathCorrect)
+}
+
+func getContentType(path string) string {
+	ext := filepath.Ext(path)
+	switch ext {
+	case ".txt":
+		return "text/plain"
+	case ".xml":
+		return "application/xml"
+	// Agrega más casos según los tipos de archivo que manejes
+	default:
+		return "application/octet-stream"
+	}
+}
+
 // Middleware para manejar CORS
 func corsHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +127,7 @@ func corsHandler(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PATCH")
 
 		// Permitir ciertos encabezados
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Disposition")
 
 		// Si la solicitud es de tipo OPTIONS, responder con éxito y terminar la cadena de middleware
 		if r.Method == "OPTIONS" {
