@@ -29,11 +29,9 @@ var navbarHeight = $(".navbar").outerHeight(); // Altura de la barra de navegaci
 
 $(window).scroll(function () {
     if ($(this).scrollTop() > navbarHeight) {
-        // filtros.removeClass('filtros');
-        filtros.addClass("fixed-top"); // Agrega la clase para fijar el menú de filtros en la parte superior
+        filtros.addClass("fixed-top");
     } else {
-        // filtros.addClass('filtros');
-        filtros.removeClass("fixed-top"); // Quita la clase cuando el usuario se desplaza hacia arriba
+        filtros.removeClass("fixed-top");
     }
 });
 
@@ -60,11 +58,39 @@ $.ajax({
 });
 
 // Select de empresa
+$.ajax({
+    url: prefijoURL + `/empresas`,
+    method: 'GET',
+    dataType: 'json',
+    success: function (data) {
+        $("#emp").empty();
+        var selOption = document.createElement("option");
+        selOption.value = '';
+        selOption.textContent = 'Todas';
+        $("#emp").append(selOption);
+        if (data && data.length > 0) {
+            data.forEach(empresa => {
+                const option = document.createElement("option");
+                option.value = empresa.id;
+                option.textContent = empresa.nombre;
+                $("#emp").append(option);
+            });
+        } else {
+            console.log('No se recibieron datos del servidor.');
+        }
+    },
+    error: function (error) {
+        console.error('Error en la búsqueda:', error);
+    }
+});
+
+// Select de empresas para convenio
 $("#conv").change(function () {
     var convId = $("#conv").val();
+    var url = convId ? prefijoURL + `/empresas/${convId}` : prefijoURL + "/empresas";
 
     $.ajax({
-        url: prefijoURL + `/empresas/${convId}`,
+        url: url,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -157,8 +183,8 @@ $("#btnBuscar").click(function () {
         }
     }
     // Validaciones de campos obligatorios y fechas
-    if (!(conv && fechaDesde && fechaHasta)) {
-        alert("Faltan completar campos");
+    if (!(fechaDesde && fechaHasta)) {
+        alert("Los campos Desde y Hasta son obligatorios");
         return;
     } else if (!(fechaHasta >= fechaDesde)) {
         alert("La fecha Hasta no puede ser menor a la fecha de inicio");
@@ -228,6 +254,7 @@ var llenarTabla = function (rawData) {
         $.each(item, function (i, proceso) {
             if (i === 0) {
                 var row = $(`<tr class="accordion-toggle">`);
+                row.append('<td>' + proceso.Convenio + '</td>');
                 row.append('<td>' + proceso.Empresa + '</td>');
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
@@ -246,6 +273,7 @@ var llenarTabla = function (rawData) {
                 tbody.append(row);
             } else {
                 var subRow = $(`<tr class="collapse ${proceso.Id_modelo}">`);
+                subRow.append('<td></td>');
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
