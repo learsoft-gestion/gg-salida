@@ -152,8 +152,8 @@ var llenarTabla = function (data) {
         row.append(`<td>${item.Tipo}</td>`);
         row.append(`<td>${item.Nombre}</td>`);
         row.append(`<td><button class="btn btn-default btn-sm openOculto" data-target=".${item.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`);
-        row.append(`<td><a href="${prefijoURL}${item.Ruta_archivo_modelo}">${item.Archivo_modelo}</a></td>`);
-        row.append(`<td><a href="${prefijoURL}${item.Ruta_archivo_nomina}">${item.Archivo_nomina}</a></td>`);
+        row.append(`<td><button type="button" value="${prefijoURL}${item.Ruta_archivo_modelo}" class="json-link">${item.Archivo_modelo}</button></td>`);
+        row.append(`<td><button type="button" value="${prefijoURL}${item.Ruta_archivo_nomina}" class="json-link">${item.Archivo_nomina}</button></td>`);
         row.append(`<td><div class="form-check form-switch"><input type="checkbox" value="${item.Id_modelo}" class="form-check-input" ${item.Vigente === "true" ? "checked" : ""}></div></td>`);
 
         tbody.append(row);
@@ -170,6 +170,8 @@ var llenarTabla = function (data) {
         var id = $(this).attr("data-target");
         $(id).toggleClass("collapse");
     });
+
+    crearJsonLinks();
 
     $('.form-check-input').change(function () {
         var json = {
@@ -204,6 +206,32 @@ var llenarTabla = function (data) {
                     console.error('Error en la solicitud:', error);
                 }
             }
-        })
+        });
+    });
+}
+
+var crearJsonLinks = function() {
+    $('.json-link').click(function (event) {
+        var jsonUrl = $(this).val();
+        var name = $(this).text();
+
+        // Realizar una solicitud AJAX para obtener el contenido del archivo JSON
+        $.ajax({
+            url: jsonUrl,
+            dataType: 'json',
+            success: function (data) {
+                // Mostrar el contenido JSON en el modal
+                $('#json-content').text(JSON.stringify(data, null, 2));
+                $('#json-modal').modal('show');
+                $(".modal-title").text(name);
+            },
+            error: function () {
+                alert('Error al cargar el archivo JSON.');
+            }
+        });
+    });
+
+    $(".close").click(function() {
+        $('#json-modal').modal('hide');
     });
 }

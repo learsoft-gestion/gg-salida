@@ -86,3 +86,10 @@ tbody td {
     display: flex;
     justify-content: center;
 }
+
+.json-link {
+    background: 0;
+    color: blue;
+    text-decoration: underline;
+    padding: 0;
+}
