@@ -1,0 +1,60 @@
+{
+    "campo": [
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "Nombre",
+            "nombre": "apellidoynombre",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Ingreso",
+            "nombre": "ingreso",
+            "columna": "C",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "C.C.T.",
+            "nombre": "",
+            "columna": "D",
+            "tipo": "fijo",
+            "formato": "C.C.T. 458/06"
+        },
+        {
+            "titulo": "Categoria",
+            "nombre": "categoria",
+            "columna": "E",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Afiliado",
+            "nombre": "",
+            "columna": "F",
+            "tipo": "fijo",
+            "formato": "NO"
+        },
+        {
+            "titulo": "Remun. Bruta + Incremento N.R. 458/06 (**)",
+            "nombre": "bruto_imp",
+            "columna": "G",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "No Remun.",
+            "nombre": "total_noRem",
+            "columna": "H",
+            "tipo": "moneda",
+            "formato": ""
+        }
+    ]
+}

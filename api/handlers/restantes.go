@@ -31,8 +31,11 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 			procesado = false
 		}
 
-		query := fmt.Sprintf("select modelo.id_modelo from extractor.ext_modelos modelo where modelo.id_convenio = %v and vigente and not exists  (select 1 from extractor.ext_procesados ep where ep.id_modelo = modelo.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s')", id_convenio, fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("select modelo.id_modelo from extractor.ext_modelos modelo where vigente and not exists (select 1 from extractor.ext_procesados ep where ep.id_modelo = modelo.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s')", fechaFormateada, fechaFormateada2)
 
+		if len(id_convenio) > 0 {
+			query += fmt.Sprintf(" and modelo.id_convenio = %v", id_convenio)
+		}
 		if len(id_empresa) > 0 {
 			query += fmt.Sprintf(" and modelo.id_empresa_adm = %s", id_empresa)
 		}
@@ -51,7 +54,7 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 
 		rows, err := db.Query(query)
 		if err != nil {
-			fmt.Println(fmt.Println("Error al ejecutar query de procesosRestantes"))
+			fmt.Println("Error al ejecutar query de procesosRestantes")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -116,7 +119,14 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 				resString += ", jurisdiccion " + jurisdiccion
 			}
 		} else {
-			resString = fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
+			if len(id_convenio) > 0 {
+				resString = fmt.Sprintf("Faltan generar %v informes para el convenio %s", cantidad, nombre_conv)
+			} else if len(id_empresa) > 0 {
+				resString = fmt.Sprintf("Faltan generar %v informes para la empresa %s", cantidad, nombre_emp)
+			} else {
+				resString = fmt.Sprintf("Faltan generar %v informes para el periodo %s-%s", cantidad, fechaFormateada, fechaFormateada2)
+			}
+
 			if nombre_emp != "" {
 				resString += ", empresa " + nombre_emp
 			}
