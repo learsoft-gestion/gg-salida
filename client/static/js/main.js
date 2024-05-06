@@ -1,4 +1,63 @@
-import { prefijoURL } from './variables.js';
+var prefijoURL
+
+fetch("/backend-url")
+.then(res => res.json())
+.then(data => {
+    prefijoURL = data.prefijoURL;
+    console.log(prefijoURL);
+
+    // Select de convenio
+    $.ajax({
+        url: prefijoURL + '/convenios',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            if (data && data.length > 0) {
+                data.forEach(convenio => {
+                    const option = document.createElement("option");
+                    option.value = convenio.id;
+                    option.textContent = convenio.nombre;
+                    $("#conv").append(option);
+                });
+            } else {
+                console.log('No se recibieron datos del servidor.');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
+
+    // Select de empresa
+    $.ajax({
+        url: prefijoURL + `/empresas`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $("#emp").empty();
+            var selOption = document.createElement("option");
+            selOption.value = '';
+            selOption.textContent = 'Todas';
+            $("#emp").append(selOption);
+            if (data && data.length > 0) {
+                data.forEach(empresa => {
+                    const option = document.createElement("option");
+                    option.value = empresa.id;
+                    option.textContent = empresa.nombre;
+                    $("#emp").append(option);
+                });
+            } else {
+                console.log('No se recibieron datos del servidor.');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
+})
+.catch(error => {
+    console.error("Error al obtener la URL del backend: ", error)
+})
 
 // Chequear los checkbox
 $('[type=checkbox]').prop('checked', true);
@@ -22,6 +81,8 @@ $(document).ready(function () {
         language: "es"
     });
 
+
+
 });
 
 var filtros = $("#filtros");
@@ -35,54 +96,54 @@ $(window).scroll(function () {
     }
 });
 
-// Select de convenio
-$.ajax({
-    url: prefijoURL + '/convenios',
-    method: 'GET',
-    dataType: 'json',
-    success: function (data) {
-        if (data && data.length > 0) {
-            data.forEach(convenio => {
-                const option = document.createElement("option");
-                option.value = convenio.id;
-                option.textContent = convenio.nombre;
-                $("#conv").append(option);
-            });
-        } else {
-            console.log('No se recibieron datos del servidor.');
-        }
-    },
-    error: function (error) {
-        console.error('Error en la búsqueda:', error);
-    }
-});
+// // Select de convenio
+// $.ajax({
+//     url: prefijoURL + '/convenios',
+//     method: 'GET',
+//     dataType: 'json',
+//     success: function (data) {
+//         if (data && data.length > 0) {
+//             data.forEach(convenio => {
+//                 const option = document.createElement("option");
+//                 option.value = convenio.id;
+//                 option.textContent = convenio.nombre;
+//                 $("#conv").append(option);
+//             });
+//         } else {
+//             console.log('No se recibieron datos del servidor.');
+//         }
+//     },
+//     error: function (error) {
+//         console.error('Error en la búsqueda:', error);
+//     }
+// });
 
-// Select de empresa
-$.ajax({
-    url: prefijoURL + `/empresas`,
-    method: 'GET',
-    dataType: 'json',
-    success: function (data) {
-        $("#emp").empty();
-        var selOption = document.createElement("option");
-        selOption.value = '';
-        selOption.textContent = 'Todas';
-        $("#emp").append(selOption);
-        if (data && data.length > 0) {
-            data.forEach(empresa => {
-                const option = document.createElement("option");
-                option.value = empresa.id;
-                option.textContent = empresa.nombre;
-                $("#emp").append(option);
-            });
-        } else {
-            console.log('No se recibieron datos del servidor.');
-        }
-    },
-    error: function (error) {
-        console.error('Error en la búsqueda:', error);
-    }
-});
+// // Select de empresa
+// $.ajax({
+//     url: prefijoURL + `/empresas`,
+//     method: 'GET',
+//     dataType: 'json',
+//     success: function (data) {
+//         $("#emp").empty();
+//         var selOption = document.createElement("option");
+//         selOption.value = '';
+//         selOption.textContent = 'Todas';
+//         $("#emp").append(selOption);
+//         if (data && data.length > 0) {
+//             data.forEach(empresa => {
+//                 const option = document.createElement("option");
+//                 option.value = empresa.id;
+//                 option.textContent = empresa.nombre;
+//                 $("#emp").append(option);
+//             });
+//         } else {
+//             console.log('No se recibieron datos del servidor.');
+//         }
+//     },
+//     error: function (error) {
+//         console.error('Error en la búsqueda:', error);
+//     }
+// });
 
 // Select de empresas para convenio
 $("#conv").change(function () {

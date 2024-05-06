@@ -71,9 +71,11 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 			id_modelos = append(id_modelos, id_modelo)
 		}
 
-		err = db.QueryRow(fmt.Sprintf("SELECT nombre from extractor.ext_convenios where id_convenio = %v", id_convenio)).Scan(&nombre_conv)
-		if err != nil {
-			fmt.Println(err.Error())
+		if id_convenio != "" {
+			err = db.QueryRow(fmt.Sprintf("SELECT nombre from extractor.ext_convenios where id_convenio = %v", id_convenio)).Scan(&nombre_conv)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 		}
 
 		if id_empresa != "" {
@@ -127,7 +129,7 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 				resString = fmt.Sprintf("Faltan generar %v informes para el periodo %s-%s", cantidad, fechaFormateada, fechaFormateada2)
 			}
 
-			if nombre_emp != "" {
+			if nombre_emp != "" && nombre_conv != "" {
 				resString += ", empresa " + nombre_emp
 			}
 			if nombre_concepto != "" {

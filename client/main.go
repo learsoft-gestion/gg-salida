@@ -41,6 +41,7 @@ func main() {
 	// :: GG :: Public routes
 	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/login", loginHandler).Methods("GET", "POST")
+	router.HandleFunc("/backend-url", backendUrl())
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),
@@ -50,6 +51,25 @@ func main() {
 	fmt.Println("Listening at ", os.Getenv("SV_ADDR"))
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Println(err.Error())
+	}
+}
+
+func backendUrl() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		// Cargar variables de entorno
+		if err := godotenv.Load(); err != nil {
+			fmt.Println("Error: ", err.Error())
+		}
+
+		prefijoURL := os.Getenv("URL_BACK")
+
+		type Response struct {
+			PrefijoURL string `json:"prefijoURL"`
+		}
+		response := Response{PrefijoURL: prefijoURL}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
 }
 
