@@ -425,7 +425,12 @@ var obtenerNombreArchivo = function (nombre) {
 }
 
 var obtenerLink = function(nombre) {
-    return nombre != "" ? nombre.includes("api") ? prefijoURL + nombre.split("api")[1].replace(/\\/g, "/") : prefijoURL + nombre.split("gg-salida")[1].replace(/\\/g, "/") : "";
+    if (nombre != "" && (nombre.includes("api") || nombre.includes("gg-salida"))) {
+        return nombre.includes("api") ? prefijoURL + nombre.split("api")[1].replace(/\\/g, "/") : prefijoURL + nombre.split("gg-salida")[1].replace(/\\/g, "/");
+    } else if (nombre != "") {
+        return nombre;
+    }
+    return "";
 }
 
 var generarBoton = function (boton, id, idProcesado, tipo) {
