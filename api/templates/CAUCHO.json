@@ -1,0 +1,53 @@
+{
+    "campo": [
+        {
+            "titulo": "Legajo",
+            "nombre": "legajo",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Apellido y Nombre",
+            "nombre": "apellidoynombre",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "C",
+            "tipo": "string",
+            "formato": "cuil sin guiones"
+        },
+        {
+            "titulo": "CATEGORIA",
+            "nombre": "categoria",
+            "columna": "D",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "SUELDO BRUTO",
+            "nombre": "bruto_imp",
+            "columna": "E",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "Fecha de ingreso",
+            "nombre": "ingreso",
+            "columna": "F",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Afiliado",
+            "nombre": "afiliado",
+            "columna": "G",
+            "tipo": "condicional",
+            "formato": "Si/No"
+        }
+    ]
+}

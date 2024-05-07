@@ -1,4 +1,5 @@
-import { prefijoURL } from './variables.js';
+// import { prefijoURL } from './variables.js';
+var prefijoURL
 
 $(document).ready(function () {
     $('[type=checkbox]').prop('checked', true);
@@ -12,6 +13,12 @@ $(document).ready(function () {
         dateFormat: 'd-m-Y',
         locale: 'es',
     });
+
+fetch("/backend-url")
+.then(res => res.json())
+.then(data => {
+    prefijoURL = data.prefijoURL;
+    console.log(prefijoURL);    
 
     // Select de convenio
     $.ajax({
@@ -80,6 +87,10 @@ $(document).ready(function () {
             console.error('Error en la búsqueda:', error);
         }
     });
+})
+.catch(error => {
+    console.error("Error al obtener la URL del backend: ", error)
+})    
 
     $('#btnBuscar').click(function () {
         buscar();
