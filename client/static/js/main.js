@@ -351,11 +351,11 @@ var llenarTabla = function (rawData) {
         });
     });
 
-    $('table th:nth-child(6), table td:nth-child(6)').css({
+    $('table th:nth-child(7), table td:nth-child(7)').css({
         'border-left': '1px solid black',
         'border-right': '1px solid black'
     });
-    $('table th:nth-child(8), table td:nth-child(8)').css({
+    $('table th:nth-child(9), table td:nth-child(9)').css({
         'border-left': '1px solid black',
         'border-right': '1px solid black'
     });

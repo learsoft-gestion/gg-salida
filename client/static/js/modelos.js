@@ -158,12 +158,11 @@ var llenarTabla = function (data) {
 
         tbody.append(row);
 
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;">`);
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Convenio:</strong> ${item.Filtro_convenio}</td>`);
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Personas:</strong> ${item.Filtro_personas}</td>`);
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Recibos:</strong> ${item.Filtro_recibos}</td>`);
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Columna Estado:</strong> ${item.Columna_estado}</td>`);
-        tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Select Control:</strong> ${item.Select_control}</td>`);
+        item.Filtro_convenio ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Convenio:</strong> ${item.Filtro_convenio}</td>`) : "";
+        item.Filtro_personas ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Personas:</strong> ${item.Filtro_personas}</td>`) : "";
+        item.Filtro_recibos ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Recibos:</strong> ${item.Filtro_recibos}</td>`) : "";
+        item.Columna_estado ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Columna Estado:</strong> ${item.Columna_estado}</td>`) : "";
+        item.Select_control ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Select Control:</strong> ${item.Select_control}</td>`) : "";
     });
 
     $("tr.accordion-toggle .openOculto").on('click', function () {
