@@ -336,6 +336,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						condiciones := strings.Split(campo.Formato, "/")
 						if numRegex.MatchString(v) {
 							value = condiciones[1]
+						} else if strings.TrimSpace(v) == "0" {
+							value = condiciones[1]
 						} else {
 							value = condiciones[0]
 						}
@@ -353,7 +355,13 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						value += strings.TrimSpace(string(v))
 					}
 				case nil:
-					value = ""
+					if strings.ToLower(campo.Tipo) == "condicional" {
+						condiciones := strings.Split(campo.Formato, "/")
+						value = condiciones[1]
+					} else {
+						value = ""
+					}
+
 				default:
 					value = strings.TrimSpace(fmt.Sprintf("%v", v))
 				}
