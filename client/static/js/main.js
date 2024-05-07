@@ -420,7 +420,11 @@ var reordenarData = function (rawData) {
 }
 
 var obtenerNombreArchivo = function (nombre) {
-    nombre = nombre.split("\\");
+    if (nombre.includes("\\")) {
+        nombre = nombre.split("\\");
+    } else {
+        nombre = nombre.split("/");
+    }
     return nombre[nombre.length - 1];
 }
 
