@@ -1,0 +1,64 @@
+{
+    "cabecera": {
+        "formato": "fijo"
+    },
+    "campo": [
+        {
+            "nombre": "cuil",
+            "inicio": 0,
+            "fin": 11,
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "nombre": "afiliado",
+            "inicio": 11,
+            "fin": 12,
+            "tipo": "condicional",
+            "formato": "N/S"
+        },
+        {
+            "nombre": "bruto_imp",
+            "inicio": 12,
+            "fin": 30,           
+            "tipo": "rellenado",
+            "formato": "0"
+        },
+        {
+            "nombre": "bruto_imp",
+            "inicio": 30,
+            "fin": 48,           
+            "tipo": "rellenado",
+            "formato": "0"
+        },
+        {
+            "nombre": "ingreso",
+            "inicio": 48,
+            "fin": 56,           
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "nombre": "codigo_postal",
+            "inicio": 56,
+            "fin": 60,
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "01"
+        },
+        {
+            "nombre": "laboral_localidad",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "",
+            "tipo": "fijo",
+            "formato": "N"
+        }
+    ]
+}
