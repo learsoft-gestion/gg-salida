@@ -13,7 +13,7 @@ var Convenios []modelos.Option
 func GetConvenios(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		rows, err := db.Query("SELECT em.id_convenio, c.nombre, c.filtro FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente order by c.nombre")
+		rows, err := db.Query("SELECT em.id_convenio, c.nombre, c.filtro FROM extractor.ext_modelos em JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where em.vigente order by c.nombre")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

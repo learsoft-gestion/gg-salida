@@ -80,6 +80,13 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 						value = formatearFecha(v, campo.Formato)
 					} else if campo.Formato == "DD/MM/YYYY" {
 						value = formatearFecha(v, campo.Formato)
+					} else if campo.Tipo == "condicional" {
+						condiciones := strings.Split(campo.Formato, "/")
+						if string(v) != "0" {
+							value = condiciones[0]
+						} else {
+							value = condiciones[1]
+						}
 					} else if strings.ToLower(campo.Tipo) == "lookup" {
 						// El dato lo saco del .json
 						for _, variable := range plantilla.Variables {
@@ -117,24 +124,38 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 						// } else {
 						// 	value = campo.Option2
 						// }
+					} else {
+						value += strings.Replace(string(v), ".", "", -1) // Numero sin puntos
+					}
+				case int64:
+					condiciones := strings.Split(campo.Formato, "/")
+					if int64(v) == 0 {
+						value = condiciones[0]
+					} else {
+						value = condiciones[1]
 					}
 				default:
-					value = fmt.Sprintf("##%s##", campo.Nombre)
+					// fmt.Printf("Campo: %s Valor: %v Tipo: %s\n", campo.Nombre, v, reflect.TypeOf(v))
+					value = "#"
 				}
 			}
 
+			// fmt.Printf("Campo: %s Valor: %s\n", campo.Nombre, value)
+
 			if plantilla.Cabecera.Formato == "fijo" {
-				// if strings.ToLower(campo.Formato) == "condicional" {
-				// 	println(value)
-				// }
+
 				longitud_campo := campo.Fin - campo.Inicio + 1
 
 				if len(value) < longitud_campo {
 					diferencia := longitud_campo - len(value)
-					value += strings.Repeat(" ", diferencia)
-					// } else {
-					// 	fmt.Println("Longitud del campo demasiado chica")
-					// 	fmt.Printf("Longitud del campo: %v Longitud del valor: %v\n", longitud_campo, len(value))
+					if strings.ToLower(campo.Tipo) == "rellenado" {
+						value = strings.Repeat(campo.Formato, diferencia) + value
+					} else if value == "#" {
+						value += strings.Repeat("#", diferencia)
+					} else {
+						value += strings.Repeat(" ", diferencia)
+					}
+
 				}
 				// Iterar sobre blancos para agregar letra por letra
 				arreglo := []rune(blancos)

@@ -2,7 +2,7 @@
     "campo": [
         {
             "titulo": "Legajo",
-            "nombre": "legajo",
+            "nombre": "numero_legajo",
             "columna": "A",
             "tipo": "string",
             "formato": ""

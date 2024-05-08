@@ -1,0 +1,28 @@
+{
+    "cabecera": {
+        "formato": "fijo"
+    },
+    "campo": [
+        {
+            "nombre": "cuil",
+            "inicio": 0,
+            "fin": 11,
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "nombre": "apellidoynombre",
+            "inicio": 11,
+            "fin": 61,
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "nombre": "bruto_imp",
+            "inicio": 61,
+            "fin": 76,           
+            "tipo": "rellenado",
+            "formato": "0"
+        }
+    ]
+}

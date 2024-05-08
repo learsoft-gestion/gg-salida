@@ -103,6 +103,7 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 			Fecha1:   fechaFormateada,
 			Fecha2:   fechaFormateada2,
 		}
+
 		cantidad := len(id_modelos)
 		var resString string
 		var btn string
@@ -143,6 +144,7 @@ func ProcesosRestantes(db *sql.DB) http.HandlerFunc {
 			}
 			btn = "Generar"
 		}
+		// fmt.Println(Restantes)
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")

@@ -95,7 +95,7 @@
             "titulo": "SAC",
             "nombre": "TOTAL_SAC",
             "columna": "N",
-            "tipo": "string",
+            "tipo": "numero",
             "formato": ""
         },
         {
@@ -109,7 +109,7 @@
             "titulo": "NoRem",
             "nombre": "total_norem",
             "columna": "P",
-            "tipo": "string",
+            "tipo": "numero",
             "formato": ""
         }
     ]

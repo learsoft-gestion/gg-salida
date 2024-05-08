@@ -35,28 +35,34 @@
             "nombre": "ingreso",
             "inicio": 48,
             "fin": 56,           
-            "tipo": "fecha",
-            "formato": "DD/MM/YYYY"
+            "tipo": "string",
+            "formato": ""
         },
         {
-            "nombre": "codigo_postal",
+            "nombre": "laboral_cp",
             "inicio": 56,
             "fin": 60,
             "tipo": "string",
             "formato": ""
         },
         {
-            "nombre": "",
+            "nombre": "convenio",
+            "inicio": 60,
+            "fin": 62,
             "tipo": "fijo",
             "formato": "01"
         },
         {
-            "nombre": "laboral_localidad",
-            "tipo": "string",
-            "formato": ""
+            "nombre": "categoria",
+            "inicio": 62,
+            "fin": 64,
+            "tipo": "fijo",
+            "formato": "03"
         },
         {
-            "nombre": "",
+            "nombre": "administracion_publica",
+            "inicio": 64,
+            "fin": 66,
             "tipo": "fijo",
             "formato": "N"
         }

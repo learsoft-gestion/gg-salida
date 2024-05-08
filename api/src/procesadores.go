@@ -297,9 +297,13 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	if proceso.Select_control != "" {
 		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
 	} else {
-		var queryReplace string
-		db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'CONTROL'").Scan(&queryReplace)
-		queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
+		// Logueo
+		_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, "el control no esta configurado para este modelo")
+		if err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
+		return "", modelos.ErrorFormateado{Mensaje: "el control no esta configurado para este modelo"}
 	}
 	proceso.Query = queryFinal
 
