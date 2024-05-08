@@ -16,6 +16,10 @@ body {
     padding: 0;
 }
 
+label {
+    font-weight: bold;
+}
+
 .form-group {
     margin-bottom: 20px;
 }
