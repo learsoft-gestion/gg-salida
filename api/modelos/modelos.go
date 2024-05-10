@@ -219,3 +219,17 @@ type Concepto struct {
 	Id     string
 	Nombre string
 }
+
+type Alicuota struct {
+	IdAlicuota  string
+	IdConvenio  string
+	Nombre      string
+	Descripcion string
+}
+
+type ValorAlicuota struct {
+	IdValoresAlicuota string
+	IdAlicuota        string
+	VigenciaDesde     string
+	Valor             string
+}

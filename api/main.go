@@ -62,6 +62,10 @@ func main() {
 	router.HandleFunc("/migrador/convenios", handlers.MigradorGetConvenios(db))
 	router.HandleFunc("/migrador/periodos", handlers.MigradorGetPeriodos(db))
 	router.HandleFunc("/migrador/archivos", handlers.ProcesarArchivo(db))
+	router.HandleFunc("/alicuotas/{idConvenio}", handlers.GetAlicuotas(db))
+	router.HandleFunc("/alicuotas", handlers.SaveAlicuota(db))
+	router.HandleFunc("/valoresAlicuotas/{idAlicuota}", handlers.GetValoresAlicuotas(db))
+	router.HandleFunc("/valoresAlicuotas", handlers.SaveValoresAlicuota(db))
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),

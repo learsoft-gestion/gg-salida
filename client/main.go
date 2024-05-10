@@ -35,6 +35,7 @@ func main() {
 	protectedRoutes := router.NewRoute().Subrouter()
 	protectedRoutes.HandleFunc("/a-convenios", conveniosHandler)
 	protectedRoutes.HandleFunc("/a-modelos", aModelosHandler)
+	protectedRoutes.HandleFunc("/a-alicuotas", aAlicuotasHandler)
 	protectedRoutes.HandleFunc("/migrador", migradorHandler)
 	protectedRoutes.HandleFunc("/logout", logoutHandler)
 
@@ -221,6 +222,10 @@ func conveniosHandler(w http.ResponseWriter, r *http.Request) {
 
 func aModelosHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "./templates/modelos.html", nil)
+}
+
+func aAlicuotasHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "./templates/alicuotas.html", nil)
 }
 
 func migradorHandler(w http.ResponseWriter, r *http.Request) {
