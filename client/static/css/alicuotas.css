@@ -72,3 +72,24 @@ label {
     align-items: center;
     font-weight: bold;
 }
+
+.nombre {
+    width: 70px;
+}
+
+.descripcion {
+    width: 280px;
+}
+
+.periodo {
+    width: 70px;
+    margin-right: 10px;
+}
+
+.valor {
+    width: 80px;
+}
+
+.bg-amarillo {
+    background-color: lightyellow;
+}

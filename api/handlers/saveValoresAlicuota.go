@@ -42,9 +42,33 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
 			}
 		} else if r.Method == "POST" {
-			query := "INSERT INTO extractor.ext_valores_alicuotas (id_alicuota, vigencia_desde, valor) values ($1, $2, $3)"
+			query := "INSERT INTO extractor.ext_valores_alicuotas (id_alicuota, vigencia_desde, valor) values ($1, $2, $3) RETURNING id_valores_alicuota"
 
-			result, err := db.Exec(query, valor.IdAlicuota, valor.VigenciaDesde, valor.Valor)
+			result := db.QueryRow(query, valor.IdAlicuota, valor.VigenciaDesde, valor.Valor)
+			var lastInsertID int
+			err := result.Scan(&lastInsertID)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Println("Error al obtener el último ID insertado:", err.Error())
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			respuesta := struct {
+				Mensaje string `json:"mensaje"`
+				ID      int    `json:"id"`
+			}{
+				Mensaje: "Valor creado exitosamente",
+				ID:      lastInsertID,
+			}
+			jsonResp, _ := json.Marshal(respuesta)
+			w.Write(jsonResp)
+		} else if r.Method == "DELETE" {
+			query := "delete from extractor.ext_valores_alicuotas where id_valores_alicuota = $1"
+
+			result, err := db.Exec(query, valor.IdValoresAlicuota)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
@@ -55,12 +79,12 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			if cuenta, err := result.RowsAffected(); cuenta == 1 {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
-				respuesta := "Valor creado exitosamente"
+				respuesta := "Valor borrado exitosamente"
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
 				return
 			} else if err != nil {
-				fmt.Println("Error al crear valor: " + err.Error())
+				fmt.Println("Error al borrar valor: " + err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
 				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
 			}

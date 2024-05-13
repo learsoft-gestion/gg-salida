@@ -128,7 +128,7 @@ func corsHandler(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		// Permitir ciertos métodos HTTP
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PATCH")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PATCH, DELETE")
 
 		// Permitir ciertos encabezados
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Disposition")
