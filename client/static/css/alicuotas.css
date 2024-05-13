@@ -1,0 +1,74 @@
+#logo {
+    width: 125px;
+}
+
+.title-right {
+    margin-left: auto;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 50px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+}
+
+label {
+    font-weight: bold;
+}
+
+.row {
+    position: relative;
+    top: 15px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+}
+
+.form-control {
+    position: relative;
+}
+
+.form-group label {
+    margin-right: 10px;
+}
+
+.caja {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.info-box {
+    width: 48%; /* Ajusta el ancho según tus necesidades */
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Espacio entre los rectángulos */
+    display: none;
+}
+
+.actions {
+    position: absolute;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.btnAddDiv {
+    margin-top: 10px;
+}
+
+.btnAdd {
+    margin-left: 1rem;
+    padding: 3px 8px 3px 3px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
