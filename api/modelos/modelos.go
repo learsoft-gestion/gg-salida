@@ -219,3 +219,9 @@ type Concepto struct {
 	Id     string
 	Nombre string
 }
+
+type Alicuota struct {
+	ValorAli   string
+	NombreAli  string
+	ReplaceAli string
+}

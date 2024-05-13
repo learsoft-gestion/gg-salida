@@ -37,7 +37,12 @@ func ProcesadosSalida(db *sql.DB, id_modelo int, fecha1 string, fecha2 string, v
 
 func ProcesadosNomina(db *sql.DB, id_proceso int, cant_registros int, nombre_nomina string) error {
 
-	fecha_completa := time.Now()
+	location, err := time.LoadLocation("America/Buenos_Aires")
+	if err != nil {
+		fmt.Println("Error al encontrar el timezone")
+		return err
+	}
+	fecha_completa := time.Now().In(location)
 	fecha_actual := fecha_completa.Format("2006-01-02 15:04:05")
 
 	res, err := db.Exec("update extractor.ext_procesados ep set cant_registros_nomina = $1, archivo_nomina = $2, fecha_ejecucion = $3 where ep.id_proceso = $4", cant_registros, nombre_nomina, fecha_actual, id_proceso)
