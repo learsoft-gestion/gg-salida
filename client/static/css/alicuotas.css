@@ -74,20 +74,20 @@ label {
 }
 
 .nombre {
-    width: 70px;
+    width: 90px;
 }
 
 .descripcion {
-    width: 280px;
+    width: 320px;
 }
 
 .periodo {
-    width: 70px;
+    width: 90px;
     margin-right: 10px;
 }
 
 .valor {
-    width: 80px;
+    width: 100px;
 }
 
 .bg-azul {

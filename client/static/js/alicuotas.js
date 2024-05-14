@@ -12,7 +12,7 @@ fetch("/backend-url")
 
         // Select de Sindicato
         $.ajax({
-            url: prefijoURL + '/convenios',
+            url: prefijoURL + '/convenios/all',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
