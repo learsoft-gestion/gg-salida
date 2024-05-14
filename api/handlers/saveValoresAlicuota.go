@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
+	"strconv"
 )
 
 func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
@@ -15,6 +17,21 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			fmt.Println(err.Error())
 			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Valido formato numérico para valor
+		if _, err := strconv.ParseFloat(valor.Valor, 64); valor.Valor != "" && err != nil {
+			fmt.Println("Valor debe ser dato numérico")
+			http.Error(w, "Debe ingresar un dato numérico como Valor.", http.StatusBadRequest)
+			return
+		}
+
+		// Valido formato de fecha YYYYMM para vigenciaDesde
+		regexp := regexp.MustCompile(`^\d{6}$`)
+		if valor.VigenciaDesde != "" && !regexp.MatchString(valor.VigenciaDesde) {
+			fmt.Println("Formato de fecha inválido: " + valor.VigenciaDesde)
+			http.Error(w, "Debe ingresar formato de fecha válido.", http.StatusBadRequest)
 			return
 		}
 

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func SaveAlicuota(db *sql.DB) http.HandlerFunc {
@@ -21,7 +22,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 		if r.Method == "PATCH" {
 			query := "UPDATE extractor.ext_alicuotas SET nombre = $1, descripcion = $2 where id_alicuota = $3"
 
-			result, err := db.Exec(query, alicuota.Nombre, alicuota.Descripcion, alicuota.IdAlicuota)
+			result, err := db.Exec(query, strings.ToUpper(alicuota.Nombre), alicuota.Descripcion, alicuota.IdAlicuota)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
@@ -44,7 +45,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 		} else if r.Method == "POST" {
 			query := "INSERT INTO extractor.ext_alicuotas (id_convenio, nombre, descripcion) values ($1, $2, $3) RETURNING id_alicuota"
 
-			result := db.QueryRow(query, alicuota.IdConvenio, alicuota.Nombre, alicuota.Descripcion)
+			result := db.QueryRow(query, alicuota.IdConvenio, strings.ToUpper(alicuota.Nombre), alicuota.Descripcion)
 			var lastInsertID int
 			err := result.Scan(&lastInsertID)
 			if err != nil {

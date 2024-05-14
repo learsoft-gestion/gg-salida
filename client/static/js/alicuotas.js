@@ -51,13 +51,14 @@ $('#sindicato').change(function () {
             console.error('Error en la búsqueda:', error);
             Swal.fire({
                 title: "Ocurrió un error",
-                text: error.mensaje,
+                text: error.responseText,
                 icon: "error"
             });
         }
     });
 });
 
+// Armado de cuadrante de alícuotas
 var mostrarAlicuotas = function (data) {
     $('#alicuotasData').empty();
 
@@ -99,6 +100,7 @@ var mostrarAlicuotas = function (data) {
     $('#alicuotas').show();
 }
 
+// Botón para añadir nueva alícuota
 $('#btnAddAlicuota').click(function () {
     if ($('#saveAli-').is(':visible')) {
         return;
@@ -141,12 +143,14 @@ $('#btnAddAlicuota').click(function () {
     botonCreateAli();
 });
 
+// Botón para cancelar nueva alícuota
 var botonCancelAli = function () {
     $('#cancelAli').click(function () {
         $('#newAli').remove();
     });
 }
 
+// Botón para guardar la nueva alícuota
 var botonCreateAli = function () {
     $('#saveAli-').click(function () {
         var json = {
@@ -184,7 +188,7 @@ var botonCreateAli = function () {
                 console.error('Error en la búsqueda:', error);
                 Swal.fire({
                     title: "Ocurrió un error",
-                    text: error.mensaje,
+                    text: error.responseText,
                     icon: "error"
                 });
             }
@@ -192,6 +196,7 @@ var botonCreateAli = function () {
     });
 }
 
+// Botón para editar alícuota
 var botonEditAli = function (id) {
     $(`#editAli-${id}`).click(function () {
         $(`#nombre-${id}`).removeAttr('disabled');
@@ -203,6 +208,7 @@ var botonEditAli = function (id) {
     });
 }
 
+// Botón para mostrar valores de alícuota
 var botonValuesAli = function (id) {
     $(`#valuesAli-${id}`).click(function () {
         $.ajax({
@@ -210,15 +216,15 @@ var botonValuesAli = function (id) {
             method: 'GET',
             dataType: 'json',
             success: function (data) {
-                $(`.form-control`).removeClass('bg-amarillo');
-                $(`#${id} .form-control`).addClass('bg-amarillo');
+                $(`.form-control`).removeClass('bg-azul');
+                $(`#${id} .form-control`).addClass('bg-azul');
                 mostrarValoresAlicuotas(data, id);
             },
             error: function (error) {
                 console.error('Error en la búsqueda:', error);
                 Swal.fire({
                     title: "Ocurrió un error",
-                    text: error.mensaje,
+                    text: error.responseText,
                     icon: "error"
                 });
             }
@@ -226,6 +232,7 @@ var botonValuesAli = function (id) {
     });
 }
 
+// Botón para guardar cambios de alícuota
 var botonSaveAli = function (id) {
     $(`#saveAli-${id}`).click(function () {
         var json = {
@@ -253,7 +260,7 @@ var botonSaveAli = function (id) {
                 console.error('Error en la búsqueda:', error);
                 Swal.fire({
                     title: "Ocurrió un error",
-                    text: error.mensaje,
+                    text: error.responseText,
                     icon: "error"
                 });
             }
@@ -261,6 +268,7 @@ var botonSaveAli = function (id) {
     });
 }
 
+// Botón para eliminar una alícuota
 var botonDeleteAli = function (id) {
     $(`#deleteAli-${id}`).click(function () {
         Swal.fire({
@@ -295,7 +303,7 @@ var botonDeleteAli = function (id) {
                         console.error('Error en la búsqueda:', error);
                         Swal.fire({
                             title: "Ocurrió un error",
-                            text: error.mensaje,
+                            text: error.responseText,
                             icon: "error"
                         });
                     }
@@ -305,6 +313,7 @@ var botonDeleteAli = function (id) {
     });
 }
 
+// Armado de cuadrante de Valores
 var mostrarValoresAlicuotas = function (data, idAlicuota) {
     $('#valoresData').empty();
     $('#valoresData').val(idAlicuota);
@@ -353,6 +362,7 @@ var mostrarValoresAlicuotas = function (data, idAlicuota) {
     $('#valores').show();
 }
 
+// Botón para editar Valor
 var botonEditValor = function (id) {
     $(`#editVal-${id}`).click(function () {
         $(`#periodo-${id}`).removeAttr('disabled');
@@ -364,6 +374,7 @@ var botonEditValor = function (id) {
     });
 }
 
+// Botón para guardar cambios de Valor
 var botonSaveValor = function (id) {
     $(`#saveVal-${id}`).click(function () {
         var json = {
@@ -391,7 +402,7 @@ var botonSaveValor = function (id) {
                 console.error('Error en la búsqueda:', error);
                 Swal.fire({
                     title: "Ocurrió un error",
-                    text: error.mensaje,
+                    text: error.responseText,
                     icon: "error"
                 });
             }
@@ -399,6 +410,7 @@ var botonSaveValor = function (id) {
     });
 }
 
+// Botón para eliminar un Valor
 var botonDeleteValor = function (id) {
     $(`#deleteVal-${id}`).click(function () {
         Swal.fire({
@@ -416,7 +428,7 @@ var botonDeleteValor = function (id) {
                     url: prefijoURL + `/valoresAlicuotas`,
                     method: 'DELETE',
                     dataType: 'json',
-                    data: JSON.stringify({ idValoresAlicuota: id }),
+                    data: JSON.stringify({ idValoresAlicuota: String(id) }),
                     success: function (data) {
                         if (data) {
                             $(`#${id}`).remove();
@@ -433,7 +445,7 @@ var botonDeleteValor = function (id) {
                         console.error('Error en la búsqueda:', error);
                         Swal.fire({
                             title: "Ocurrió un error",
-                            text: error.mensaje,
+                            text: error.responseText,
                             icon: "error"
                         });
                     }
@@ -443,6 +455,7 @@ var botonDeleteValor = function (id) {
     });
 }
 
+// Botón para agregar un nuevo Valor
 $('#btnAddValor').click(function () {
     if ($('#saveVal-').is(':visible')) {
         return;
@@ -491,12 +504,14 @@ $('#btnAddValor').click(function () {
     botonCreateVal();
 });
 
+// Botón para cancelar nuevo Valor
 var botonCancelVal = function () {
     $('#cancelVal').click(function () {
         $('#newVal').remove();
     });
 }
 
+// Botón para guardar cambios de nuevo Valor
 var botonCreateVal = function () {
     $('#saveVal-').click(function () {
         var json = {
@@ -512,7 +527,7 @@ var botonCreateVal = function () {
             data: JSON.stringify(json),
             success: function (data) {
                 if (data) {
-                    $(`#newVal-`).attr('id', `${data.id}`);
+                    $(`#newVal`).attr('id', `${data.id}`);
                     $(`#saveVal-`).attr('id', `saveVal-${data.id}`);
                     $(`#editVal-`).attr('id', `editVal-${data.id}`);
                     $(`#deleteVal-`).attr('id', `deleteVal-${data.id}`);
@@ -523,6 +538,7 @@ var botonCreateVal = function () {
                     $(`#deleteVal-${data.id}`).removeClass('d-none');
                     $(`#periodo-${data.id}`).attr('disabled', true);
                     $(`#valor-${data.id}`).attr('disabled', true);
+                    $(`#cancelVal`).remove();
                     botonEditValor(data.id);
                     botonSaveValor(data.id);
                     botonDeleteValor(data.id);
@@ -534,7 +550,7 @@ var botonCreateVal = function () {
                 console.error('Error en la búsqueda:', error);
                 Swal.fire({
                     title: "Ocurrió un error",
-                    text: error.mensaje,
+                    text: error.responseText,
                     icon: "error"
                 });
             }
