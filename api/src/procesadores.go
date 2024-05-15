@@ -332,14 +332,21 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	var name string
 
 	// Reemplazar Alicuotas
-	alicuotas, err := Alicuota(db, proceso.Id_convenio, fecha, fecha2)
+	var select_control string
+	err = db.QueryRow("SELECT extractor.obt_control($1, $2, $3)", proceso.Id_modelo, fecha, fecha2).Scan(&select_control)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
-	for _, ali := range alicuotas {
-		proceso.Select_control = strings.Replace(proceso.Select_control, ali.ReplaceAli, ali.ValorAli, -1)
-	}
+	proceso.Select_control = select_control
+	// alicuotas, err := Alicuota(db, proceso.Id_convenio, fecha, fecha2)
+	// if err != nil {
+	// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+	// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+	// }
+	// for _, ali := range alicuotas {
+	// 	proceso.Select_control = strings.Replace(proceso.Select_control, ali.ReplaceAli, ali.ValorAli, -1)
+	// }
 
 	// fmt.Printf("Select_control despues del replace: \n%s\n", proceso.Select_control)
 
