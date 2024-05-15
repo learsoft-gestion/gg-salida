@@ -166,16 +166,19 @@ var botonCreateAli = function () {
             data: JSON.stringify(json),
             success: function (data) {
                 if (data) {
+                    $(`#editAli-`).removeClass('d-none');
+                    $(`#valuesAli-`).removeClass('d-none');
+                    $(`#deleteAli-`).removeClass('d-none');
                     $(`#saveAli-`).attr('id', `saveAli-${data.id}`);
                     $(`#editAli-`).attr('id', `editAli-${data.id}`);
+                    $(`#valuesAli-`).attr('id', `valuesAli-${data.id}`);
                     $(`#deleteAli-`).attr('id', `deleteAli-${data.id}`);
                     $(`#nombre-`).attr('id', `nombre-${data.id}`);
                     $(`#descripcion-`).attr('id', `descripcion-${data.id}`);
                     $(`#saveAli-${data.id}`).hide();
-                    $(`#editAli-${data.id}`).removeClass('d-none');
-                    $(`#daleteAli-${data.id}`).removeClass('d-none');
                     $(`#nombre-${data.id}`).attr('disabled', true);
                     $(`#descripcion-${data.id}`).attr('disabled', true);
+                    $(`#cancelAli`).remove();
                     botonEditAli(data.id);
                     botonValuesAli(data.id);
                     botonSaveAli(data.id);
@@ -286,7 +289,7 @@ var botonDeleteAli = function (id) {
                     url: prefijoURL + `/alicuotas`,
                     method: 'DELETE',
                     dataType: 'json',
-                    data: JSON.stringify({ idAlicuota: id }),
+                    data: JSON.stringify({ idAlicuota: String(id) }),
                     success: function (data) {
                         if (data) {
                             $(`#sindicato`).trigger('change');
