@@ -233,3 +233,9 @@ type ValorAlicuota struct {
 	VigenciaDesde     string
 	Valor             string
 }
+
+type AlicuotaBack struct {
+	ValorAli   string
+	NombreAli  string
+	ReplaceAli string
+}

@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-
+	fmt.Println("Version 1.0.0")
 	// Cargar variables de entorno
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Error: ", err.Error())
@@ -73,7 +73,7 @@ func main() {
 		Handler: router,
 	}
 
-	fmt.Println("Listening at ", os.Getenv("SV_ADDR"))
+	fmt.Println("Listening at port:", os.Getenv("SV_ADDR"))
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Println(err.Error())
 	}

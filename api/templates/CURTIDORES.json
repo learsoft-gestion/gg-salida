@@ -1,0 +1,67 @@
+{
+    "campo": [
+        {
+            "titulo": "Apellido y Nombre",
+            "nombre": "apellidoynombre",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "B",
+            "tipo": "string",
+            "formato": "cuil sin guiones"
+        },
+        {
+            "titulo": "Zona",
+            "nombre": "zona",
+            "columna": "C",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Suma de Bruto",
+            "nombre": "bruto_imp",
+            "columna": "D",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "Suma de 911 - Prestamos",
+            "nombre": "total_911",
+            "columna": "E",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "Suma de 870 - Cuota Sindical (C)",
+            "nombre": "total_870",
+            "columna": "F",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "Cuenta de 871 - Aporte Solidario (D)",
+            "nombre": "total_871",
+            "columna": "G",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "Suma de 1200 - Contribución Patronal 1(C7)",
+            "nombre": "total_1200",
+            "columna": "H",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "Suma de 903 - Seguro (C)",
+            "nombre": "total_903",
+            "columna": "I",
+            "tipo": "numero decimal",
+            "formato": ""
+        }
+    ]
+}

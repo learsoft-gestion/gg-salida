@@ -86,6 +86,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 
 			datos.Version = version
 
+			fmt.Printf("## Salida de %s ##\n", Procesos[0].Nombre)
 			var resultado []string
 			result, id_procesado, errFormateado, db, sql := src.ProcesadorSalida(Procesos[0], datos.Fecha, datos.Fecha2, version, archivo_salida)
 			if result != "" {
@@ -113,7 +114,18 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			// Ejecutar control
 			respuesta_control := Control(db, sql, datos, Procesos[0])
 
-			if respuesta_nomina.Archivos_nomina != nil {
+			if respuesta_nomina.Archivos_nomina[0] == "No se han encontrado registros" {
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				respuesta := modelos.Respuesta{
+					Mensaje:          "No se han encontrado registros",
+					Archivos_salida:  resultado,
+					Archivos_nomina:  respuesta_nomina.Archivos_nomina,
+					Archivos_control: respuesta_control.Archivos_control,
+				}
+				jsonResp, _ := json.Marshal(respuesta)
+				w.Write(jsonResp)
+			} else if respuesta_nomina.Archivos_nomina != nil {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
@@ -139,6 +151,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 
 func MultipleSend(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// println("Restantes pre func", Restantes)
 		if r.Method == "POST" {
 			Procesos = nil
 
@@ -161,7 +174,8 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				fmt.Println(len(Restantes.Id))
 				fmt.Println("Error al preparar query: ", err.Error())
 				// fmt.Printf("Error al preparar query: %s \nQuery: %s\n", err.Error(), queryModelos)
-				http.Error(w, "Error al preparar query: "+err.Error(), http.StatusBadRequest)
+				strRes := fmt.Sprintf("Error al preparar query. Restantes: %v", len(Restantes.Id))
+				http.Error(w, strRes, http.StatusInternalServerError)
 				return
 			}
 			defer stmt.Close()
@@ -224,7 +238,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 					version += int(cuenta.Int32) + 1
 				}
 
-				fmt.Printf("Salida de %s\n", proc.Nombre)
+				fmt.Printf("## Salida de %s ##\n", proc.Nombre)
 				result_salida, id_procesado, err, db, sql := src.ProcesadorSalida(proc, Restantes.Fecha1, Restantes.Fecha2, version, archivoSalida)
 				if err.Mensaje != "" {
 					fmt.Println(err.Mensaje)
@@ -276,7 +290,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 }
 
 func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Proceso) modelos.Respuesta {
-	fmt.Printf("Nomina de %s\n", proceso.Nombre)
+	fmt.Printf("## Nomina de %s ##\n", proceso.Nombre)
 	var resultado []string
 	result, errFormateado := src.ProcesadorNomina(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version)
 	if result != "" {
@@ -301,7 +315,7 @@ func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Pro
 }
 
 func Control(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Proceso) modelos.Respuesta {
-	fmt.Printf("Control de %s\n", proceso.Nombre)
+	fmt.Printf("## Control de %s ##\n", proceso.Nombre)
 
 	var resultado []string
 	result, errFormateado := src.ProcesadorControl(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version)

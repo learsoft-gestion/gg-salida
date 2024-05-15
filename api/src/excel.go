@@ -302,6 +302,9 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					}
 				}
 
+				// if strings.ToLower(campo.Nombre) == "afiliado" {
+				// 	fmt.Printf("Campo: %s Valor: %v Tipo: %s\n", campo.Nombre, val, reflect.TypeOf(val))
+				// }
 				switch v := val.(type) {
 				case int:
 					value += strings.TrimSpace(fmt.Sprintf("%d", v))
@@ -343,6 +346,17 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						}
 					} else {
 						value += strings.TrimSpace(v)
+					}
+				case int64:
+					if strings.ToLower(campo.Tipo) == "condicional" {
+						condiciones := strings.Split(campo.Formato, "/")
+						if v == 0 {
+							value = condiciones[1]
+						} else {
+							value = condiciones[0]
+						}
+					} else {
+						value = strings.TrimSpace(fmt.Sprintf("%v", v))
 					}
 				case []int:
 					value += strings.TrimSpace(fmt.Sprintf("%v", v))
