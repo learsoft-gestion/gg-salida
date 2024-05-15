@@ -42,7 +42,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusBadRequest)
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
 				return
 			}
 
@@ -89,7 +89,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusBadRequest)
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
 				return
 			}
 

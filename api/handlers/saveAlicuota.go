@@ -26,7 +26,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusBadRequest)
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
 				return
 			}
 
@@ -71,9 +71,9 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 
 			result, err := db.Exec(query, alicuota.IdAlicuota)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusBadRequest)
+				w.WriteHeader(http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
 				return
 			}
 
@@ -86,7 +86,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 				return
 			} else if cuenta == 0 {
 				fmt.Println("Error al borrar alícuota: Tiene valores asociados")
-				w.WriteHeader(http.StatusInternalServerError)
+				w.WriteHeader(http.StatusBadRequest)
 				http.Error(w, "La alícuota tiene valores asociados", http.StatusBadRequest)
 			} else if err != nil {
 				fmt.Println("Error al borrar alícuota: " + err.Error())
