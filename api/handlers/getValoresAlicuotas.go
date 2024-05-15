@@ -15,7 +15,7 @@ func GetValoresAlicuotas(db *sql.DB) http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		idAlicuota := vars["idAlicuota"]
-		query := "select id_valores_alicuota, id_alicuota, vigencia_desde, valor from extractor.ext_valores_alicuotas where id_alicuota = $1"
+		query := "select id_valores_alicuota, id_alicuota, vigencia_desde, valor from extractor.ext_valores_alicuotas where id_alicuota = $1 order by 1 desc"
 
 		rows, err := db.Query(query, idAlicuota)
 		if err != nil {

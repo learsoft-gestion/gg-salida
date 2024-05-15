@@ -62,6 +62,7 @@ func main() {
 	router.HandleFunc("/migrador/convenios", handlers.MigradorGetConvenios(db))
 	router.HandleFunc("/migrador/periodos", handlers.MigradorGetPeriodos(db))
 	router.HandleFunc("/migrador/archivos", handlers.ProcesarArchivo(db))
+	router.HandleFunc("/convenios/all", handlers.GetAllConvenios(db))
 	router.HandleFunc("/alicuotas/{idConvenio}", handlers.GetAlicuotas(db))
 	router.HandleFunc("/alicuotas", handlers.SaveAlicuota(db))
 	router.HandleFunc("/valoresAlicuotas/{idAlicuota}", handlers.GetValoresAlicuotas(db))
@@ -128,7 +129,7 @@ func corsHandler(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		// Permitir ciertos métodos HTTP
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PATCH")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PATCH, DELETE")
 
 		// Permitir ciertos encabezados
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Disposition")
