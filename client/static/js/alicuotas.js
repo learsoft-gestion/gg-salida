@@ -153,6 +153,10 @@ var botonCancelAli = function () {
 // Botón para guardar la nueva alícuota
 var botonCreateAli = function () {
     $('#saveAli-').click(function () {
+        if ($(`#nombre-`).val() == "" || $(`#descripcion-`).val() == "") {
+            alert("Debe completar los campos de nombre y descripción antes de guardar.");
+            return;
+        }
         var json = {
             idConvenio: $(`#sindicato`).val(),
             nombre: $(`#nombre-`).val(),
@@ -169,6 +173,7 @@ var botonCreateAli = function () {
                     $(`#editAli-`).removeClass('d-none');
                     $(`#valuesAli-`).removeClass('d-none');
                     $(`#deleteAli-`).removeClass('d-none');
+                    $(`#newAli`).attr('id', `${data.id}`);
                     $(`#saveAli-`).attr('id', `saveAli-${data.id}`);
                     $(`#editAli-`).attr('id', `editAli-${data.id}`);
                     $(`#valuesAli-`).attr('id', `valuesAli-${data.id}`);
@@ -322,7 +327,7 @@ var mostrarValoresAlicuotas = function (data, idAlicuota) {
     $('#valoresData').val(idAlicuota);
 
     $.each(data, function (index, valor) {
-        const group = $(`<div class="form-group" id="${valor.IdValoresAlicuota}">`);
+        const group = $(`<div class="form-group" id="groupVal${valor.IdValoresAlicuota}">`);
         const control = $(`<div class="form-control">`);
         const labelPeriodo = $(`<label for="periodo-${valor.IdValoresAlicuota}">Período</label>`);
         const periodo = $(`<input type="text" disabled value="${valor.VigenciaDesde}" id="periodo-${valor.IdValoresAlicuota}" class="periodo">`);
@@ -434,7 +439,7 @@ var botonDeleteValor = function (id) {
                     data: JSON.stringify({ idValoresAlicuota: String(id) }),
                     success: function (data) {
                         if (data) {
-                            $(`#${id}`).remove();
+                            $(`#groupVal${id}`).remove();
                             Swal.fire({
                                 title: "¡Borrado!",
                                 text: "El valor se ha borrado.",
@@ -530,7 +535,7 @@ var botonCreateVal = function () {
             data: JSON.stringify(json),
             success: function (data) {
                 if (data) {
-                    $(`#newVal`).attr('id', `${data.id}`);
+                    $(`#newVal`).attr('id', `groupVal${data.id}`);
                     $(`#saveVal-`).attr('id', `saveVal-${data.id}`);
                     $(`#editVal-`).attr('id', `editVal-${data.id}`);
                     $(`#deleteVal-`).attr('id', `deleteVal-${data.id}`);

@@ -233,7 +233,7 @@ var obtenerFiltro = function(id, nombre, filtro) {
     td.append(filt);
     tr.append(td);
 
-    $(`#btnOcultar${id}`).hide();
+    // $(`#btnOcultar${id}`).hide();
     return tr;
 }
 
