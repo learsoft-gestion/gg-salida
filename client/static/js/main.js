@@ -242,8 +242,8 @@ var mostrarMensaje = function (json) {
                 $("#mensajeFaltantes").show();
                 $("#mensaje").text(data.mensaje);
                 if (data.boton) {
-                    // $("#btnGenerar").show();
-                    $("#btnGenerar").hide(); // Se deja oculto botón para que no se vea en prod hasta nuevo fix
+                    $("#btnGenerar").show();
+                    // $("#btnGenerar").hide(); // Se deja oculto botón para que no se vea en prod hasta nuevo fix
                 } else {
                     $("#btnGenerar").hide();
                 }

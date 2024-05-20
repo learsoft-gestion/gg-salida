@@ -94,3 +94,7 @@ tbody td {
     text-decoration: underline;
     padding: 0;
 }
+
+.btn-filter {
+    padding: 0;
+}

@@ -169,11 +169,11 @@ var llenarTabla = function (data) {
 
         tbody.append(row);
 
-        item.Filtro_convenio ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Convenio:</strong> ${item.Filtro_convenio}</td>`) : "";
-        item.Filtro_personas ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Personas:</strong> ${item.Filtro_personas}</td>`) : "";
-        item.Filtro_recibos ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Filtro Recibos:</strong> ${item.Filtro_recibos}</td>`) : "";
-        item.Columna_estado ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Columna Estado:</strong> ${item.Columna_estado}</td>`) : "";
-        item.Select_control ? tbody.append(`<tr class="collapse ${item.Id_modelo}" style="background-color: lightyellow;"><td colspan=12 style="text-align: left;padding-left: 4rem;"><strong>Select Control:</strong> ${item.Select_control}</td>`) : "";
+        item.Filtro_convenio ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Convenio", item.Filtro_convenio)) : "";
+        item.Filtro_personas ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Personas", item.Filtro_personas)) : "";
+        item.Filtro_recibos ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Recibos", item.Filtro_recibos)) : "";
+        item.Columna_estado ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Estado", item.Columna_estado)) : "";
+        item.Select_control ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Control", item.Select_control)) : "";
     });
 
     $("tr.accordion-toggle .openOculto").on('click', function () {
@@ -218,6 +218,23 @@ var llenarTabla = function (data) {
             }
         });
     });
+}
+
+var obtenerFiltro = function(id, nombre, filtro) {
+    const tr = $(`<tr class="collapse ${id}" style="background-color: lightyellow;">`);
+    const td = $(`<td colspan=12 style="text-align: left;padding-left: 4rem;">`);
+    const titulo = `<strong>${nombre}: `;
+    // const btnMostrar = $(`<button class="btn btn-sm btn-filter" id="btnMostrar${id}"><span class="material-symbols-outlined">arrow_drop_down</span></button>`);
+    // const btnOcultar = $(`<button class="btn btn-sm btn-filter" id="btnOcultar${id}"><span class="material-symbols-outlined">arrow_drop_up</span></button>`);
+    const filt = `<p>${filtro}</p>`;
+    td.append(titulo);
+    // td.append(btnMostrar);
+    // td.append(btnOcultar);
+    td.append(filt);
+    tr.append(td);
+
+    $(`#btnOcultar${id}`).hide();
+    return tr;
 }
 
 var crearJsonLinks = function() {
