@@ -280,8 +280,12 @@ var llenarTabla = function (rawData) {
                 proceso.Nombre_control != "-" ?
                     row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
                     : row.append('<td>' + proceso.Nombre_control + '</td>');
-                row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
-                row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
+                proceso.Nombre_nomina != "-" ?
+                    row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
+                    : row.append('<td>' + proceso.Nombre_nomina + '</td>');
+                proceso.Nombre_salida != "-" ?
+                    row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
+                    : row.append('<td>' + proceso.Nombre_salida + '</td>');
                 row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
                 row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
 
