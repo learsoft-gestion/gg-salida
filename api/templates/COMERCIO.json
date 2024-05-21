@@ -1,0 +1,32 @@
+{
+    "campo": [
+        {
+            "titulo": "Apellido y Nombre",
+            "nombre": "apellidoynombre",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "columna": "B",
+            "tipo": "string",
+            "formato": "cuil sin guiones"
+        },
+        {
+            "titulo": "Bruto",
+            "nombre": "bruto_imp",
+            "columna": "C",
+            "tipo": "numero decimal",
+            "formato": ""
+        },
+        {
+            "titulo": "No Rem.",
+            "nombre": "total_noRem",
+            "columna": "D",
+            "tipo": "numero decimal",
+            "formato": ""
+        }
+    ]
+}

@@ -79,7 +79,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		// No se han encontrado registros
 
 		// Insertar nuevo proceso en ext_procesados
-		if idProc, err := ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, len(registros), ""); err != nil {
+		if idProc, err := ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, len(registros), "-"); err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil, nil
 		} else if idProc > 0 {
@@ -227,7 +227,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, ""); err != nil {
+		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, "-"); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
@@ -332,21 +332,17 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	var name string
 
 	// Reemplazar Alicuotas
-	var select_control string
-	err = db.QueryRow("SELECT extractor.obt_control($1, $2, $3)", proceso.Id_modelo, fecha, fecha2).Scan(&select_control)
+	var select_control modelos.Select_control
+	err = db.QueryRow("SELECT extractor.obt_control($1, $2, $3)", proceso.Id_modelo, fecha, fecha2).Scan(&select_control.Query)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 	}
-	proceso.Select_control = select_control
-	// alicuotas, err := Alicuota(db, proceso.Id_convenio, fecha, fecha2)
-	// if err != nil {
-	// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-	// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-	// }
-	// for _, ali := range alicuotas {
-	// 	proceso.Select_control = strings.Replace(proceso.Select_control, ali.ReplaceAli, ali.ValorAli, -1)
-	// }
+	if select_control.Query.Valid {
+		proceso.Select_control = select_control.Query.String
+	} else {
+		proceso.Select_control = ""
+	}
 
 	// fmt.Printf("Select_control despues del replace: \n%s\n", proceso.Select_control)
 
@@ -357,12 +353,17 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
 	} else {
 		// Logueo
+		if err = ProcesadosControl(db, proceso.Id_procesado, "-"); err != nil {
+			fmt.Println(err.Error())
+			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+		}
+
 		_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, "el control no esta configurado para este modelo")
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
-		return "", modelos.ErrorFormateado{Mensaje: "el control no esta configurado para este modelo"}
+		return "-", modelos.ErrorFormateado{Mensaje: ""}
 	}
 	proceso.Query = queryFinal
 
@@ -373,7 +374,7 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosControl(db, proceso.Id_procesado, ""); err != nil {
+		if err = ProcesadosControl(db, proceso.Id_procesado, "-"); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}

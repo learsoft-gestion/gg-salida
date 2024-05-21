@@ -38,7 +38,7 @@ func ProcesarArchivo(db *sql.DB) http.HandlerFunc {
 		var datos modelos.Option
 		err = json.NewDecoder(r.Body).Decode(&datos)
 		if err != nil {
-			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
+			http.Error(w, "Error decodificando JSON: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 

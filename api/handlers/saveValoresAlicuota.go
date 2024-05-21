@@ -16,7 +16,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 		err := json.NewDecoder(r.Body).Decode(&valor)
 		if err != nil {
 			fmt.Println(err.Error())
-			http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
+			http.Error(w, "Error decodificando JSON: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -42,7 +42,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -56,7 +56,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			} else if err != nil {
 				fmt.Println("Error al actualizar valor: " + err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 			}
 		} else if r.Method == "POST" {
 			query := "INSERT INTO extractor.ext_valores_alicuotas (id_alicuota, vigencia_desde, valor) values ($1, $2, $3) RETURNING id_valores_alicuota"
@@ -67,7 +67,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al obtener el último ID insertado:", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -89,7 +89,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -103,7 +103,7 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			} else if err != nil {
 				fmt.Println("Error al borrar valor: " + err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 			}
 		}
 	}

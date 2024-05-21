@@ -26,7 +26,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -40,7 +40,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 			} else if err != nil {
 				fmt.Println("Error al actualizar alícuota: " + err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 			}
 		} else if r.Method == "POST" {
 			query := "INSERT INTO extractor.ext_alicuotas (id_convenio, nombre, descripcion) values ($1, $2, $3) RETURNING id_alicuota"
@@ -51,7 +51,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al obtener el último ID insertado:", err.Error())
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -73,7 +73,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				fmt.Println("Error al ejecutar query: ", err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 
@@ -91,7 +91,7 @@ func SaveAlicuota(db *sql.DB) http.HandlerFunc {
 			} else if err != nil {
 				fmt.Println("Error al borrar alícuota: " + err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
-				http.Error(w, "Error en el servidor", http.StatusInternalServerError)
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 			}
 		}
 	}

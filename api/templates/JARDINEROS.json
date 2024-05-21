@@ -23,10 +23,10 @@
         },
         {
             "titulo": "C.C.T.",
-            "nombre": "",
+            "nombre": "convenio",
             "columna": "D",
-            "tipo": "fijo",
-            "formato": "C.C.T. 458/06"
+            "tipo": "string",
+            "formato": ""
         },
         {
             "titulo": "Categoria",
@@ -37,10 +37,10 @@
         },
         {
             "titulo": "Afiliado",
-            "nombre": "",
+            "nombre": "afiliado",
             "columna": "F",
-            "tipo": "fijo",
-            "formato": "NO"
+            "tipo": "condicional",
+            "formato": "SI/NO"
         },
         {
             "titulo": "Remun. Bruta + Incremento N.R. 458/06 (**)",

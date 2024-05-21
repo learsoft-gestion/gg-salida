@@ -18,18 +18,18 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			var datos modelos.DTOdatos
 			err := json.NewDecoder(r.Body).Decode(&datos)
 			if err != nil {
-				http.Error(w, "Error decodificando JSON", http.StatusBadRequest)
+				http.Error(w, "Error decodificando JSON: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			datos.Fecha = src.FormatoFecha(datos.Fecha)
 			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
 
-			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.filtro_having, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
+			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
 			// fmt.Println("Query modelos: ", queryModelos)
 			stmt, err := db.Prepare(queryModelos)
 			if err != nil {
 				fmt.Println(err.Error())
-				http.Error(w, "Error al preparar query", http.StatusBadRequest)
+				http.Error(w, "Error al preparar query: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			defer stmt.Close()
@@ -37,7 +37,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			args = append(args, datos.Id_modelo)
 			rows, err := stmt.Query(args...)
 			if err != nil {
-				http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
+				http.Error(w, "Error al ejecutar el query: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			defer rows.Close()
@@ -46,11 +46,24 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				var proceso modelos.Proceso
 				var estado sql.NullString
 				var select_control sql.NullString
-				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_empresa_reducido, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Filtro_having, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
+				var filtro_recibos sql.NullString
+				var filtro_personas sql.NullString
+
+				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_empresa_reducido, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &filtro_personas, &filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
 				if err != nil {
 					fmt.Println(err.Error())
-					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					http.Error(w, "Error al escanear proceso: "+err.Error(), http.StatusBadRequest)
 					return
+				}
+				if filtro_personas.Valid {
+					proceso.Filtro_personas = filtro_personas.String
+				} else {
+					proceso.Filtro_personas = ""
+				}
+				if filtro_recibos.Valid {
+					proceso.Filtro_recibos = filtro_recibos.String
+				} else {
+					proceso.Filtro_recibos = ""
 				}
 				if estado.Valid {
 					proceso.Columna_estado = estado.String
@@ -74,7 +87,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			err = db.QueryRow("select num_version, archivo_salida from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3 order by num_version desc limit 1;", datos.Id_modelo, datos.Fecha, datos.Fecha2).Scan(&num_version, &archivoSalida)
 			if err != nil && err != sql.ErrNoRows {
 				fmt.Println(err.Error())
-				http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+				http.Error(w, "Error al escanear proceso: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if archivoSalida.Valid {
@@ -186,7 +199,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 
 			rows, err := stmt.Query(args...)
 			if err != nil {
-				http.Error(w, "Error al ejecutar el query", http.StatusBadRequest)
+				http.Error(w, "Error al ejecutar el query: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			defer rows.Close()
@@ -194,11 +207,24 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				var proceso modelos.Proceso
 				var estado sql.NullString
 				var select_control sql.NullString
-				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_empresa_reducido, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &proceso.Filtro_personas, &proceso.Filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
+				var filtro_recibos sql.NullString
+				var filtro_personas sql.NullString
+
+				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_empresa_reducido, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &filtro_personas, &filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
 				if err != nil {
 					fmt.Println(err.Error())
-					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					http.Error(w, "Error al escanear proceso: "+err.Error(), http.StatusBadRequest)
 					return
+				}
+				if filtro_personas.Valid {
+					proceso.Filtro_personas = filtro_personas.String
+				} else {
+					proceso.Filtro_personas = ""
+				}
+				if filtro_recibos.Valid {
+					proceso.Filtro_recibos = filtro_recibos.String
+				} else {
+					proceso.Filtro_recibos = ""
 				}
 				if estado.Valid {
 					proceso.Columna_estado = estado.String
@@ -228,7 +254,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				err = db.QueryRow("select num_version, archivo_salida from extractor.ext_procesados where id_modelo = $1 and fecha_desde = $2 and fecha_hasta = $3 order by num_version desc limit 1", proc.Id_modelo, Restantes.Fecha1, Restantes.Fecha2).Scan(&cuenta, &archivo_salida)
 				if err != nil && err != sql.ErrNoRows {
 					fmt.Println(err.Error())
-					http.Error(w, "Error al escanear proceso", http.StatusBadRequest)
+					http.Error(w, "Error al escanear proceso: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 				if archivo_salida.Valid {
@@ -269,7 +295,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				if result_control.Archivos_control != nil {
 					resultado_control = append(resultado_nomina, result_control.Archivos_control[0])
 				} else {
-					fmt.Println("Error en en control: ", result_control.Mensaje)
+					fmt.Println("Error en el control: ", result_control.Mensaje)
 					http.Error(w, "Error interno del servidor", http.StatusBadRequest)
 					return
 				}

@@ -23,7 +23,6 @@ type Modelo struct {
 	Ruta_archivo_modelo string
 	Archivo_modelo      string
 	Vigente             string
-	Filtro_having       string
 	Ruta_archivo_nomina string
 	Archivo_nomina      string
 	Columna_estado      string
@@ -44,7 +43,6 @@ type Proceso struct {
 	Formato_salida          string
 	Query                   string
 	Archivo_modelo          string
-	Filtro_having           string
 	Archivo_nomina          string
 	Id_procesado            int
 	Columna_estado          string
@@ -238,4 +236,8 @@ type AlicuotaBack struct {
 	ValorAli   string
 	NombreAli  string
 	ReplaceAli string
+}
+
+type Select_control struct {
+	Query sql.NullString
 }

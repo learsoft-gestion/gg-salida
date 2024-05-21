@@ -44,12 +44,6 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		}
 		// queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", "", -1)
 	}
-	if proceso.Filtro_having != "" {
-		queryFinal = strings.Replace(queryFinal, "$FILTRO_HAVING$", proceso.Filtro_having, -1)
-	} else {
-		parts2 := strings.Split(queryFinal, "$FILTRO_HAVING$")
-		queryFinal = strings.TrimSpace(parts2[0]) + "\n" + strings.TrimSpace(parts2[1])
-	}
 
 	// fmt.Println("Query: \n", queryFinal)
 

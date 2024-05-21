@@ -27,6 +27,12 @@ COPY --from=sindicatos_api_builder /sindicatos-api /sindicatos-api
 
 COPY . .
 
+# Copy timezone data
+RUN apk add --no-cache tzdata
+
+# Set the timezone environment variable
+ENV TZ=America/Argentina/Buenos_Aires
+
 # Expose port (the same as in the ENV SV_ADDR)
 # EXPOSE 8088
 

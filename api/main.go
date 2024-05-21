@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Version 1.0.0")
+	fmt.Println("Version 1.0.1")
 	// Cargar variables de entorno
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Error: ", err.Error())
