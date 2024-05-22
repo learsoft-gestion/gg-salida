@@ -36,6 +36,8 @@ type Proceso struct {
 	Nombre_empresa_reducido string
 	Id_convenio             int
 	Nombre_convenio         string
+	Id_concepto             string
+	Id_tipo                 string
 	Nombre                  string
 	Filtro_convenio         string
 	Filtro_personas         string

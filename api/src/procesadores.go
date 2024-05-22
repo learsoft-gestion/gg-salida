@@ -134,9 +134,9 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		}
 
 		if version > 1 {
-			nombreSalida = fmt.Sprintf("%s_%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Nombre, fechaSalida, version)
+			nombreSalida = fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, proceso.Nombre, fechaSalida, version)
 		} else {
-			nombreSalida = fmt.Sprintf("%s_%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Nombre, fechaSalida)
+			nombreSalida = fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, proceso.Nombre, fechaSalida)
 		}
 
 		// Formato del archivo de salida
@@ -282,9 +282,9 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 		}
 
 		if version > 1 {
-			nombreControl = fmt.Sprintf("%s_%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, procesoNombre, fechaControl, version)
+			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl, version)
 		} else {
-			nombreControl = fmt.Sprintf("%s_%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, procesoNombre, fechaControl)
+			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl)
 		}
 
 		// Ruta completa del archivo
@@ -429,9 +429,9 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 		}
 
 		if version > 1 {
-			nombreControl = fmt.Sprintf("%s_%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, procesoNombre, fechaControl, version)
+			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl, version)
 		} else {
-			nombreControl = fmt.Sprintf("%s_%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, procesoNombre, fechaControl)
+			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl)
 		}
 
 		// Ruta completa del archivo
