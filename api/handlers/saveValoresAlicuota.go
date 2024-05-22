@@ -40,7 +40,6 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 
 			result, err := db.Exec(query, valor.VigenciaDesde, valor.Valor, valor.IdValoresAlicuota)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
 				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -55,7 +54,6 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 				return
 			} else if err != nil {
 				fmt.Println("Error al actualizar valor: " + err.Error())
-				w.WriteHeader(http.StatusInternalServerError)
 				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 			}
 		} else if r.Method == "POST" {
@@ -65,7 +63,6 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 			var lastInsertID int
 			err := result.Scan(&lastInsertID)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al obtener el último ID insertado:", err.Error())
 				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -87,7 +84,6 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 
 			result, err := db.Exec(query, valor.IdValoresAlicuota)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Println("Error al ejecutar query: ", err.Error())
 				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -102,7 +98,6 @@ func SaveValoresAlicuota(db *sql.DB) http.HandlerFunc {
 				return
 			} else if err != nil {
 				fmt.Println("Error al borrar valor: " + err.Error())
-				w.WriteHeader(http.StatusInternalServerError)
 				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
 			}
 		}
