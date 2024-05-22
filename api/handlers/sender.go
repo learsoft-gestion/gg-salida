@@ -149,9 +149,13 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				}
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
-			} else {
+			} else if respuesta_nomina.Archivos_nomina == nil {
 				w.WriteHeader(http.StatusBadRequest)
 				jsonResp, _ := json.Marshal(respuesta_nomina)
+				w.Write(jsonResp)
+			} else {
+				w.WriteHeader(http.StatusBadRequest)
+				jsonResp, _ := json.Marshal(respuesta_control)
 				w.Write(jsonResp)
 			}
 
