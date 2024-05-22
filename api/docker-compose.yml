@@ -15,8 +15,8 @@ services:
     environment:
       - SV_ADDR=0.0.0.0:${PORT}
       - CONN_POSTGRES=${CONN_POSTGRES}
-    # volumes:
-      # - .:/app
+    volumes:
+      - ./salida:/salida
     command: /sindicatos-api
     networks:
       - sindicatos-network

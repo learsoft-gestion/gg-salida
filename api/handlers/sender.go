@@ -138,7 +138,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				}
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
-			} else if respuesta_nomina.Archivos_nomina != nil {
+			} else if (respuesta_nomina.Archivos_nomina != nil) && (respuesta_control.Archivos_control != nil) {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
