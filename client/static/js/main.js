@@ -355,10 +355,11 @@ var llenarTabla = function (rawData) {
                 $('#loadingOverlay').hide();
                 Swal.fire({
                     title: "Ocurrió un error",
-                    text: error.mensaje,
+                    text: error.responseJSON.mensaje,
                     icon: "error"
                 });
                 console.error('Error en la solicitud:', error);
+                $("#btnBuscar").trigger("click");
             }
         });
     });
