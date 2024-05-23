@@ -126,6 +126,33 @@ $("#conv").change(function () {
             console.error('Error en la búsqueda:', error);
         }
     });
+
+    var emp = $('#emp').val()
+    $.ajax({
+        url: prefijoURL + `/jurisdicciones/${convId}${emp ? "/" + emp : "/0"}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $("#jurisdiccion").empty();
+            var selOption = document.createElement("option");
+            selOption.value = '';
+            selOption.textContent = 'Todas';
+            $("#jurisdiccion").append(selOption);
+            if (data && data.length > 0) {
+                data.forEach(jurisdiccion => {
+                    const option = document.createElement("option");
+                    option.value = jurisdiccion;
+                    option.textContent = jurisdiccion;
+                    $("#jurisdiccion").append(option);
+                });
+            } else {
+                console.log('No se recibieron datos del servidor.');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
 });
 
 // Select de concepto y tipo
@@ -160,6 +187,32 @@ $("#emp").change(function () {
                     option.value = tipo.Id;
                     option.textContent = tipo.Nombre;
                     $("#tipo").append(option);
+                });
+            } else {
+                console.log('No se recibieron datos del servidor.');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
+
+    $.ajax({
+        url: prefijoURL + `/jurisdicciones/${convId ? convId + "/" : "0/"}${empId}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $("#jurisdiccion").empty();
+            var selOption = document.createElement("option");
+            selOption.value = '';
+            selOption.textContent = 'Todas';
+            $("#jurisdiccion").append(selOption);
+            if (data && data.length > 0) {
+                data.forEach(jurisdiccion => {
+                    const option = document.createElement("option");
+                    option.value = jurisdiccion;
+                    option.textContent = jurisdiccion;
+                    $("#jurisdiccion").append(option);
                 });
             } else {
                 console.log('No se recibieron datos del servidor.');
