@@ -1,6 +1,8 @@
 package modelos
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type Modelo struct {
 	Id_modelo           int
@@ -261,4 +263,19 @@ type PiDetalle struct {
 	RemTotal               int
 	Categoria              int
 	DescuentaCuotaSindical bool
+}
+
+type Estilos struct {
+	StyleMoneda            int
+	StyleNumero            int
+	StyleNumeroDecimal     int
+	StyleEncabezadoNomina  int
+	StyleEncabezadoControl int
+	StyleColumnaControl    int
+	StyleTotalesControl    int
+	StyleControlCeleste    int
+	StyleAligned           int
+	StyleDefaultCabecera   int
+	StyleDefault           int
+	StyleVertical          int
 }

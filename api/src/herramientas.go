@@ -13,6 +13,8 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 
 	// Reemplazo de fecha en query
 	var queryFinal string
+	var personal_interno string
+
 	if proceso.Columna_estado != "" {
 		queryFinal = strings.Replace(proceso.Query, "$COLUMNA_ESTADO$", proceso.Columna_estado, -1)
 	} else {
@@ -29,7 +31,6 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 	} else {
 		parts := strings.Split(queryFinal, "$FILTRO_PERSONAS$")
 		// fmt.Println("Query: \n", queryFinal)
-		// fmt.Println("PARTS: ", parts)
 		queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
 	}
 	if proceso.Filtro_recibos != "" {
@@ -42,7 +43,14 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		} else {
 			queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
 		}
-		// queryFinal = strings.Replace(queryFinal, "$FILTRO_RECIBOS$", "", -1)
+	}
+	err := db.QueryRow("select extractor.obt_personal_interno()").Scan(&personal_interno)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		fmt.Println("Error al obtener personal interno del extractor")
+		return nil, err
+	} else {
+		queryFinal = strings.Replace(queryFinal, "$PERSONAL_INTERNO$", personal_interno, -1)
 	}
 
 	// fmt.Println("Query: \n", queryFinal)
