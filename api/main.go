@@ -68,6 +68,12 @@ func main() {
 	router.HandleFunc("/alicuotas", handlers.SaveAlicuota(db))
 	router.HandleFunc("/valoresAlicuotas/{idAlicuota}", handlers.GetValoresAlicuotas(db))
 	router.HandleFunc("/valoresAlicuotas", handlers.SaveValoresAlicuota(db))
+	router.HandleFunc("/personalinterno/all", handlers.GetPersonalInterno(db))
+	router.HandleFunc("/personalinterno", handlers.SavePersonalInterno(db))
+	router.HandleFunc("/piCabecera/all", handlers.GetPiCabecera(db))
+	router.HandleFunc("/piCabecera", handlers.SavePiCabecera(db))
+	router.HandleFunc("/piDetalle/{idPi}", handlers.GetPiDetalle(db))
+	router.HandleFunc("/piDetalle", handlers.SavePiDetalle(db))
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),

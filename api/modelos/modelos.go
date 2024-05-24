@@ -243,3 +243,22 @@ type AlicuotaBack struct {
 type Select_control struct {
 	Query sql.NullString
 }
+
+type PersonalInterno struct {
+	Cuil string
+}
+
+type PiCabecera struct {
+	IdPi         string
+	IdEmpresaAdm string
+	Periodo      string
+}
+
+type PiDetalle struct {
+	IdPi                   string
+	Cuil                   string
+	FechaIngreso           string
+	RemTotal               int
+	Categoria              int
+	DescuentaCuotaSindical bool
+}
