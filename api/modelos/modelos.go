@@ -1,6 +1,8 @@
 package modelos
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type Modelo struct {
 	Id_modelo           int
@@ -242,4 +244,19 @@ type AlicuotaBack struct {
 
 type Select_control struct {
 	Query sql.NullString
+}
+
+type Estilos struct {
+	StyleMoneda            int
+	StyleNumero            int
+	StyleNumeroDecimal     int
+	StyleEncabezadoNomina  int
+	StyleEncabezadoControl int
+	StyleColumnaControl    int
+	StyleTotalesControl    int
+	StyleControlCeleste    int
+	StyleAligned           int
+	StyleDefaultCabecera   int
+	StyleDefault           int
+	StyleVertical          int
 }

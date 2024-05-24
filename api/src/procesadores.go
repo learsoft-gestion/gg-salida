@@ -79,7 +79,7 @@ func ProcesadorSalida(proceso modelos.Proceso, fecha string, fecha2 string, vers
 		// No se han encontrado registros
 
 		// Insertar nuevo proceso en ext_procesados
-		if idProc, err := ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, len(registros), "-"); err != nil {
+		if idProc, err := ProcesadosSalida(db, proceso.Id_modelo, fecha, fecha2, version, len(registros), "Sin datos"); err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil, nil
 		} else if idProc > 0 {
@@ -227,9 +227,9 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, "-"); err != nil {
+		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, "Sin datos"); err != nil {
 			fmt.Println(err.Error())
-			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
 		// Logueo
@@ -245,7 +245,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
-		return "No se han encontrado registros", modelos.ErrorFormateado{Mensaje: ""}
+		return "Sin datos", modelos.ErrorFormateado{Mensaje: ""}
 
 	} else {
 		fmt.Println("Cantidad de registros: ", len(registros))
@@ -275,9 +275,9 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 		// Verificar si la carpeta de salida existe, si no, crearla
 		if _, err := os.Stat(rutaCarpeta); os.IsNotExist(err) {
 			if err := os.MkdirAll(rutaCarpeta, 0755); err != nil {
-				fmt.Println("Error al crear la carpeta de salida:", err)
+				fmt.Println("Error al crear la carpeta de salida: ", err)
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				return "", modelos.ErrorFormateado{Mensaje: "Error al crear la carpeta de salida: " + err.Error()}
 			}
 		}
 
@@ -353,7 +353,7 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 		queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
 	} else {
 		// Logueo
-		if err = ProcesadosControl(db, proceso.Id_procesado, "-"); err != nil {
+		if err = ProcesadosControl(db, proceso.Id_procesado, "Sin datos"); err != nil {
 			fmt.Println(err.Error())
 			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
 		}
@@ -363,7 +363,7 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
-		return "-", modelos.ErrorFormateado{Mensaje: ""}
+		return "Sin datos", modelos.ErrorFormateado{Mensaje: ""}
 	}
 	proceso.Query = queryFinal
 
@@ -374,9 +374,9 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	}
 
 	if len(registros) == 0 {
-		if err = ProcesadosControl(db, proceso.Id_procesado, "-"); err != nil {
+		if err = ProcesadosControl(db, proceso.Id_procesado, "Sin datos"); err != nil {
 			fmt.Println(err.Error())
-			return err.Error(), modelos.ErrorFormateado{Mensaje: "error al loguear en procesados"}
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
 		// Logueo
@@ -392,7 +392,7 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
-		return "No se han encontrado registros", modelos.ErrorFormateado{Mensaje: ""}
+		return "Sin datos", modelos.ErrorFormateado{Mensaje: ""}
 
 	} else {
 		fmt.Println("Cantidad de registros: ", len(registros))

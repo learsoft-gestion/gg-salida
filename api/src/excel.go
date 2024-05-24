@@ -39,103 +39,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	fileNuevo.SetSheetName("Sheet1", sheetName)
 
 	fileNuevo.SetColWidth(sheetName, "A", "CA", 15)
-	// fuente_valores := &excelize.Font{
-	// 	Size: 9,
-	// }
-	// borde := []excelize.Border{
-	// 	{
-	// 		Type:  "top",
-	// 		Color: "000000",
-	// 		Style: 1,
-	// 	},
-	// 	{
-	// 		Type:  "bottom",
-	// 		Color: "000000",
-	// 		Style: 1,
-	// 	},
-	// 	{
-	// 		Type:  "left",
-	// 		Color: "000000",
-	// 		Style: 1,
-	// 	},
-	// 	{
-	// 		Type:  "right",
-	// 		Color: "000000",
-	// 		Style: 1,
-	// 	},
-	// },
 
-	styleMoneda, _ := fileNuevo.NewStyle(&excelize.Style{
-		NumFmt: 177,
-		Font: &excelize.Font{
-			Size: 9,
-		},
-		Alignment: &excelize.Alignment{
-			Horizontal: "center",
-			Vertical:   "center",
-			WrapText:   false,
-		},
-		Border: []excelize.Border{
-			{
-				Type:  "top",
-				Color: "000000",
-				Style: 1,
-			},
-			{
-				Type:  "bottom",
-				Color: "000000",
-				Style: 1,
-			},
-			{
-				Type:  "left",
-				Color: "000000",
-				Style: 1,
-			},
-			{
-				Type:  "right",
-				Color: "000000",
-				Style: 1,
-			},
-		},
-	})
-	styleNumero, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 1, Border: []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}}})
-	styleNumeroDecimal, _ := fileNuevo.NewStyle(&excelize.Style{NumFmt: 2, Border: []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}}})
-	styleEncabezadoNomina, _ := fileNuevo.NewStyle(&excelize.Style{
-		Font:      &excelize.Font{Size: 10, Color: "#FF0000"},
-		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#a7a7a7"}, Pattern: 1},
-		Alignment: &excelize.Alignment{Horizontal: "left", Vertical: "center", WrapText: true},
-		Border:    []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
-	})
-	styleEncabezadoControl, _ := fileNuevo.NewStyle(&excelize.Style{Font: &excelize.Font{Size: 10}, Border: []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}}, Fill: excelize.Fill{Type: "pattern", Color: []string{"#a7a7a7"}, Pattern: 1}, Alignment: &excelize.Alignment{Horizontal: "left", Vertical: "center", WrapText: true}})
-	styleColumnaControl, _ := fileNuevo.NewStyle(&excelize.Style{
-		Font:      &excelize.Font{Color: "#FFD3A7"},
-		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#000000"}, Pattern: 1},
-		Alignment: &excelize.Alignment{Horizontal: "center", Vertical: "center", WrapText: true},
-	})
-	styleTotalesControl, _ := fileNuevo.NewStyle(&excelize.Style{
-		NumFmt:    177,
-		Font:      &excelize.Font{Bold: true},
-		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#a7a7a7"}, Pattern: 1},
-		Alignment: &excelize.Alignment{Horizontal: "center", Vertical: "center", ReadingOrder: 0, Indent: 0, RelativeIndent: 0, ShrinkToFit: false, TextRotation: 0, WrapText: false},
-		Border:    []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
-	})
-	styleAligned, _ := fileNuevo.NewStyle(&excelize.Style{
-		Alignment: &excelize.Alignment{Horizontal: "center", Vertical: "center", ReadingOrder: 0, Indent: 0, RelativeIndent: 0, ShrinkToFit: false, TextRotation: 0, WrapText: false},
-		Border:    []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
-	})
-	styleDefaultCabecera, _ := fileNuevo.NewStyle(&excelize.Style{
-		Border: []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
-		Fill:   excelize.Fill{Type: "pattern", Color: []string{"#fdf59a"}, Pattern: 1},
-	})
-	styleDefault, _ := fileNuevo.NewStyle(&excelize.Style{
-		Border: []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
-	})
-	styleVertical, _ := fileNuevo.NewStyle(&excelize.Style{
-		Font:      &excelize.Font{Bold: true},
-		Alignment: &excelize.Alignment{Horizontal: "center", Vertical: "center", TextRotation: 90, WrapText: true},
-		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#C6E0B4"}, Pattern: 1},
-		Border:    []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
-	})
+	estilos := ObtenerEstilos(fileNuevo)
 
 	if tipo_ejecucion == "control" {
 
@@ -158,8 +63,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				// Escribir claves
 				cellKey := "B" + strconv.Itoa(j+2)
 				fileNuevo.SetCellValue(sheetName, cellKey, campo)
-				fileNuevo.SetCellStyle(sheetName, cellKey, cellKey, styleEncabezadoControl) // Fondo gris para el campo
-				fileNuevo.SetRowHeight(sheetName, j+2, 25)                                  // Amplia alto de la fila
+				fileNuevo.SetCellStyle(sheetName, cellKey, cellKey, estilos.StyleEncabezadoControl) // Fondo gris para el campo
+				fileNuevo.SetRowHeight(sheetName, j+2, 25)                                          // Amplia alto de la fila
 
 				// Escribir valores
 				value := registro.Valores[strings.ToUpper(campo)]
@@ -167,7 +72,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 				if strings.ToUpper(campo) == "PERIODOLIQ" {
 					value = formatearPeriodoLiq(value.(string))
-					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleColumnaControl)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleColumnaControl)
 				}
 
 				switch v := value.(type) {
@@ -178,20 +83,20 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						fmt.Println(err.Error())
 					}
 					fileNuevo.SetCellValue(sheetName, cellValue, valueFloat)
-					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleMoneda)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleMoneda)
 				case string:
 					fileNuevo.SetCellValue(sheetName, cellValue, v)
-					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleAligned)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleAligned)
 				case int64:
 					fileNuevo.SetCellValue(sheetName, cellValue, v)
-					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, styleAligned)
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleAligned)
 				default:
 					fileNuevo.SetCellValue(sheetName, cellValue, "defValue")
 					fmt.Printf("Tipo de dato en %s: %T\n", campo, value)
 
 				}
 
-				if strings.Contains(campo, "KTNA") && strings.Contains(campo, "TOTAL") {
+				if strings.Contains(strings.ToUpper(campo), "KTNA") && strings.Contains(strings.ToUpper(campo), "TOTAL") {
 
 					if colInicioLiq == 3 {
 						// Inició con LIQ
@@ -200,27 +105,21 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 					colTotalKtna = j + 2
 
-					// if !strings.Contains(registro.Columnas[j+1], "KTNA") {
 					for k := colInicioKtna; k <= j+2; k++ {
-						// for k := colTotalNum + 1; k <= j+2; k++ {
 						cell := fmt.Sprintf("A%d", k)
 						fileNuevo.SetCellValue(sheetName, cell, "TOTAL DESCONTADO KTNA")
-						fileNuevo.SetCellStyle(sheetName, cell, cell, styleVertical)
-						// colTotal = fmt.Sprintf("%d", j+2)
+						fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleVertical)
 					}
 
 					// fmt.Println("Proxima iteracion ya no es ktna: ", registro.Columnas[j+1])
 					// fmt.Printf("Merge de %s a %s para ktna.\n", "A"+strconv.Itoa(colTotalNum), "A"+strconv.Itoa(j+2))
 
 					fileNuevo.MergeCell(sheetName, "A"+strconv.Itoa(colInicioKtna), "A"+strconv.Itoa(colTotalKtna))
-					// }
 
-					// fmt.Printf("Celda de KTNA TOTAL: %s\n", "B"+strconv.Itoa(j+2))
-					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), styleTotalesControl)             // Negrita y fondo gris para el total
-					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), styleTotalesControl) // Negrita y fondo gris para el total
+					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
+					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
 
-				} else if strings.Contains(campo, "TOTAL") {
-					// } else if strings.Contains(campo, "TOTAL") && !strings.Contains(campo, "KTNA") && strings.Contains(campo, "LIQ") {
+				} else if strings.Contains(strings.ToUpper(campo), "TOTAL") && !strings.Contains(strings.ToUpper(campo), "PAGAR") {
 
 					if colInicioKtna == 3 {
 						// Inició con KTNA
@@ -228,26 +127,27 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					}
 
 					colTotalLiq = j + 2
-					// if strings.Contains(registro.Columnas[j+1], "KTNA") { // Si el siguiente campo es de ktna
 					for z := colInicioLiq; z <= colTotalLiq; z++ {
 						cell := fmt.Sprintf("A%d", z)
 						fileNuevo.SetCellValue(sheetName, cell, "Liquidacion")
-						fileNuevo.SetCellStyle(sheetName, cell, cell, styleVertical)
+						fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleVertical)
 					}
 
-					// colInicioKtna = j + 3
-					// fmt.Println("Proxima iteración es ktna: ", registro.Columnas[j+1])
-					// fmt.Printf("Merge de %s a %s para liquidacion.\n", "A3", "A"+strconv.Itoa(j+2))
-
 					fileNuevo.MergeCell(sheetName, "A"+strconv.Itoa(colInicioLiq), "A"+strconv.Itoa(colTotalLiq))
-					// }
 
 					// fmt.Printf("Celda de TOTAL: %s\n", "B"+strconv.Itoa(j+2))
-					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), styleTotalesControl)             // Negrita y fondo gris para el total
-					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), styleTotalesControl) // Negrita y fondo gris para el total
+					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
+					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
 
 				}
 
+				if strings.Contains(strings.ToUpper(campo), "*C") {
+					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleControlCeleste)             // Negrita y fondo gris para el total
+					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleControlCeleste) // Negrita y fondo gris para el total
+				} else if strings.Contains(strings.ToUpper(campo), "*") {
+					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
+					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
+				}
 			}
 
 			for j, campo := range registro.Columnas { // Borrar prefijos "KTNA"
@@ -258,10 +158,18 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					campo = strings.Replace(campo, "LIQ ", "", -1)
 					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
 				}
+				if strings.Contains(strings.ToUpper(campo), "*C") {
+					campo = strings.Replace(campo, "*C ", "", -1)
+					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
+				} else if strings.Contains(campo, "*") {
+					campo = strings.Replace(campo, "* ", "", -1)
+					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
+				}
+
 			}
 
-			fileNuevo.SetCellStyle(sheetName, colLetter+"2", colLetter+"2", styleColumnaControl) // Fondo negro en fila 2
-			fileNuevo.SetColWidth(sheetName, "B", "B", 30)                                       // Amplia ancho de columna
+			fileNuevo.SetCellStyle(sheetName, colLetter+"2", colLetter+"2", estilos.StyleColumnaControl) // Fondo negro en fila 2
+			fileNuevo.SetColWidth(sheetName, "B", "B", 30)                                               // Amplia ancho de columna
 
 			// fmt.Printf("LIQ: \n%v ---> %v\nKTNA: \n%v ---> %v\n", colInicioLiq, colTotalLiq, colInicioKtna, colTotalKtna)
 		}
@@ -278,10 +186,11 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 		// Escribir campo fijos
 		fileNuevo.SetCellValue(sheetName, "A2", "Detalle")
 		fileNuevo.SetCellValue(sheetName, "B2", "Conceptos")
+		// fileNuevo.SetCellValue(sheetName, "A1", proceso.Nombre_convenio+"_"+proceso.Nombre_empresa_reducido+"_"+proceso.Id_concepto+proceso.Id_tipo+"_"+proceso.Nombre)
 
 		//Estilos fijos
-		fileNuevo.SetCellStyle(sheetName, "A2", "A2", styleColumnaControl)
-		fileNuevo.SetCellStyle(sheetName, "B2", "B2", styleColumnaControl)
+		fileNuevo.SetCellStyle(sheetName, "A2", "A2", estilos.StyleColumnaControl)
+		fileNuevo.SetCellStyle(sheetName, "B2", "B2", estilos.StyleColumnaControl)
 
 		// Guardar archivo
 		if err := fileNuevo.SaveAs(nombreSalida); err != nil {
@@ -303,10 +212,10 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 		for _, campo := range plantilla.Campos {
 			cell := campo.Columna + "1"
 			fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
-			fileNuevo.SetCellStyle(sheetName, cell, cell, styleDefaultCabecera)
+			fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleDefaultCabecera)
 		}
 		if strings.ToLower(plantilla.Cabecera.Estilo) == "nomina" {
-			fileNuevo.SetRowStyle(sheetName, 1, 1, styleEncabezadoNomina)
+			fileNuevo.SetRowStyle(sheetName, 1, 1, estilos.StyleEncabezadoNomina)
 			fileNuevo.SetRowHeight(sheetName, 1, 50)
 		}
 	}
@@ -318,8 +227,22 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 			// Validaciones
 
-			if campo.Nombre == "" {
+			if campo.Nombre == "" && campo.Tipo != "suma" {
 				value += campo.Formato
+			} else if strings.ToLower(campo.Tipo) == "suma" {
+				partes := strings.Split(campo.Formato, ",")
+				var acumulador float64
+				for _, parte := range partes {
+					campoSuma := strings.ToUpper(strings.TrimSpace(parte))
+					valor := registro.Valores[campoSuma]
+					switch v := valor.(type) {
+					case []byte:
+						// valorStr := string(v)
+						valorFloat := valueToFloat(v)
+						acumulador += valorFloat
+					}
+				}
+				value = fmt.Sprintf("%.2f", acumulador)
 			} else {
 				campo.Nombre = strings.ToUpper(campo.Nombre)
 				val := registro.Valores[campo.Nombre]
@@ -430,13 +353,13 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				if strings.ToLower(campo.Tipo) == "moneda" {
 					valor, _ := strconv.ParseFloat(value, 64)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
-					fileNuevo.SetCellStyle(sheetName, cell, cell, styleMoneda)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleMoneda)
 				} else if strings.ToLower(campo.Tipo) == "int" {
 					valor, _ := strconv.Atoi(value)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
-					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumero)
+					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, estilos.StyleNumero)
 				} else if strings.ToLower(campo.Tipo) == "numero decimal" {
-					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, styleNumeroDecimal)
+					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, estilos.StyleNumeroDecimal)
 					fileNuevo.SetCellValue(sheetName, cell, value)
 				} else {
 					fileNuevo.SetCellValue(sheetName, cell, value)
@@ -446,7 +369,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				if strings.ToLower(campo.Tipo) == "moneda" {
 					valor, _ := strconv.ParseFloat(value, 64)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
-					fileNuevo.SetCellStyle(sheetName, cell, cell, styleMoneda)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleMoneda)
 				} else if strings.ToLower(campo.Tipo) == "int" {
 					if len(value) > 0 {
 						valor, err := strconv.ParseFloat(value, 64)
@@ -457,7 +380,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					} else {
 						fileNuevo.SetCellValue(sheetName, cell, value)
 					}
-					fileNuevo.SetCellStyle(sheetName, cell, cell, styleNumero)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleNumero)
 				} else if strings.ToLower(campo.Tipo) == "numero" {
 					if len(value) > 0 {
 						valor, err := strconv.ParseFloat(value, 64)
@@ -468,13 +391,13 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					} else {
 						fileNuevo.SetCellValue(sheetName, cell, value)
 					}
-					fileNuevo.SetCellStyle(sheetName, cell, cell, styleNumeroDecimal)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleNumeroDecimal)
 				} else {
 					fileNuevo.SetCellValue(sheetName, cell, value)
 					if campo.Ancho > 0 {
 						fileNuevo.SetColWidth(sheetName, campo.Columna, campo.Columna, float64(campo.Ancho))
 					}
-					fileNuevo.SetCellStyle(sheetName, cell, cell, styleDefault)
+					fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleDefault)
 				}
 			}
 		}

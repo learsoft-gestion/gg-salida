@@ -108,8 +108,13 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			datos.Id_procesado = id_procesado
 			Procesos[0].Id_procesado = id_procesado
 			if errFormateado.Mensaje != "" {
+				_, err = src.ProcesadosSalida(db, Procesos[0].Id_modelo, datos.Fecha, datos.Fecha2, version, 0, "Error")
+				if err != nil {
+					fmt.Println(err.Error())
+					http.Error(w, "Error al loguear en procesados: "+err.Error(), http.StatusBadRequest)
+					return
+				}
 				errString := "Error en " + Procesos[0].Nombre + ": " + errFormateado.Mensaje
-				// http.Error(w, errString, http.StatusBadRequest)
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
@@ -269,10 +274,17 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				}
 
 				fmt.Printf("## Salida de %s ##\n", proc.Nombre)
-				result_salida, id_procesado, err, db, sql := src.ProcesadorSalida(proc, Restantes.Fecha1, Restantes.Fecha2, version, archivoSalida)
-				if err.Mensaje != "" {
-					fmt.Println(err.Mensaje)
-					http.Error(w, err.Mensaje, http.StatusBadRequest)
+				result_salida, id_procesado, errFormateado, db, sql := src.ProcesadorSalida(proc, Restantes.Fecha1, Restantes.Fecha2, version, archivoSalida)
+				if errFormateado.Mensaje != "" {
+					_, err := src.ProcesadosSalida(db, proc.Id_modelo, Restantes.Fecha1, Restantes.Fecha2, version, 0, "Error")
+					if err != nil {
+						fmt.Println(err.Error())
+						http.Error(w, "Error al loguear en procesados: "+err.Error(), http.StatusBadRequest)
+						return
+					}
+
+					fmt.Println(errFormateado.Mensaje)
+					http.Error(w, errFormateado.Mensaje, http.StatusBadRequest)
 					return
 				}
 				if result_salida != "" {
@@ -327,6 +339,17 @@ func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Pro
 		resultado = append(resultado, result)
 	}
 	if errFormateado.Mensaje != "" {
+		if err := src.ProcesadosNomina(db, proceso.Id_procesado, 0, "Error"); err != nil {
+			errString := "Error al loguear en procesados: " + errFormateado.Mensaje
+
+			respuesta := modelos.Respuesta{
+				Mensaje:         errString,
+				Archivos_nomina: nil,
+			}
+
+			return respuesta
+		}
+
 		errString := "Error en " + proceso.Nombre + ": " + errFormateado.Mensaje
 
 		respuesta := modelos.Respuesta{
@@ -353,6 +376,18 @@ func Control(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Pr
 		resultado = append(resultado, result)
 	}
 	if errFormateado.Mensaje != "" {
+
+		if err := src.ProcesadosControl(db, proceso.Id_procesado, "Error"); err != nil {
+			errString := "Error al loguear en procesados: " + errFormateado.Mensaje
+
+			respuesta := modelos.Respuesta{
+				Mensaje:          errString,
+				Archivos_control: nil,
+			}
+
+			return respuesta
+		}
+
 		errString := "Error en " + proceso.Nombre + ": " + errFormateado.Mensaje
 
 		respuesta := modelos.Respuesta{
