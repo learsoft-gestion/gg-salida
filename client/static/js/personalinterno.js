@@ -1,9 +1,11 @@
 var prefijoURL
 
+// Menú barra de navegación
 $('#menu').load('/static/menu.html', function () {
     $('#titulo').append('Personal Interno');
 });
 
+// Obtener url del backend
 fetch("/backend-url")
     .then(res => res.json())
     .then(data => {
@@ -15,6 +17,7 @@ fetch("/backend-url")
         console.error("Error al obtener la URL del backend: ", error)
     });
 
+// Buscar registros de cuils
 var buscarCuils = function () {
     $.ajax({
         url: prefijoURL + '/personalinterno/all',
@@ -31,6 +34,7 @@ var buscarCuils = function () {
     });
 }
 
+// Armado dinámico de registros de cuils
 var mostrarCuils = function (data) {
     $('#cuilsData').empty();
     data.forEach(cuil => {
@@ -52,6 +56,7 @@ var mostrarCuils = function (data) {
     });
 }
 
+// Botón para eliminar un cuil
 var botonDeleteCuil = function (id) {
     $(`#delete-${id}`).click(function () {
         Swal.fire({
@@ -96,6 +101,7 @@ var botonDeleteCuil = function (id) {
     });
 }
 
+// Evento de botón Agregar
 $('#btnAdd').click(function () {
     if ($('#new').is(':visible')) {
         return;
@@ -125,14 +131,22 @@ $('#btnAdd').click(function () {
     $('#cuilsData').append(group);
     botonCancel();
     botonSaveCuil();
+    $('#nombre').on('keypress', function(e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $('#save').click();
+        }
+    });
 });
 
+// Botón para cancelar nuevo registro
 var botonCancel = function () {
     $('#cancel').click(function () {
         $('#new').remove();
     });
 }
 
+// Botón para guardar nuevo registro de cuil
 var botonSaveCuil = function () {
     $('#save').click(function () {
         var cuil = $('#nombre').val();
