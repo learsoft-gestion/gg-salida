@@ -44,21 +44,32 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 	if tipo_ejecucion == "control" {
 
-		colInicioLiq := 0  // Almacena la fila del inicio de liquidacion
-		colTotalLiq := 0   // Almacena la fila del total de liquidacion
-		colInicioKtna := 0 // Almacena la fila del inicio de KTNA
-		colTotalKtna := 0  // Almacena la fila del total de KTNA
+		var saltos []int
 
 		for i, registro := range data {
 			colLetter := ObtenerLetra(i + 3) // Almacena la columna para este registro
+			grupoPrevio := ""
+			filaInicialGrupo := 3
 
-			if strings.Contains(registro.Columnas[1], "KTNA") {
-				colInicioKtna = 3
-			} else {
-				colInicioLiq = 3
-			}
-
+			fmt.Println(len(registro.Columnas))
 			for j, campo := range registro.Columnas {
+
+				grupoActual := ExtraerGrupo(campo)
+
+				// Eliminar marca en el nombre del campo
+				campo = EliminarPrefijo(campo, fmt.Sprintf("<%s>", grupoActual))
+				campo = EliminarPrefijo(campo, "*C")
+				campo = EliminarPrefijo(campo, "*")
+
+				if grupoPrevio != "" && grupoPrevio != grupoActual {
+					// El grupo cambia, fusiono las celdas de la columna "A"
+					fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+1)
+					fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+1))
+					fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
+					fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
+					filaInicialGrupo = j + 2
+					saltos = append(saltos, j+2+len(saltos))
+				}
 
 				// Escribir claves
 				cellKey := "B" + strconv.Itoa(j+2)
@@ -67,7 +78,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				fileNuevo.SetRowHeight(sheetName, j+2, 25)                                          // Amplia alto de la fila
 
 				// Escribir valores
-				value := registro.Valores[strings.ToUpper(campo)]
+				value := registro.Valores[strings.ToUpper(registro.Columnas[j])]
 				cellValue := colLetter + strconv.Itoa(j+2)
 
 				if strings.ToUpper(campo) == "PERIODOLIQ" {
@@ -96,97 +107,40 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 				}
 
-				if strings.Contains(strings.ToUpper(campo), "KTNA") && strings.Contains(strings.ToUpper(campo), "TOTAL") {
+				grupoPrevio = grupoActual
 
-					if colInicioLiq == 3 {
-						// Inició con LIQ
-						colInicioKtna = colTotalLiq + 1
-					}
-
-					colTotalKtna = j + 2
-
-					for k := colInicioKtna; k <= j+2; k++ {
-						cell := fmt.Sprintf("A%d", k)
-						fileNuevo.SetCellValue(sheetName, cell, "TOTAL DESCONTADO KTNA")
-						fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleVertical)
-					}
-
-					// fmt.Println("Proxima iteracion ya no es ktna: ", registro.Columnas[j+1])
-					// fmt.Printf("Merge de %s a %s para ktna.\n", "A"+strconv.Itoa(colTotalNum), "A"+strconv.Itoa(j+2))
-
-					fileNuevo.MergeCell(sheetName, "A"+strconv.Itoa(colInicioKtna), "A"+strconv.Itoa(colTotalKtna))
-
-					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
-					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
-
-				} else if strings.Contains(strings.ToUpper(campo), "TOTAL") && !strings.Contains(strings.ToUpper(campo), "PAGAR") {
-
-					if colInicioKtna == 3 {
-						// Inició con KTNA
-						colInicioLiq = colTotalKtna + 1
-					}
-
-					colTotalLiq = j + 2
-					for z := colInicioLiq; z <= colTotalLiq; z++ {
-						cell := fmt.Sprintf("A%d", z)
-						fileNuevo.SetCellValue(sheetName, cell, "Liquidacion")
-						fileNuevo.SetCellStyle(sheetName, cell, cell, estilos.StyleVertical)
-					}
-
-					fileNuevo.MergeCell(sheetName, "A"+strconv.Itoa(colInicioLiq), "A"+strconv.Itoa(colTotalLiq))
-
-					// fmt.Printf("Celda de TOTAL: %s\n", "B"+strconv.Itoa(j+2))
-					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
-					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
-
-				}
-
-				if strings.Contains(strings.ToUpper(campo), "*C") {
+				if strings.Contains(registro.Columnas[j], "*C") {
 					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleControlCeleste)             // Negrita y fondo gris para el total
 					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleControlCeleste) // Negrita y fondo gris para el total
-				} else if strings.Contains(strings.ToUpper(campo), "*") {
+				} else if strings.Contains(registro.Columnas[j], "*") {
 					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
 					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
 				}
-			}
 
-			for j, campo := range registro.Columnas { // Borrar prefijos "KTNA"
-				if strings.Contains(campo, "KTNA") {
-					campo = strings.Replace(campo, "KTNA ", "", -1)
-					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
-				} else if strings.Contains(campo, "LIQ") {
-					campo = strings.Replace(campo, "LIQ ", "", -1)
-					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
+				if j == len(registro.Columnas)-1 {
+					// Fusionar celdas del ultimo grupo
+					if grupoPrevio != "" {
+						fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+2)
+						fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+2))
+						fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
+						fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
+					}
 				}
-				if strings.Contains(strings.ToUpper(campo), "*C") {
-					campo = strings.Replace(campo, "*C ", "", -1)
-					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
-				} else if strings.Contains(campo, "*") {
-					campo = strings.Replace(campo, "* ", "", -1)
-					fileNuevo.SetCellValue(sheetName, "B"+strconv.Itoa(j+2), campo)
-				}
-
 			}
 
 			fileNuevo.SetCellStyle(sheetName, colLetter+"2", colLetter+"2", estilos.StyleColumnaControl) // Fondo negro en fila 2
 			fileNuevo.SetColWidth(sheetName, "B", "B", 30)                                               // Amplia ancho de columna
 
-			// fmt.Printf("LIQ: \n%v ---> %v\nKTNA: \n%v ---> %v\n", colInicioLiq, colTotalLiq, colInicioKtna, colTotalKtna)
 		}
 
-		if colTotalKtna > colTotalLiq {
-			// liq antes que ktna
-			fileNuevo.InsertRows(sheetName, colTotalLiq+1, 1)  // Fila vacia
-			fileNuevo.InsertRows(sheetName, colTotalKtna+2, 1) // Fila vacia
-		} else {
-			fileNuevo.InsertRows(sheetName, colTotalKtna+1, 1) // Fila vacia
-			fileNuevo.InsertRows(sheetName, colTotalLiq+2, 1)  // Fila vacia
+		// Insertar separacion entre filas
+		for _, fila := range saltos {
+			fileNuevo.InsertRows(sheetName, fila, 1)
 		}
 
 		// Escribir campo fijos
 		fileNuevo.SetCellValue(sheetName, "A2", "Detalle")
 		fileNuevo.SetCellValue(sheetName, "B2", "Conceptos")
-		// fileNuevo.SetCellValue(sheetName, "A1", proceso.Nombre_convenio+"_"+proceso.Nombre_empresa_reducido+"_"+proceso.Id_concepto+proceso.Id_tipo+"_"+proceso.Nombre)
 
 		//Estilos fijos
 		fileNuevo.SetCellStyle(sheetName, "A2", "A2", estilos.StyleColumnaControl)
@@ -410,6 +364,19 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	}
 
 	return nombreSalida, nil
+}
+
+func ExtraerGrupo(campo string) string {
+	inicio := strings.Index(campo, "<")
+	fin := strings.Index(campo, ">")
+	if inicio != -1 && fin != -1 && fin > inicio {
+		return campo[inicio+1 : fin]
+	}
+	return ""
+}
+
+func EliminarPrefijo(campo, prefijo string) string {
+	return strings.Replace(campo, prefijo, "", -1)
 }
 
 func ObtenerLetra(numero int) string {

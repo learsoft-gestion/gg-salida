@@ -9,7 +9,7 @@
         },
         {
             "titulo": "APELLIDO Y NOMBRE",
-            "nombre": "cuil",
+            "nombre": "apellidoynombre",
             "columna": "B",
             "tipo": "string",
             "formato": ""

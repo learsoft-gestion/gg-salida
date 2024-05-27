@@ -1,0 +1,32 @@
+{
+    "campo": [
+        {
+            "titulo": "Cuil",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "ApellidoNombre",
+            "nombre": "apellidoynombre",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "RemuneracionTotal",
+            "nombre": "bruto_imp",
+            "columna": "C",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "LugarDeTrabajo",
+            "nombre": "laboral_provincia",
+            "columna": "D",
+            "tipo": "string",
+            "formato": ""
+        }
+    ]
+}

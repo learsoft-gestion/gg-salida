@@ -423,23 +423,30 @@
             "formato": ""
         },
         {
+            "titulo": "600",
+            "nombre": "total_600",
+            "columna": "BG",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
             "titulo": "TOTAL",
             "nombre": "total_imp",
-            "columna": "BG",
+            "columna": "BH",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "NO REM",
             "nombre": "total_noRem",
-            "columna": "BH",
+            "columna": "BI",
             "tipo": "moneda",
             "formato": ""
         },
         {
             "titulo": "Tipo de empleado",
             "nombre": "tipo_empleado",
-            "columna": "BI",
+            "columna": "BJ",
             "tipo": "string",
             "formato": ""
         }

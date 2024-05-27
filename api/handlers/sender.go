@@ -23,7 +23,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			}
 			datos.Fecha = src.FormatoFecha(datos.Fecha)
 			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
-
+			fmt.Println("MODELO: ", datos.Id_modelo)
 			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.id_concepto, em.id_tipo, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
 			// fmt.Println("Query modelos: ", queryModelos)
 			stmt, err := db.Prepare(queryModelos)
@@ -101,14 +101,9 @@ func Sender(db *sql.DB) http.HandlerFunc {
 
 			fmt.Printf("## Salida de %s ##\n", Procesos[0].Nombre)
 			var resultado []string
-			result, id_procesado, errFormateado, db, sql := src.ProcesadorSalida(Procesos[0], datos.Fecha, datos.Fecha2, version, archivo_salida)
-			if result != "" {
-				resultado = append(resultado, result)
-			}
-			datos.Id_procesado = id_procesado
-			Procesos[0].Id_procesado = id_procesado
+			result, id_procesado, errFormateado, sql := src.ProcesadorSalida(db, Procesos[0], datos.Fecha, datos.Fecha2, version, archivo_salida)
 			if errFormateado.Mensaje != "" {
-				_, err = src.ProcesadosSalida(db, Procesos[0].Id_modelo, datos.Fecha, datos.Fecha2, version, 0, "Error")
+				_, err = src.ProcesadosSalida(db, datos.Id_modelo, datos.Fecha, datos.Fecha2, version, 0, "Error")
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al loguear en procesados: "+err.Error(), http.StatusBadRequest)
@@ -125,6 +120,11 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				w.Write(jsonResp)
 				return
 			}
+			if result != "" {
+				resultado = append(resultado, result)
+			}
+			datos.Id_procesado = id_procesado
+			Procesos[0].Id_procesado = id_procesado
 
 			// Ejecutar nomina
 			respuesta_nomina := Nomina(db, sql, datos, Procesos[0])
@@ -189,7 +189,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				return
 			}
 
-			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
+			queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.id_concepto, em.id_tipo, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
 
 			stmt, err := db.Prepare(queryModelos)
 			if err != nil {
@@ -219,7 +219,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				var filtro_recibos sql.NullString
 				var filtro_personas sql.NullString
 
-				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_empresa_reducido, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Nombre, &proceso.Filtro_convenio, &filtro_personas, &filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
+				err = rows.Scan(&proceso.Id_modelo, &proceso.Id_empresa, &proceso.Nombre_empresa, &proceso.Nombre_empresa_reducido, &proceso.Id_convenio, &proceso.Nombre_convenio, &proceso.Id_concepto, &proceso.Id_tipo, &proceso.Nombre, &proceso.Filtro_convenio, &filtro_personas, &filtro_recibos, &proceso.Formato_salida, &proceso.Archivo_modelo, &proceso.Archivo_nomina, &estado, &proceso.Id_query, &select_control)
 				if err != nil {
 					fmt.Println(err.Error())
 					http.Error(w, "Error al escanear proceso: "+err.Error(), http.StatusBadRequest)
@@ -274,7 +274,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				}
 
 				fmt.Printf("## Salida de %s ##\n", proc.Nombre)
-				result_salida, id_procesado, errFormateado, db, sql := src.ProcesadorSalida(proc, Restantes.Fecha1, Restantes.Fecha2, version, archivoSalida)
+				result_salida, id_procesado, errFormateado, sql := src.ProcesadorSalida(db, proc, Restantes.Fecha1, Restantes.Fecha2, version, archivoSalida)
 				if errFormateado.Mensaje != "" {
 					_, err := src.ProcesadosSalida(db, proc.Id_modelo, Restantes.Fecha1, Restantes.Fecha2, version, 0, "Error")
 					if err != nil {

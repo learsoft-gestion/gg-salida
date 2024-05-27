@@ -44,13 +44,13 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 			queryFinal = strings.TrimSpace(parts[0]) + "\n" + strings.TrimSpace(parts[1])
 		}
 	}
-	err := db.QueryRow("select extractor.obt_personal_interno()").Scan(&personal_interno)
+	err := db.QueryRow("select extractor.obt_tabla_pi()").Scan(&personal_interno)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		fmt.Println("Error al obtener personal interno del extractor")
 		return nil, err
 	} else {
-		queryFinal = strings.Replace(queryFinal, "$PERSONAL_INTERNO$", personal_interno, -1)
+		queryFinal = strings.Replace(queryFinal, "$QUERY_PI$", personal_interno, -1)
 	}
 
 	// fmt.Println("Query: \n", queryFinal)
@@ -100,7 +100,7 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		idString := fmt.Sprintf("%v", id)
 
 		if strings.ToLower(tipo_ejecucion) == "salida" {
-			if registroMapa["OK"] == "ok" {
+			if registroMapa["OK"] != nil {
 				// fmt.Println(registroMapa["OK"])
 				registro := modelos.Registro{
 					Ids:     idString,
