@@ -72,7 +72,7 @@ var mostrarAlicuotas = function (data) {
         const spanEdit = $(`<span class="material-symbols-outlined">edit</span>`);
         const btnValue = $(`<button type="button" class="btn btn-sm" id="valuesAli-${alicuota.IdAlicuota}" title="Valores">`);
         const spanValue = $(`<span class="material-symbols-outlined">double_arrow</span>`);
-        const btnSave = $(`<button type="button" class="btn btn-sm d-none" id="saveAli-${alicuota.IdAlicuota}" title="Guardar">`);
+        const btnSave = $(`<button type="button" class="btn btn-sm d-none saveAli" id="saveAli-${alicuota.IdAlicuota}" title="Guardar">`);
         const spanSave = $(`<span class="material-symbols-outlined">done_outline</span>`);
         const btnDelete = $(`<button type="button" class="btn btn-sm" id="deleteAli-${alicuota.IdAlicuota}" title="Borrar">`);
         const spanDelete = $(`<span class="material-symbols-outlined">delete</span>`);
@@ -95,6 +95,14 @@ var mostrarAlicuotas = function (data) {
         botonValuesAli(alicuota.IdAlicuota);
         botonSaveAli(alicuota.IdAlicuota);
         botonDeleteAli(alicuota.IdAlicuota);
+
+        // Evento enter para guardar al editar
+        $('.nombre, .descripcion').on('keypress', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                $(this).closest('.form-control').find('.saveAli').click();
+            }
+        });
     });
 
     $('#alicuotas').show();
@@ -115,7 +123,7 @@ $('#btnAddAlicuota').click(function () {
     const spanEdit = $(`<span class="material-symbols-outlined">edit</span>`);
     const btnValue = $(`<button type="button" class="btn btn-sm d-none" id="valuesAli-" title="Valores">`);
     const spanValue = $(`<span class="material-symbols-outlined">double_arrow</span>`);
-    const btnSave = $(`<button type="button" class="btn btn-sm" id="saveAli-" title="Guardar">`);
+    const btnSave = $(`<button type="button" class="btn btn-sm saveAli" id="saveAli-" title="Guardar">`);
     const spanSave = $(`<span class="material-symbols-outlined">done_outline</span>`);
     const btnDelete = $(`<button type="button" class="btn btn-sm d-none" id="deleteAli-" title="Borrar">`);
     const spanDelete = $(`<span class="material-symbols-outlined">delete</span>`);
@@ -128,8 +136,8 @@ $('#btnAddAlicuota').click(function () {
     btnValue.append(spanValue);
     btnEdit.append(spanEdit);
     acciones.append(btnEdit);
-    acciones.append(btnValue);
     acciones.append(btnSave);
+    acciones.append(btnValue);
     acciones.append(btnDelete);
     acciones.append(btnCancel);
     control.append(nombre);
@@ -141,6 +149,14 @@ $('#btnAddAlicuota').click(function () {
 
     botonCancelAli();
     botonCreateAli();
+
+    // Evento enter para guardar nueva alícuota
+    $('.nombre, .descripcion').on('keypress', function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $(this).closest('.form-control').find('.saveAli').click();
+        }
+    });
 });
 
 // Botón para cancelar nueva alícuota
@@ -242,9 +258,10 @@ var botonValuesAli = function (id) {
 
 // Botón para guardar cambios de alícuota
 var botonSaveAli = function (id) {
+    $(`#saveAli-${id}`).off(); // Elimino eventos previos
     $(`#saveAli-${id}`).click(function () {
         var json = {
-            idAlicuota: id,
+            idAlicuota: String(id),
             nombre: $(`#nombre-${id}`).val(),
             descripcion: $(`#descripcion-${id}`).val()
         }
@@ -330,13 +347,13 @@ var mostrarValoresAlicuotas = function (data, idAlicuota) {
         const group = $(`<div class="form-group" id="groupVal${valor.IdValoresAlicuota}">`);
         const control = $(`<div class="form-control">`);
         const labelPeriodo = $(`<label for="periodo-${valor.IdValoresAlicuota}">Período</label>`);
-        const periodo = $(`<input type="text" disabled value="${valor.VigenciaDesde}" id="periodo-${valor.IdValoresAlicuota}" class="periodo">`);
+        const periodo = $(`<input type="text" disabled value="${valor.VigenciaDesde}" id="periodo-${valor.IdValoresAlicuota}" class="periodo" readonly>`);
         const labelValor = $(`<label for="valor-${valor.IdValoresAlicuota}">Valor</label>`);
         const valorAli = $(`<input type="text" disabled value="${valor.Valor}" id="valor-${valor.IdValoresAlicuota}" class="valor">`);
         const acciones = $(`<div class="actions">`);
         const btnEdit = $(`<button type="button" class="btn btn-sm" id="editVal-${valor.IdValoresAlicuota}" title="Editar">`);
         const spanEdit = $(`<span class="material-symbols-outlined">edit</span>`);
-        const btnSave = $(`<button type="button" class="btn btn-sm d-none" id="saveVal-${valor.IdValoresAlicuota}" title="Guardar">`);
+        const btnSave = $(`<button type="button" class="btn btn-sm d-none saveVal" id="saveVal-${valor.IdValoresAlicuota}" title="Guardar">`);
         const spanSave = $(`<span class="material-symbols-outlined">done_outline</span>`);
         const btnDelete = $(`<button type="button" class="btn btn-sm" id="deleteVal-${valor.IdValoresAlicuota}" title="Borrar">`);
         const spanDelete = $(`<span class="material-symbols-outlined">delete</span>`);
@@ -358,6 +375,14 @@ var mostrarValoresAlicuotas = function (data, idAlicuota) {
         botonEditValor(valor.IdValoresAlicuota);
         botonSaveValor(valor.IdValoresAlicuota);
         botonDeleteValor(valor.IdValoresAlicuota);
+
+        // Evento enter para guardar nuevo valor
+        $('.periodo, .valor').on('keypress', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                $(this).closest('.form-control').find('.saveVal').click();
+            }
+        });
     });
 
     $(".periodo").datepicker({
@@ -384,6 +409,7 @@ var botonEditValor = function (id) {
 
 // Botón para guardar cambios de Valor
 var botonSaveValor = function (id) {
+    $(`#saveVal-${id}`).off(); // Elimino eventos previos
     $(`#saveVal-${id}`).click(function () {
         var json = {
             idValoresAlicuota: String(id),
@@ -472,13 +498,13 @@ $('#btnAddValor').click(function () {
     const group = $(`<div class="form-group" id="newVal">`);
     const control = $(`<div class="form-control">`);
     const labelPeriodo = $(`<label for="periodo-">Período</label>`);
-    const periodo = $(`<input type="text" value="" id="periodo-" class="periodo">`);
+    const periodo = $(`<input type="text" value="" id="periodo-" class="periodo" readonly>`);
     const labelValor = $(`<label for="valor-">Valor</label>`);
     const valorAli = $(`<input type="text" value="" id="valor-" class="valor">`);
     const acciones = $(`<div class="actions">`);
     const btnEdit = $(`<button type="button" class="btn btn-sm d-none" id="editVal-" title="Editar">`);
     const spanEdit = $(`<span class="material-symbols-outlined">edit</span>`);
-    const btnSave = $(`<button type="button" class="btn btn-sm" id="saveVal-" title="Guardar">`);
+    const btnSave = $(`<button type="button" class="btn btn-sm saveVal" id="saveVal-" title="Guardar">`);
     const spanSave = $(`<span class="material-symbols-outlined">done_outline</span>`);
     const btnDelete = $(`<button type="button" class="btn btn-sm d-none" id="deleteVal-" title="Borrar">`);
     const spanDelete = $(`<span class="material-symbols-outlined">delete</span>`);
@@ -510,6 +536,14 @@ $('#btnAddValor').click(function () {
     });
     botonCancelVal();
     botonCreateVal();
+
+    // Evento enter para guardar nuevo valor
+    $('.periodo, .valor').on('keypress', function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $(this).closest('.form-control').find('.saveVal').click();
+        }
+    });
 });
 
 // Botón para cancelar nuevo Valor

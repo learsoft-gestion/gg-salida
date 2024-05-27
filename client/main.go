@@ -36,6 +36,7 @@ func main() {
 	protectedRoutes.HandleFunc("/a-convenios", conveniosHandler)
 	protectedRoutes.HandleFunc("/a-modelos", aModelosHandler)
 	protectedRoutes.HandleFunc("/a-alicuotas", aAlicuotasHandler)
+	protectedRoutes.HandleFunc("/a-personalinterno", aPersonalinternoHandler)
 	protectedRoutes.HandleFunc("/migrador", migradorHandler)
 	protectedRoutes.HandleFunc("/logout", logoutHandler)
 
@@ -226,6 +227,10 @@ func aModelosHandler(w http.ResponseWriter, r *http.Request) {
 
 func aAlicuotasHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "./templates/alicuotas.html", nil)
+}
+
+func aPersonalinternoHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "./templates/personalinterno.html", nil)
 }
 
 func migradorHandler(w http.ResponseWriter, r *http.Request) {
