@@ -52,6 +52,7 @@ type Proceso struct {
 	Columna_estado          string
 	Id_query                int
 	Select_control          string
+	Select_salida           string
 }
 
 type Migrador struct {

@@ -36,16 +36,25 @@ func ProcesadorSalida(db *sql.DB, proceso modelos.Proceso, fecha string, fecha2 
 		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil
 	}
 
+	// Reemplazar Alicuotas
+	var select_salida modelos.Select_control
+	err = db.QueryRow("SELECT extractor.obt_salida($1, $2, $3)", proceso.Id_modelo, fecha, fecha2).Scan(&select_salida.Query)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil
+	}
+	if select_salida.Query.Valid {
+		proceso.Select_salida = select_salida.Query.String
+	} else {
+		proceso.Select_salida = ""
+	}
+
 	var query string
 	var queryFinal string
 	db.QueryRow("SELECT texto_query FROM extractor.ext_query where id_query = $1", proceso.Id_query).Scan(&query)
-	// if proceso.Select_control != "" {
-	// 	queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_control, 1)
-	// } else {
-	var queryReplace string
-	db.QueryRow("SELECT valor from extractor.ext_variables where variable = 'SELECT'").Scan(&queryReplace)
-	queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
-	// }
+	// var queryReplace string
+	// db.QueryRow("SELECT valor from extractor.ext_variables where variable = $1", proceso.Select_salida).Scan(&queryReplace)
+	queryFinal = strings.Replace(query, "$SELECT$", proceso.Select_salida, 1)
 	proceso.Query = queryFinal
 
 	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "salida")

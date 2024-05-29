@@ -1,0 +1,39 @@
+{
+    "campo": [
+        {
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guion"
+        },
+        {
+            "titulo": "Categoría",
+            "nombre": "categoria",
+            "columna": "B",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "DIAS X MES",
+            "nombre": "dias_trabajados",
+            "columna": "C",
+            "tipo": "int",
+            "formato": ""
+        },
+        {
+            "titulo": "VALOR X DIA",
+            "nombre": "valor_dia",
+            "columna": "D",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "VALOR X MES",
+            "nombre": "valor_mes",
+            "columna": "E",
+            "tipo": "moneda",
+            "formato": ""
+        }
+    ]
+}

@@ -99,25 +99,25 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		id := *valores[0].(*interface{})
 		idString := fmt.Sprintf("%v", id)
 
-		if strings.ToLower(tipo_ejecucion) == "salida" {
-			if registroMapa["OK"] != nil {
-				// fmt.Println(registroMapa["OK"])
-				registro := modelos.Registro{
-					Ids:     idString,
-					Valores: registroMapa,
-				}
-				registros = append(registros, registro)
-				// } else {
-				// 	fmt.Println(registroMapa["OK"])
-			}
-		} else {
-			registro := modelos.Registro{
-				Ids:      idString,
-				Columnas: columnas,
-				Valores:  registroMapa,
-			}
-			registros = append(registros, registro)
+		// if strings.ToLower(tipo_ejecucion) == "salida" {
+		// 	if registroMapa["OK"] != nil {
+		// 		// fmt.Println(registroMapa["OK"])
+		// 		registro := modelos.Registro{
+		// 			Ids:     idString,
+		// 			Valores: registroMapa,
+		// 		}
+		// 		registros = append(registros, registro)
+		// 		// } else {
+		// 		// 	fmt.Println(registroMapa["OK"])
+		// 	}
+		// } else {
+		registro := modelos.Registro{
+			Ids:      idString,
+			Columnas: columnas,
+			Valores:  registroMapa,
 		}
+		registros = append(registros, registro)
+		// }
 	}
 
 	return registros, nil
