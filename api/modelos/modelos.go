@@ -151,6 +151,7 @@ type Cabecera struct {
 	Children           string
 	Sentido_encabezado string
 	Estilo             string
+	Encabezados        string
 }
 
 type Campo struct {

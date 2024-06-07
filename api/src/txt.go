@@ -40,7 +40,7 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 	defer archivo.Close()
 
 	texto := ""
-	blancos := strings.Repeat(" ", 200)
+	blancos := strings.Repeat(" ", 300)
 	for _, dato := range data {
 		for i, campo := range plantilla.Campos {
 			var value string
@@ -79,6 +79,8 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 					} else if campo.Formato == "MM/YYYY" {
 						value = formatearFecha(v, campo.Formato)
 					} else if campo.Formato == "DD/MM/YYYY" {
+						value = formatearFecha(v, campo.Formato)
+					} else if campo.Formato == "DDMMYYYY" {
 						value = formatearFecha(v, campo.Formato)
 					} else if campo.Tipo == "condicional" {
 						condiciones := strings.Split(campo.Formato, "/")
@@ -157,6 +159,8 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 					}
 
 				}
+
+				fmt.Println(campo.Formato)
 				// Iterar sobre blancos para agregar letra por letra
 				arreglo := []rune(blancos)
 				palabra := []rune(value)

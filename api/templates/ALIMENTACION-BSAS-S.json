@@ -1,0 +1,56 @@
+{
+    "cabecera": {
+        "encabezados": "si"
+    },
+    "campo": [
+        {
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "A",
+            "tipo": "string",
+            "formato": "cuil sin guiones"
+        },
+        {
+            "titulo": "Fecha Ingreso",
+            "nombre": "ingreso",
+            "columna": "B",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Fecha Egreso",
+            "nombre": "egreso",
+            "columna": "C",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Remuneracion",
+            "nombre": "bruto_imp",
+            "columna": "D",
+            "tipo": "numero",
+            "formato": ""
+        },
+        {
+            "titulo": "Es Afiliado",
+            "nombre": "afiliado",
+            "columna": "E",
+            "tipo": "condicional",
+            "formato": "S/N"
+        },
+        {
+            "titulo": "Apellido",
+            "nombre": "apellidos",
+            "columna": "F",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Nombre",
+            "nombre": "nombre",
+            "columna": "G",
+            "tipo": "string",
+            "formato": ""
+        }
+    ]
+}

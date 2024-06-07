@@ -18,8 +18,8 @@
             "titulo": "RemuneracionTotal",
             "nombre": "bruto_imp",
             "columna": "C",
-            "tipo": "moneda",
-            "formato": ""
+            "tipo": "float",
+            "formato": "millares con coma"
         },
         {
             "titulo": "LugarDeTrabajo",

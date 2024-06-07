@@ -18,15 +18,15 @@
             "titulo": "RemuneracionTotal",
             "nombre": "bruto_imp",
             "columna": "C",
-            "tipo": "moneda",
-            "formato": ""
+            "tipo": "float",
+            "formato": "millares con coma"
         },
         {
             "titulo": "Categoria",
             "nombre": "",
             "columna": "D",
             "tipo": "fijo",
-            "formato": "4"
+            "formato": "9"
         },
         {
             "titulo": "DescuentaCuotaSindical",

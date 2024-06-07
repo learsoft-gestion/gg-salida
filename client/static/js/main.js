@@ -80,6 +80,9 @@ $(document).ready(function () {
         format: 'mm/yyyy',
         language: "es"
     });
+
+
+
 });
 
 var filtros = $("#filtros");

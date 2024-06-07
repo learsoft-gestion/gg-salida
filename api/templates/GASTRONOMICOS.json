@@ -1,25 +1,42 @@
 {
+    "cabecera": {
+        "encabezados": "no"
+    },
     "campo": [
         {
-            "titulo": "CUIL",
+            "titulo": "",
             "nombre": "cuil",
             "columna": "A",
             "tipo": "string",
-            "formato": "cuil sin guion"
+            "formato": ""
         },
         {
-            "titulo": "APELLIDO Y NOMBRE",
+            "titulo": "",
             "nombre": "apellidoynombre",
             "columna": "B",
             "tipo": "string",
             "formato": ""
         },
         {
-            "titulo": "REM BRUTA + NO REM",
+            "titulo": "",
             "nombre": "",
             "columna": "C",
             "tipo": "suma",
             "formato": "bruto_imp,total_norem"
+        },
+        {
+            "titulo": "",
+            "nombre": "total_sac",
+            "columna": "D",
+            "tipo": "numero",
+            "formato": ""
+        },
+        {
+            "titulo": "",
+            "nombre": "afiliado",
+            "columna": "E",
+            "tipo": "condicional",
+            "formato": "SI/NO"
         }
     ]
 }

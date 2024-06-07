@@ -63,7 +63,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 				if grupoPrevio != "" && grupoPrevio != grupoActual {
 					// El grupo cambia, fusiono las celdas de la columna "A"
-					fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+1)
+					// fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+1)
 					fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+1))
 					fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
 					fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
@@ -120,7 +120,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				if j == len(registro.Columnas)-1 {
 					// Fusionar celdas del ultimo grupo
 					if grupoPrevio != "" {
-						fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+2)
+						// fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+2)
 						fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+2))
 						fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
 						fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
@@ -161,7 +161,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 			cell := "B" + campo.Columna
 			fileNuevo.SetCellValue(sheetName, cell, campo.Titulo)
 		}
-	} else {
+	} else if strings.ToLower(plantilla.Cabecera.Encabezados) != "no" {
 		// Escribir horizontalmente encabezados en el Excel
 		for _, campo := range plantilla.Campos {
 			cell := campo.Columna + "1"
@@ -178,7 +178,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 	for i, registro := range data {
 		for _, campo := range plantilla.Campos {
 			var value string
-
+			var cell string
 			// Validaciones
 
 			if campo.Nombre == "" && campo.Tipo != "suma" {
@@ -202,19 +202,19 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				val := registro.Valores[campo.Nombre]
 
 				if campo.Columna == "" {
-					return "", fmt.Errorf("JSON: el campo %s no tiene columna", campo.Titulo)
+					return "", fmt.Errorf("JSON: el campo %s no tiene columna", campo.Nombre)
 				}
 				if campo.Inicio != 0 || campo.Fin != 0 {
-					return "", fmt.Errorf("JSON: el campo %s no debe tener 'inicio' ni 'fin'", campo.Titulo)
+					return "", fmt.Errorf("JSON: el campo %s no debe tener 'inicio' ni 'fin'", campo.Nombre)
 				}
 				if campo.Tipo == "fecha" {
 					if campo.Formato != "DD/MM/YYYY" && campo.Formato != "DD-MM-YYYY" && campo.Formato != "YYYYMMDD" {
-						return "", fmt.Errorf("JSON: formato desconocido para %s", campo.Titulo)
+						return "", fmt.Errorf("JSON: formato desconocido para %s", campo.Nombre)
 					}
 				}
 				if campo.Formato == "DD/MM/YYYY" || campo.Formato == "DD-MM-YYYY" {
 					if campo.Tipo != "fecha" {
-						return "", fmt.Errorf("JSON: el campo %s debe ser de tipo fecha", campo.Titulo)
+						return "", fmt.Errorf("JSON: el campo %s debe ser de tipo fecha", campo.Nombre)
 					}
 				}
 
@@ -303,7 +303,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 			if strings.ToLower(plantilla.Cabecera.Sentido_encabezado) == "vertical" {
 				colLetter := ObtenerLetra(i + 3)
-				cell := colLetter + campo.Columna
+				cell = colLetter + campo.Columna
 				if strings.ToLower(campo.Tipo) == "moneda" {
 					valor, _ := strconv.ParseFloat(value, 64)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
@@ -319,7 +319,11 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					fileNuevo.SetCellValue(sheetName, cell, value)
 				}
 			} else {
-				cell := campo.Columna + fmt.Sprintf("%v", i+2)
+				if strings.ToLower(plantilla.Cabecera.Encabezados) != "no" {
+					cell = campo.Columna + fmt.Sprintf("%v", i+2)
+				} else {
+					cell = campo.Columna + fmt.Sprintf("%v", i+1)
+				}
 				if strings.ToLower(campo.Tipo) == "moneda" {
 					valor, _ := strconv.ParseFloat(value, 64)
 					fileNuevo.SetCellValue(sheetName, cell, valor)
@@ -436,6 +440,9 @@ func formatearFecha(s string, formato string) string {
 	} else if formato == "MM/YYYY" {
 		partes = append(partes, s[:4], s[4:])
 		strFinal = partes[1] + "/" + partes[0]
+	} else if formato == "DDMMYYYY" {
+		partes = append(partes, s[:4], s[4:6], s[6:])
+		strFinal = partes[2] + partes[1] + partes[0]
 	}
 	return strFinal
 }

@@ -1,7 +1,7 @@
 {
     "campo": [
         {
-            "titulo": "Sucursal",
+            "titulo": "Suc.",
             "nombre": "sucursal",
             "columna": "A",
             "tipo": "fijo",
@@ -46,8 +46,8 @@
             "titulo": "Remuneracion",
             "nombre": "bruto_imp",
             "columna": "G",
-            "tipo": "moneda",
-            "formato": ""
+            "tipo": "float",
+            "formato": "millares con coma"
         },
         {
             "titulo": "Media jornada",
