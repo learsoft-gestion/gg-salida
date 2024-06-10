@@ -351,9 +351,15 @@ var llenarTabla = function (rawData) {
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
                 subRow.append('<td>' + proceso.Version + '</td>');
-                subRow.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`);
-                subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`);
-                subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`);
+                proceso.Nombre_control != "-" ?
+                    subRow.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
+                    : subRow.append('<td>' + proceso.Nombre_control + '</td>');
+                proceso.Nombre_nomina != "-" ?
+                    subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
+                    : subRow.append('<td>' + proceso.Nombre_nomina + '</td>');
+                proceso.Nombre_salida != "-" ?
+                    subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
+                    : subRow.append('<td>' + proceso.Nombre_salida + '</td>');
                 subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
                 subRow.append('<td></td>');
 
