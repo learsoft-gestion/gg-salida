@@ -1,28 +1,27 @@
 {
+    "cabecera": {
+        "encabezados": "no"
+    },
     "campo": [
         {
-            "titulo": " ",
             "nombre": "cuil",
             "columna": "A",
             "tipo": "string",
             "formato": "cuil sin guion"
         },
         {
-            "titulo": " ",
             "nombre": "apellidoynombre",
             "columna": "B",
             "tipo": "string",
             "formato": ""
         },
         {
-            "titulo": " ",
             "nombre": "bruto_imp",
             "columna": "C",
-            "tipo": "float",
-            "formato": "punto"
+            "tipo": "numero",
+            "formato": ""
         },
         {
-            "titulo": " ",
             "nombre": "",
             "columna": "D",
             "tipo": "fijo",

@@ -110,7 +110,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 					return
 				}
 				errString := "Error en " + Procesos[0].Nombre + ": " + errFormateado.Mensaje
-				w.WriteHeader(http.StatusOK)
+				w.WriteHeader(http.StatusBadRequest)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
 					Mensaje:         errString,

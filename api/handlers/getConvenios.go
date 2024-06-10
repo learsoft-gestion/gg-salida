@@ -8,10 +8,10 @@ import (
 	"net/http"
 )
 
-var Convenios []modelos.Option
-
 func GetConvenios(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		var Convenios []modelos.Option
 
 		rows, err := db.Query("select c.id_convenio, c.nombre, c.filtro from extractor.ext_convenios c where exists (select 1 from extractor.ext_modelos em where em.id_convenio = c.id_convenio and em.vigente) order by 2")
 		if err != nil {

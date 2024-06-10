@@ -45,100 +45,117 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 		for i, campo := range plantilla.Campos {
 			var value string
 
-			// Validaciones
-			if plantilla.Cabecera.Formato == "" {
-				return "", fmt.Errorf("debe agregarle un formato a la cabecera del template")
-			}
-			if campo.Titulo != "" {
-				return "", fmt.Errorf("JSON: el campo %s no debe tener Titulo", campo.Nombre)
-			}
-			if strings.ToLower(campo.Tipo) == "fijo" && campo.Formato == "" {
-				return "", fmt.Errorf("JSON: tipo de dato fijo sin formato para el campo %s", campo.Nombre)
-			}
-			if strings.ToLower(campo.Tipo) == "float" {
-				if strings.ToLower(campo.Formato) != "coma" && strings.ToLower(campo.Formato) != "punto" {
-					return "", fmt.Errorf("JSON: tipo de dato float con formato erroneo para el campo %s", campo.Nombre)
+			if strings.ToLower(campo.Tipo) == "suma" {
+				partes := strings.Split(campo.Formato, ",")
+				var acumulador float64
+				for _, parte := range partes {
+					campoSuma := strings.ToUpper(strings.TrimSpace(parte))
+					valor := dato.Valores[campoSuma]
+					switch v := valor.(type) {
+					case []byte:
+						// valorStr := string(v)
+						valorFloat := valueToFloat(v)
+						acumulador += valorFloat
+					}
 				}
-			}
-			if campo.Nombre == "" && strings.ToLower(campo.Tipo) != "fijo" {
-				return "", fmt.Errorf("campo sin nombre")
-			}
-			if campo.Nombre == "" {
-				value += campo.Formato
+				value = fmt.Sprintf("%.2f", acumulador)
 			} else {
-				campo.Nombre = strings.ToUpper(campo.Nombre)
-				val := dato.Valores[campo.Nombre]
-				switch v := val.(type) {
-				case int:
-					value += fmt.Sprintf("%d", v)
-				case float64:
-					value += fmt.Sprintf("%.2f", v)
-				case string:
-					if strings.ToLower(campo.Formato) == "cuil sin guion" {
-						value += strings.ReplaceAll(v, "-", "")
-					} else if campo.Formato == "MM/YYYY" {
-						value = formatearFecha(v, campo.Formato)
-					} else if campo.Formato == "DD/MM/YYYY" {
-						value = formatearFecha(v, campo.Formato)
-					} else if campo.Formato == "DDMMYYYY" {
-						value = formatearFecha(v, campo.Formato)
-					} else if campo.Tipo == "condicional" {
-						condiciones := strings.Split(campo.Formato, "/")
-						if string(v) != "0" {
-							value = condiciones[0]
-						} else {
-							value = condiciones[1]
-						}
-					} else if strings.ToLower(campo.Tipo) == "lookup" {
-						// El dato lo saco del .json
-						for _, variable := range plantilla.Variables {
-							if strings.ToUpper(variable.Nombre) == campo.Nombre {
-								for _, element := range variable.Datos {
-									if element.Nombre == v {
-										value += fmt.Sprintf("%v", element.Id)
+				// Validaciones
+				if plantilla.Cabecera.Formato == "" {
+					return "", fmt.Errorf("debe agregarle un formato a la cabecera del template")
+				}
+				if campo.Titulo != "" {
+					return "", fmt.Errorf("JSON: el campo %s no debe tener Titulo", campo.Nombre)
+				}
+				if strings.ToLower(campo.Tipo) == "fijo" && campo.Formato == "" {
+					return "", fmt.Errorf("JSON: tipo de dato fijo sin formato para el campo %s", campo.Nombre)
+				}
+				if strings.ToLower(campo.Tipo) == "float" {
+					if strings.ToLower(campo.Formato) != "coma" && strings.ToLower(campo.Formato) != "punto" {
+						return "", fmt.Errorf("JSON: tipo de dato float con formato erroneo para el campo %s", campo.Nombre)
+					}
+				}
+				if campo.Nombre == "" && strings.ToLower(campo.Tipo) != "fijo" {
+					return "", fmt.Errorf("campo sin nombre")
+				}
+				if campo.Nombre == "" {
+					value += campo.Formato
+				} else {
+					campo.Nombre = strings.ToUpper(campo.Nombre)
+					val := dato.Valores[campo.Nombre]
+					switch v := val.(type) {
+					case int:
+						value += fmt.Sprintf("%d", v)
+					case float64:
+						value += fmt.Sprintf("%.2f", v)
+					case string:
+						if strings.ToLower(campo.Formato) == "cuil sin guion" {
+							value += strings.ReplaceAll(v, "-", "")
+						} else if campo.Formato == "MM/YYYY" {
+							value = formatearFecha(v, campo.Formato)
+						} else if campo.Formato == "DD/MM/YYYY" {
+							value = formatearFecha(v, campo.Formato)
+						} else if campo.Formato == "DDMMYYYY" {
+							value = formatearFecha(v, campo.Formato)
+						} else if campo.Tipo == "condicional" {
+							condiciones := strings.Split(campo.Formato, "/")
+							if string(v) != "0" {
+								value = condiciones[0]
+							} else {
+								value = condiciones[1]
+							}
+						} else if strings.ToLower(campo.Tipo) == "lookup" {
+							// El dato lo saco del .json
+							for _, variable := range plantilla.Variables {
+								if strings.ToUpper(variable.Nombre) == campo.Nombre {
+									for _, element := range variable.Datos {
+										if element.Nombre == v {
+											value += fmt.Sprintf("%v", element.Id)
+										}
 									}
 								}
 							}
+							if value == "" {
+								value = "12"
+							}
+						} else {
+							value += v
 						}
-						if value == "" {
-							value = "12"
-						}
-					} else {
-						value += v
-					}
-				case []int:
-					value += fmt.Sprintf("%v", v)
-				case []byte:
-					if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) != "coma" {
-						value += string(v)
-					} else if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) == "coma" {
-						value += strings.Replace(string(v), ".", ",", -1)
-					} else if strings.ToLower(campo.Tipo) == "condicional" {
+					case []int:
+						value += fmt.Sprintf("%v", v)
+					case []byte:
+						if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) != "coma" {
+							value += string(v)
+						} else if strings.ToLower(campo.Tipo) == "float" && strings.ToLower(campo.Formato) == "coma" {
+							value += strings.Replace(string(v), ".", ",", -1)
+						} else if strings.ToLower(campo.Tipo) == "condicional" {
 
+							condiciones := strings.Split(campo.Formato, "/")
+							if string(v) != "0.00" {
+								value = condiciones[0]
+							} else {
+								value = condiciones[1]
+							}
+							// if string(v) != "0.00" {
+							// 	value = campo.Option1
+							// } else {
+							// 	value = campo.Option2
+							// }
+						} else {
+							// value += strings.Replace(string(v), ".", "", -1) // Numero sin puntos
+							value += string(v)
+						}
+					case int64:
 						condiciones := strings.Split(campo.Formato, "/")
-						if string(v) != "0.00" {
+						if int64(v) == 0 {
 							value = condiciones[0]
 						} else {
 							value = condiciones[1]
 						}
-						// if string(v) != "0.00" {
-						// 	value = campo.Option1
-						// } else {
-						// 	value = campo.Option2
-						// }
-					} else {
-						value += strings.Replace(string(v), ".", "", -1) // Numero sin puntos
+					default:
+						// fmt.Printf("Campo: %s Valor: %v Tipo: %s\n", campo.Nombre, v, reflect.TypeOf(v))
+						value = "#"
 					}
-				case int64:
-					condiciones := strings.Split(campo.Formato, "/")
-					if int64(v) == 0 {
-						value = condiciones[0]
-					} else {
-						value = condiciones[1]
-					}
-				default:
-					// fmt.Printf("Campo: %s Valor: %v Tipo: %s\n", campo.Nombre, v, reflect.TypeOf(v))
-					value = "#"
 				}
 			}
 
@@ -151,7 +168,7 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 				if len(value) < longitud_campo {
 					diferencia := longitud_campo - len(value)
 					if strings.ToLower(campo.Tipo) == "rellenado" {
-						value = strings.Repeat(campo.Formato, diferencia) + value
+						value = strings.Repeat(campo.Formato, diferencia-1) + value
 					} else if value == "#" {
 						value += strings.Repeat("#", diferencia)
 					} else {

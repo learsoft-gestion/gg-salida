@@ -1,50 +1,129 @@
 {
-    "cabecera": {
-        "formato": "fijo"
-    },
     "campo": [
         {
-            "nombre": "cuil",
-            "inicio": 0,
-            "fin": 11,
-            "tipo": "string",
-            "formato": "cuil sin guion"
+            "titulo": "Nro Documento",
+            "nombre": "nrodoc",
+            "columna": "A",
+            "tipo": "int",
+            "formato": ""
         },
         {
-            "nombre": "apellidoynombre",
-            "inicio": 11,
-            "fin": 41,
+            "titulo": "Tipo Documento",
+            "nombre": "",
+            "columna": "B",
+            "tipo": "fijo",
+            "formato": "DNI"
+        },
+        {
+            "titulo": "Nombre",
+            "nombre": "nombre",
+            "columna": "C",
             "tipo": "string",
             "formato": ""
         },
         {
-            "nombre": "",
-            "inicio": 41,
-            "fin": 42,
-            "tipo": "fijo",
-            "formato": "00"
-        },
-        {
-            "nombre": "total_870",
-            "inicio": 43,
-            "fin": 43,
+            "titulo": "Apellido",
+            "nombre": "apellidos",
+            "columna": "D",
             "tipo": "string",
-            "formato": "condicional",
-            "option1": "S",
-            "option2": "N"
+            "formato": ""
         },
         {
+            "titulo": "Nacionalidad",
+            "nombre": "",
+            "columna": "E",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Sexo",
+            "nombre": "sexo",
+            "columna": "F",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Fecha Nac",
+            "nombre": "fechanacimiento",
+            "columna": "G",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Direccion",
+            "nombre": "",
+            "columna": "H",
+            "tipo": "fijo",
+            "formato": ""
+        },
+        {
+            "titulo": "CP",
+            "nombre": "laboral_cp",
+            "columna": "I",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "Situacion Revista",
+            "nombre": "",
+            "columna": "J",
+            "tipo": "fijo",
+            "formato": "Normal"
+        },
+        {
+            "titulo": "Categoria",
+            "nombre": "",
+            "columna": "K",
+            "tipo": "fijo",
+            "formato": "NO INFORMADO"
+        },
+        {
+            "titulo": "Es jubilado",
+            "nombre": "",
+            "columna": "L",
+            "tipo": "fijo",
+            "formato": "NO"
+        },
+        {
+            "titulo": "Es Jerarquico",
+            "nombre": "",
+            "columna": "M",
+            "tipo": "fijo",
+            "formato": "NO"
+        },
+        {
+            "titulo": "Sueldo bruto",
             "nombre": "bruto_imp",
-            "inicio": 44,
-            "fin": 51,
+            "columna": "N",
             "tipo": "float",
             "formato": "coma"
         },
         {
-            "nombre": "nrodoc",
-            "inicio": 52,
-            "fin": 60,
-            "tipo": "string",
+            "titulo": "CUIL",
+            "nombre": "cuil",
+            "columna": "O",
+            "tipo": "fijo",
+            "formato": "NO INFORMADO"
+        },
+        {
+            "titulo": "Tipo Afiliado",
+            "nombre": "",
+            "columna": "P",
+            "tipo": "fijo",
+            "formato": "Resolucion 227 01"
+        },
+        {
+            "titulo": "Es afiliado social",
+            "nombre": "",
+            "columna": "Q",
+            "tipo": "fijo",
+            "formato": "NO"
+        },
+        {
+            "titulo": "Telefono",
+            "nombre": "",
+            "columna": "R",
+            "tipo": "fijo",
             "formato": ""
         }
     ]
