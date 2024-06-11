@@ -31,6 +31,18 @@ func ProcesadosSalida(db *sql.DB, id_modelo int, fecha1 string, fecha2 string, v
 	if err != nil {
 		return 0, err
 	}
+
+	if nombre_salida == "Error" {
+		err = ProcesadosNomina(db, id_proceso, cant_registros, "Error")
+		if err != nil {
+			return 0, err
+		}
+		err = ProcesadosControl(db, id_proceso, "Error")
+		if err != nil {
+			return 0, err
+		}
+	}
+
 	return id_proceso, nil
 
 }
@@ -61,6 +73,17 @@ func ProcesadosNomina(db *sql.DB, id_proceso int, cant_registros int, nombre_nom
 		}
 	}
 
+	if nombre_nomina == "Error" {
+		_, err = db.Exec("update extractor.ext_procesados ep set archivo_salida = $1 where ep.id_proceso = $2", "Error", id_proceso)
+		if err != nil {
+			return err
+		}
+		err = ProcesadosControl(db, id_proceso, "Error")
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -69,6 +92,13 @@ func ProcesadosControl(db *sql.DB, id_proceso int, nombre_control string) error 
 	_, err := db.Exec("update extractor.ext_procesados ep set archivo_control = $1 where ep.id_proceso = $2", nombre_control, id_proceso)
 	if err != nil {
 		return err
+	}
+
+	if nombre_control == "Error" {
+		_, err = db.Exec("update extractor.ext_procesados ep set archivo_salida = $1, archivo_nomina = $2 where ep.id_proceso = $3", "Error", "Error", id_proceso)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

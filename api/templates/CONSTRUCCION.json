@@ -21,15 +21,15 @@
             "nombre": "bruto_imp",
             "inicio": 12,
             "fin": 30,           
-            "tipo": "rellenado",
-            "formato": "0"
+            "tipo": "float sin caracteres",
+            "formato": "rellenado/0"
         },
         {
             "nombre": "bruto_imp",
             "inicio": 30,
             "fin": 48,           
-            "tipo": "rellenado",
-            "formato": "0"
+            "tipo": "float sin caracteres",
+            "formato": "rellenado/0"
         },
         {
             "nombre": "ingreso",
@@ -46,21 +46,21 @@
             "formato": ""
         },
         {
-            "nombre": "convenio",
+            "nombre": "",
             "inicio": 60,
             "fin": 62,
             "tipo": "fijo",
             "formato": "01"
         },
         {
-            "nombre": "categoria",
+            "nombre": "",
             "inicio": 62,
             "fin": 64,
             "tipo": "fijo",
             "formato": "03"
         },
         {
-            "nombre": "administracion_publica",
+            "nombre": "",
             "inicio": 64,
             "fin": 66,
             "tipo": "fijo",

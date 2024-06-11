@@ -19,11 +19,6 @@ func ProcesadorSalida(db *sql.DB, proceso modelos.Proceso, fecha string, fecha2 
 		fmt.Println("Error: ", err.Error())
 	}
 
-	// db, err := conexiones.ConectarBase("postgres", os.Getenv("CONN_POSTGRES"), "postgres")
-	// if err != nil {
-	// 	return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil, nil
-	// }
-
 	// Conexion al origen de datos
 	sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
 	if err != nil {

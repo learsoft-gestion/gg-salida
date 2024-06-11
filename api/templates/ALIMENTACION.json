@@ -1,168 +1,56 @@
 {
     "cabecera": {
-        "formato": "variable",
-        "separador": ","
+        "encabezados": "si"
     },
     "campo": [
         {
+            "titulo": "CUIL",
             "nombre": "cuil",
+            "columna": "A",
             "tipo": "string",
-            "formato": "cuil sin guion"
+            "formato": "cuil sin guiones"
         },
         {
-            "nombre": "apellidoynombre",
+            "titulo": "Fecha Ingreso",
+            "nombre": "ingreso",
+            "columna": "B",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Fecha Egreso",
+            "nombre": "egreso",
+            "columna": "C",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "Remuneracion",
+            "nombre": "bruto_imp",
+            "columna": "D",
+            "tipo": "numero",
+            "formato": ""
+        },
+        {
+            "titulo": "Es Afiliado",
+            "nombre": "afiliado",
+            "columna": "E",
+            "tipo": "condicional",
+            "formato": "S/N"
+        },
+        {
+            "titulo": "Apellido",
+            "nombre": "apellidos",
+            "columna": "F",
             "tipo": "string",
             "formato": ""
         },
         {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "S"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "00"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "01"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "01"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "011"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "01"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "012"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "00000"
-        },
-        {
-            "nombre": "bruto_imp",
-            "tipo": "float",
-            "formato": "punto"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "Buenos Aires-CABA"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "00"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "5"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
-        },
-        {
-            "nombre": "",
-            "tipo": "fijo",
-            "formato": "000000000000"
+            "titulo": "Nombre",
+            "nombre": "nombre",
+            "columna": "G",
+            "tipo": "string",
+            "formato": ""
         }
     ]
 }

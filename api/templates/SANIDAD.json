@@ -21,8 +21,8 @@
             "nombre": "bruto_imp",
             "inicio": 61,
             "fin": 76,           
-            "tipo": "rellenado",
-            "formato": "0"
+            "tipo": "float",
+            "formato": "rellenado/0"
         }
     ]
 }

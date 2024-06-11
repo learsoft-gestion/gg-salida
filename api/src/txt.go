@@ -71,7 +71,7 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 					return "", fmt.Errorf("JSON: tipo de dato fijo sin formato para el campo %s", campo.Nombre)
 				}
 				if strings.ToLower(campo.Tipo) == "float" {
-					if strings.ToLower(campo.Formato) != "coma" && strings.ToLower(campo.Formato) != "punto" {
+					if strings.ToLower(campo.Formato) != "coma" && strings.ToLower(campo.Formato) != "punto" && !strings.Contains(strings.ToLower(campo.Formato), "rellenado") {
 						return "", fmt.Errorf("JSON: tipo de dato float con formato erroneo para el campo %s", campo.Nombre)
 					}
 				}
@@ -141,8 +141,9 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 							// } else {
 							// 	value = campo.Option2
 							// }
+						} else if strings.ToLower(campo.Tipo) == "float sin caracteres" {
+							value += strings.Replace(string(v), ".", "", -1) // Numero sin puntos
 						} else {
-							// value += strings.Replace(string(v), ".", "", -1) // Numero sin puntos
 							value += string(v)
 						}
 					case int64:
@@ -167,8 +168,14 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 
 				if len(value) < longitud_campo {
 					diferencia := longitud_campo - len(value)
-					if strings.ToLower(campo.Tipo) == "rellenado" {
-						value = strings.Repeat(campo.Formato, diferencia-1) + value
+					if strings.Contains(strings.ToLower(campo.Formato), "rellenado") {
+						partesFormato := strings.Split(campo.Formato, "/")
+						if len(partesFormato) < 2 {
+							fmt.Println("Formato de relleno incorrecto")
+							return "", err
+						} else {
+							value = strings.Repeat(partesFormato[1], diferencia-1) + value
+						}
 					} else if value == "#" {
 						value += strings.Repeat("#", diferencia)
 					} else {
