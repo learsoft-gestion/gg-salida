@@ -1,70 +1,70 @@
 var prefijoURL
 
 fetch("/backend-url")
-.then(res => res.json())
-.then(data => {
-    prefijoURL = data.prefijoURL;
-    console.log(prefijoURL);
+    .then(res => res.json())
+    .then(data => {
+        prefijoURL = data.prefijoURL;
+        console.log(prefijoURL);
 
-    // Select de convenio
-    $.ajax({
-        url: prefijoURL + '/convenios',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            if (data && data.length > 0) {
-                data.forEach(convenio => {
-                    const option = document.createElement("option");
-                    option.value = convenio.id;
-                    option.textContent = convenio.nombre;
-                    $("#conv").append(option);
-                });
-            } else {
-                console.log('No se recibieron datos del servidor.');
+        // Select de convenio
+        $.ajax({
+            url: prefijoURL + '/convenios',
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (data && data.length > 0) {
+                    data.forEach(convenio => {
+                        const option = document.createElement("option");
+                        option.value = convenio.id;
+                        option.textContent = convenio.nombre;
+                        $("#conv").append(option);
+                    });
+                } else {
+                    console.log('No se recibieron datos del servidor.');
+                }
+            },
+            error: function (error) {
+                console.error('Error en la búsqueda:', error);
             }
-        },
-        error: function (error) {
-            console.error('Error en la búsqueda:', error);
-        }
-    });
+        });
 
-    // Select de empresa
-    $.ajax({
-        url: prefijoURL + `/empresas`,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            $("#emp").empty();
-            var selOption = document.createElement("option");
-            selOption.value = '';
-            selOption.textContent = 'Todas';
-            $("#emp").append(selOption);
-            if (data && data.length > 0) {
-                data.forEach(empresa => {
-                    const option = document.createElement("option");
-                    option.value = empresa.id;
-                    option.textContent = empresa.nombre;
-                    $("#emp").append(option);
-                });
-            } else {
-                console.log('No se recibieron datos del servidor.');
+        // Select de empresa
+        $.ajax({
+            url: prefijoURL + `/empresas`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $("#emp").empty();
+                var selOption = document.createElement("option");
+                selOption.value = '';
+                selOption.textContent = 'Todas';
+                $("#emp").append(selOption);
+                if (data && data.length > 0) {
+                    data.forEach(empresa => {
+                        const option = document.createElement("option");
+                        option.value = empresa.id;
+                        option.textContent = empresa.nombre;
+                        $("#emp").append(option);
+                    });
+                } else {
+                    console.log('No se recibieron datos del servidor.');
+                }
+            },
+            error: function (error) {
+                console.error('Error en la búsqueda:', error);
             }
-        },
-        error: function (error) {
-            console.error('Error en la búsqueda:', error);
-        }
-    });
-})
-.catch(error => {
-    console.error("Error al obtener la URL del backend: ", error)
-})
+        });
+    })
+    .catch(error => {
+        console.error("Error al obtener la URL del backend: ", error)
+    })
 
 // Chequear los checkbox
 $('[type=checkbox]').prop('checked', true);
 
 // Llenar fecha hasta = fecha desde
 $(document).ready(function () {
-    $('#menuContainer').load('/static/menu.html', function() {
+    $('#menuContainer').load('/static/menu.html', function () {
         $('#titulo').append('Procesador');
     });
     // Filtro de fecha/período
@@ -340,7 +340,7 @@ var llenarTabla = function (rawData) {
                     row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
                     : row.append('<td>' + proceso.Nombre_salida + '</td>');
                 row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + botonDelete(proceso.Boton, proceso.Id_procesado) + '</td>');
 
                 tbody.append(row);
             } else {
@@ -361,7 +361,7 @@ var llenarTabla = function (rawData) {
                     subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
                     : subRow.append('<td>' + proceso.Nombre_salida + '</td>');
                 subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                subRow.append('<td></td>');
+                subRow.append('<td>' + botonDelete(null, proceso.Id_procesado) + '</td>');
 
                 tbody.append(subRow);
             }
@@ -422,6 +422,9 @@ var llenarTabla = function (rawData) {
             }
         });
     });
+
+    // Botón Eliminar
+    eventoBotonDelete();
 }
 
 var reordenarData = function (rawData) {
@@ -446,7 +449,7 @@ var obtenerNombreArchivo = function (nombre) {
     return nombre[nombre.length - 1];
 }
 
-var obtenerLink = function(nombre) {
+var obtenerLink = function (nombre) {
     if (nombre != "" && (nombre.includes("\\api") || nombre.includes("gg-salida"))) {
         return nombre.includes("api") ? prefijoURL + nombre.split("\\api")[1].replace(/\\/g, "/") : prefijoURL + nombre.split("gg-salida")[1].replace(/\\/g, "/");
     } else if (nombre != "") {
@@ -460,6 +463,54 @@ var generarBoton = function (boton, id, idProcesado, tipo) {
         return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
     }
     return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
+}
+
+var botonDelete = function (boton, id) {
+    return boton === "lanzar" ? "" : `<button type="button" class="btn btn-danger btn-sm eliminar" value="${id}" title="Eliminar"><i class="material-icons">delete</i></button>`;
+}
+
+var eventoBotonDelete = function () {
+    $('.eliminar').click(function () {
+        Swal.fire({
+            title: "¿Quiere eliminar el proceso?",
+            text: "No podrá revertir esta acción",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, borralo",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: prefijoURL + '/procesos/' + $(this).val(),
+                    method: 'DELETE',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data) {
+                            Swal.fire({
+                                title: "Éxito!",
+                                text: data,
+                                icon: "success"
+                            });
+                            $("#btnBuscar").trigger("click");
+                        } else {
+                            console.log('No se recibieron datos del servidor.');
+                        }
+                    },
+                    error: function (error) {
+                        $('#loadingOverlay').hide();
+                        Swal.fire({
+                            title: "Ocurrió un error",
+                            text: error.responseJSON.mensaje,
+                            icon: "error"
+                        });
+                        console.error('Error en la solicitud:', error);
+                    }
+                });
+            }
+        })
+    });
 }
 
 // Botón Generar documentos

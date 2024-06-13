@@ -54,6 +54,7 @@ func main() {
 	router.HandleFunc("/conceptos/{id_convenio}/{id_empresa}", handlers.GetConceptos(db))
 	router.HandleFunc("/jurisdicciones/{idConvenio}/{idEmpresa}", handlers.GetJurisdicciones(db))
 	router.HandleFunc("/procesos", handlers.GetProcesos(db))
+	router.HandleFunc("/procesos/{idProceso}", handlers.DeleteProceso(db))
 	router.HandleFunc("/send", handlers.Sender(db)).Methods("POST")
 	router.HandleFunc("/multiple", handlers.MultipleSend(db)).Methods("POST")
 	router.HandleFunc("/restantes", handlers.ProcesosRestantes(db))
