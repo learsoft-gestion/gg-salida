@@ -169,11 +169,12 @@ var llenarTabla = function (data) {
 
         tbody.append(row);
 
-        item.Filtro_convenio ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Convenio", item.Filtro_convenio)) : "";
-        item.Filtro_personas ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Personas", item.Filtro_personas)) : "";
+        let filtroPersonas = item.Filtro_convenio ? item.Filtro_convenio + '<br>' : '';
+        filtroPersonas += item.Filtro_personas;
+        tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Personas", filtroPersonas));
         item.Filtro_recibos ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Recibos", item.Filtro_recibos)) : "";
-        item.Columna_estado ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Estado", item.Columna_estado)) : "";
-        item.Select_control ? tbody.append(obtenerFiltro(item.Id_modelo, "Filtro Control", item.Select_control)) : "";
+        item.Columna_estado ? tbody.append(obtenerFiltro(item.Id_modelo, "Condición OK para pago", item.Columna_estado)) : "";
+        item.Select_control ? tbody.append(obtenerFiltro(item.Id_modelo, "Query Control", item.Select_control)) : "";
     });
 
     $("tr.accordion-toggle .openOculto").on('click', function () {
