@@ -205,8 +205,15 @@ func CargarTxt(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []mod
 
 	}
 
+	var newText string
+
+	if plantilla.Cabecera.FinalDeLinea == "DOS" {
+		newText = strings.ReplaceAll(string(texto), "\n", "\r\n")
+	} else {
+		newText = texto
+	}
 	// fmt.Printf("Cadena: %s\n", texto)
-	_, err = fmt.Fprintf(archivo, "%s", strings.TrimSpace(texto))
+	_, err = fmt.Fprintf(archivo, "%s", newText)
 	if err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", err

@@ -152,6 +152,7 @@ type Cabecera struct {
 	Sentido_encabezado string
 	Estilo             string
 	Encabezados        string
+	FinalDeLinea       string
 }
 
 type Campo struct {
@@ -280,4 +281,6 @@ type Estilos struct {
 	StyleDefaultCabecera   int
 	StyleDefault           int
 	StyleVertical          int
+	StyleColumnaInfo       int
+	StyleValorInfo         int
 }

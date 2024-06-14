@@ -56,6 +56,14 @@ func ObtenerEstilos(fileNuevo *excelize.File) modelos.Estilos {
 		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#C6E0B4"}, Pattern: 1},
 		Border:    []excelize.Border{{Type: "top", Color: "000000", Style: 1}, {Type: "bottom", Color: "000000", Style: 1}, {Type: "left", Color: "000000", Style: 1}, {Type: "right", Color: "000000", Style: 1}},
 	})
+	styleColumnaInfo, _ := fileNuevo.NewStyle(&excelize.Style{
+		Font:      &excelize.Font{Bold: true},
+		Fill:      excelize.Fill{Type: "pattern", Color: []string{"#DCDCDC"}, Pattern: 1},
+		Alignment: &excelize.Alignment{Horizontal: "center", Vertical: "center", WrapText: true},
+	})
+	styleValorInfo, _ := fileNuevo.NewStyle(&excelize.Style{
+		Alignment: &excelize.Alignment{Vertical: "center", WrapText: true},
+	})
 
-	return modelos.Estilos{StyleMoneda: styleMoneda, StyleNumero: styleNumero, StyleNumeroDecimal: styleNumeroDecimal, StyleEncabezadoNomina: styleEncabezadoNomina, StyleEncabezadoControl: styleEncabezadoControl, StyleColumnaControl: styleColumnaControl, StyleTotalesControl: styleTotalesControl, StyleControlCeleste: styleControlCeleste, StyleAligned: styleAligned, StyleDefaultCabecera: styleDefaultCabecera, StyleDefault: styleDefault, StyleVertical: styleVertical}
+	return modelos.Estilos{StyleMoneda: styleMoneda, StyleNumero: styleNumero, StyleNumeroDecimal: styleNumeroDecimal, StyleEncabezadoNomina: styleEncabezadoNomina, StyleEncabezadoControl: styleEncabezadoControl, StyleColumnaControl: styleColumnaControl, StyleTotalesControl: styleTotalesControl, StyleControlCeleste: styleControlCeleste, StyleAligned: styleAligned, StyleDefaultCabecera: styleDefaultCabecera, StyleDefault: styleDefault, StyleVertical: styleVertical, StyleColumnaInfo: styleColumnaInfo, StyleValorInfo: styleValorInfo}
 }

@@ -1,7 +1,6 @@
 {
     "cabecera": {
-        "formato": "fijo",
-        "finalDeLinea": "DOS"
+        "formato": "fijo"
     },
     "campo": [
         {
@@ -43,7 +42,7 @@
             "nombre": "bruto_imp",
             "inicio": 50,
             "fin": 58,           
-            "tipo": "string",
+            "tipo": "float sin caracteres",
             "formato": ""
         },
         {
@@ -72,7 +71,7 @@
             "inicio": 119,
             "fin": 149,           
             "tipo": "fijo",
-            "formato": "AV SAN MARTIN"
+            "formato": "Mantenimiento Ambulante"
         },
         {
             "nombre": "",
@@ -93,14 +92,14 @@
             "inicio": 169,
             "fin": 199,           
             "tipo": "fijo",
-            "formato": "VILLA DEL DIQUE"
+            "formato": "SAN RAFAEL"
         },
         {
             "nombre": "",
             "inicio": 199,
             "fin": 233,           
             "tipo": "fijo",
-            "formato": "0620VENDEDOR"
+            "formato": "1220VENDEDOR"
         },
         {
             "nombre": "laboral_cp",
@@ -128,7 +127,7 @@
             "inicio": 252,
             "fin": 257,           
             "tipo": "fijo",
-            "formato": "00580"
+            "formato": "11111"
         },
         {
             "nombre": "nrodoc",

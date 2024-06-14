@@ -36,7 +36,7 @@
             "formato": ""
         },
         {
-            "titulo": "Afiliado",
+            "titulo": "Afiliado?",
             "nombre": "afiliado",
             "columna": "F",
             "tipo": "condicional",
@@ -46,14 +46,14 @@
             "titulo": "Remun. Bruta + Incremento N.R. 458/06 (**)",
             "nombre": "bruto_imp",
             "columna": "G",
-            "tipo": "moneda",
+            "tipo": "numero",
             "formato": ""
         },
         {
             "titulo": "No Remun.",
             "nombre": "total_noRem",
             "columna": "H",
-            "tipo": "moneda",
+            "tipo": "numero",
             "formato": ""
         }
     ]

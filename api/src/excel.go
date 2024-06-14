@@ -13,7 +13,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string, tipo_ejecucion string) (string, error) {
+func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string, tipo_ejecucion string, infoText string) (string, error) {
 
 	var plantilla modelos.Plantilla
 
@@ -146,6 +146,52 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 		fileNuevo.SetCellStyle(sheetName, "A2", "A2", estilos.StyleColumnaControl)
 		fileNuevo.SetCellStyle(sheetName, "B2", "B2", estilos.StyleColumnaControl)
 
+		if infoText != "" {
+
+			// Crear nueva hoja llamada "INFO"
+			_, err := fileNuevo.NewSheet("INFO")
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", err
+			}
+
+			fileNuevo.SetColWidth("INFO", "A", "A", 20)
+			fileNuevo.SetColWidth("INFO", "B", "B", 90)
+
+			// Extraer los segmentos del texto
+			segments, err := extractGroupsAndSegments(infoText)
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", err
+			}
+
+			charPerLine := 100
+			// Escribir los grupos y sus contenidos en la hoja "INFO"
+			for i, pair := range segments {
+				groupNameCell := fmt.Sprintf("A%d", i+1)
+				segmentCell := fmt.Sprintf("B%d", i+1)
+				fileNuevo.SetCellValue("INFO", groupNameCell, pair[0])
+				fileNuevo.SetCellStyle("INFO", groupNameCell, groupNameCell, estilos.StyleColumnaInfo)
+				fileNuevo.SetCellValue("INFO", segmentCell, pair[1])
+				fileNuevo.SetCellStyle("INFO", segmentCell, segmentCell, estilos.StyleValorInfo)
+
+				// Calcular y establecer el alto de la fila
+				rowHeight := calculateRowHeight(pair[1], charPerLine)
+				if rowHeight < 15.0 {
+					fileNuevo.SetRowHeight("INFO", i+1, 15.0)
+				} else {
+					fileNuevo.SetRowHeight("INFO", i+1, rowHeight)
+				}
+			}
+
+			// Escribir el texto en la celda A1 de la hoja "INFO"
+			// fileNuevo.SetCellValue("INFO", "A1", infoText)
+
+			// Establecer la hoja activa por defecto
+			// fileNuevo.SetActiveSheet(index)
+
+		}
+
 		// Guardar archivo
 		if err := fileNuevo.SaveAs(nombreSalida); err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
@@ -197,6 +243,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					}
 				}
 				value = fmt.Sprintf("%.2f", acumulador)
+			} else if strings.ToLower(campo.Tipo) == "orden" {
+				value = fmt.Sprintf("%d", i+1)
 			} else {
 				campo.Nombre = strings.ToUpper(campo.Nombre)
 				val := registro.Valores[campo.Nombre]
@@ -208,7 +256,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					return "", fmt.Errorf("JSON: el campo %s no debe tener 'inicio' ni 'fin'", campo.Nombre)
 				}
 				if campo.Tipo == "fecha" {
-					if campo.Formato != "DD/MM/YYYY" && campo.Formato != "DD-MM-YYYY" && campo.Formato != "YYYYMMDD" {
+					if campo.Formato != "DD/MM/YYYY" && campo.Formato != "MM/YYYY" && campo.Formato != "DD-MM-YYYY" && campo.Formato != "YYYYMMDD" {
 						return "", fmt.Errorf("JSON: formato desconocido para %s", campo.Nombre)
 					}
 				}
@@ -250,6 +298,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 								value = formatearFecha(v, campo.Formato)
 							}
 						}
+					} else if campo.Formato == "MM/YYYY" {
+						value = formatearFecha(v, campo.Formato)
 					} else if strings.ToLower(campo.Tipo) == "condicional" {
 						numRegex := regexp.MustCompile(`^\s{8}$`)
 						condiciones := strings.Split(campo.Formato, "/")
@@ -313,8 +363,9 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					fileNuevo.SetCellValue(sheetName, cell, valor)
 					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, estilos.StyleNumero)
 				} else if strings.ToLower(campo.Tipo) == "numero decimal" {
+					valor, _ := strconv.ParseFloat(value, 64)
 					fileNuevo.SetCellStyle(sheetName, colLetter, campo.Columna, estilos.StyleNumeroDecimal)
-					fileNuevo.SetCellValue(sheetName, cell, value)
+					fileNuevo.SetCellValue(sheetName, cell, valor)
 				} else {
 					fileNuevo.SetCellValue(sheetName, cell, value)
 				}
@@ -460,4 +511,65 @@ func formatearPeriodoLiq(s string) string {
 		}
 	}
 	return s
+}
+
+// Función para procesar el texto y extraer los grupos y sus contenidos
+func extractGroupsAndSegments(text string) ([][2]string, error) {
+	re := regexp.MustCompile(`\[(.*?)\]`)
+	matches := re.FindAllStringSubmatch(text, -1)
+
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("no groups found in text")
+	}
+
+	var result [][2]string
+	for i, match := range matches {
+		groupName := match[1]
+		start := strings.Index(text, match[0]) + len(match[0])
+		end := len(text)
+		if i+1 < len(matches) {
+			end = strings.Index(text, matches[i+1][0])
+		}
+		segment := strings.TrimSpace(text[start:end])
+		result = append(result, [2]string{groupName, segment})
+	}
+	return result, nil
+}
+
+// // Función para calcular el alto de la fila basado en el contenido de la celda
+// func calculateRowHeight(content string, cellWidth float64) float64 {
+// 	// Separar el contenido en líneas considerando los saltos de línea intencionales
+// 	lines := strings.Split(content, "\n")
+// 	totalLines := 0
+
+// 	charPerLine := cellWidth / 7.0 // Aproximación: 7 píxeles por carácter en promedio
+
+// 	for _, line := range lines {
+// 		// Contar el número de líneas necesarias para este fragmento de texto
+// 		lineLength := float64(len(line))
+// 		lineCount := int(lineLength/charPerLine) + 1
+// 		totalLines += lineCount
+// 	}
+
+// 	// Asumir 15 píxeles por línea, ajustar según tus necesidades
+// 	rowHeight := 15.0 * float64(totalLines)
+// 	return rowHeight
+// }
+
+// Función para calcular el alto de la fila basado en el contenido de la celda
+func calculateRowHeight(content string, charsPerLine int) float64 {
+	// Separar el contenido en líneas considerando los saltos de línea intencionales
+	lines := strings.Split(content, "\n")
+	totalLines := 0
+
+	for _, line := range lines {
+		// Contar el número de líneas necesarias para este fragmento de texto
+		lineLength := len(line)
+		lineCount := (lineLength / charsPerLine) + 1
+		totalLines += lineCount
+	}
+
+	// Asumir 15 píxeles por línea, ajustar según tus necesidades
+	rowHeight := 15.0 * float64(totalLines)
+	return rowHeight
 }

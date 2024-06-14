@@ -152,7 +152,7 @@ func ProcesadorSalida(db *sql.DB, proceso modelos.Proceso, fecha string, fecha2 
 			rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
 			plantilla := "./templates/" + proceso.Archivo_modelo
 
-			name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "salida")
+			name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "salida", "")
 			if err != nil {
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 				return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil
@@ -296,7 +296,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 		rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
 		plantilla := "./templates/" + proceso.Archivo_nomina
 
-		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "nomina")
+		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "nomina", "")
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -443,7 +443,14 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 		rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
 		// plantilla := "./templates/" + proceso.Archivo_control
 
-		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, "plantilla", "control")
+		// Obtener descripcion para la solapa info del control
+		infoText, err := getSQLResult(db, proceso.Id_modelo, fecha, fecha2)
+		if err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
+
+		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, "plantilla", "control", infoText)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -469,4 +476,17 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	}
 
 	return name, modelos.ErrorFormateado{Mensaje: ""}
+}
+
+// Función para ejecutar la consulta SQL y obtener el resultado como texto
+func getSQLResult(db *sql.DB, idModelo int, fecha1, fecha2 string) (string, error) {
+
+	var result string
+	query := "SELECT extractor.describir_filtros($1, $2, $3)"
+	err := db.QueryRow(query, idModelo, fecha1, fecha2).Scan(&result)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
 }

@@ -1,0 +1,109 @@
+{
+    "campo": [
+        {
+            "titulo": "orden",
+            "nombre": "orden",
+            "columna": "A",
+            "tipo": "orden",
+            "formato": ""
+        },
+        {
+            "titulo": "cuit",
+            "nombre": "",
+            "columna": "B",
+            "tipo": "fijo",
+            "formato": "30693231481"
+        },
+        {
+            "titulo": "sucursal",
+            "nombre": "sucursal",
+            "columna": "C",
+            "tipo": "int",
+            "formato": ""
+        },
+        {
+            "titulo": "periodo",
+            "nombre": "periodoliq",
+            "columna": "D",
+            "tipo": "fecha",
+            "formato": "MM/YYYY"
+        },
+        {
+            "titulo": "nrodocumento",
+            "nombre": "nrodoc",
+            "columna": "E",
+            "tipo": "int",
+            "formato": ""
+        },
+        {
+            "titulo": "ABM",
+            "nombre": "",
+            "columna": "F",
+            "tipo": "fijo",
+            "formato": "M"
+        },
+        {
+            "titulo": "ingresobaja",
+            "nombre": "ingreso",
+            "columna": "G",
+            "tipo": "fecha",
+            "formato": "DD/MM/YYYY"
+        },
+        {
+            "titulo": "apellido",
+            "nombre": "apellidos",
+            "columna": "H",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "nombre",
+            "nombre": "nombre",
+            "columna": "I",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "sexo",
+            "nombre": "sexo",
+            "columna": "J",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "categoria",
+            "nombre": "categoria",
+            "columna": "K",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "subcategoria",
+            "nombre": "",
+            "columna": "L",
+            "tipo": "fijo",
+            "formato": "A"
+        },
+        {
+            "titulo": "importeremunerativo",
+            "nombre": "bruto_imp",
+            "columna": "M",
+            "tipo": "numero",
+            "formato": ""
+        },
+        {
+            "titulo": "importenoremunerativo",
+            "nombre": "total_noRem",
+            "columna": "N",
+            "tipo": "numero",
+            "formato": ""
+        },
+        {
+            "titulo": "esafiliado",
+            "nombre": "afiliado",
+            "columna": "O",
+            "tipo": "condicional",
+            "formato": "S/N"
+        }
+    ]
+}
