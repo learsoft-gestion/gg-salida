@@ -325,7 +325,7 @@ var llenarTabla = function (rawData) {
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
                 row.append('<td>' + proceso.Nombre + '</td>');
-                if (proceso.Version > '1') {
+                if (item.length > 1) {
                     row.append(`<td>${proceso.Version}<button class="btn btn-default btn-sm openOculto" data-target=".${proceso.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`)
                 } else {
                     row.append('<td>' + proceso.Version + '</td>')
