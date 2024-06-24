@@ -33,8 +33,16 @@ func DeleteProceso(db *sql.DB) http.HandlerFunc {
 
 		// Borro registro de control congelado
 		if proceso.Fecha_desde == proceso.Fecha_hasta {
-			queryDeleteCongelado := "delete from extractor.ext_control_congelado where id_modelo = $1 and fecha = $2 and num_version = $3"
-			_, err = db.Exec(queryDeleteCongelado, proceso.Id_modelo, proceso.Fecha_desde, proceso.Version)
+			queryControlCongelado := "delete from extractor.ext_control_congelado where id_modelo = $1 and fecha = $2 and num_version = $3"
+			_, err = db.Exec(queryControlCongelado, proceso.Id_modelo, proceso.Fecha_desde, proceso.Version)
+			if err != nil {
+				fmt.Println("Error al eliminar de otra tabla: ", err.Error())
+				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			queryNominaCongelada := "delete from extractor.ext_nomina_congelada where id_modelo = $1 and fecha = $2 and num_version = $3"
+			_, err = db.Exec(queryNominaCongelada, proceso.Id_modelo, proceso.Fecha_desde, proceso.Version)
 			if err != nil {
 				fmt.Println("Error al eliminar de otra tabla: ", err.Error())
 				http.Error(w, "Error en el servidor: "+err.Error(), http.StatusInternalServerError)
