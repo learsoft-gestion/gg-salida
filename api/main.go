@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Version 1.0.1")
+
 	// Cargar variables de entorno
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Error: ", err.Error())
@@ -75,6 +75,7 @@ func main() {
 	router.HandleFunc("/piCabecera", handlers.SavePiCabecera(db))
 	router.HandleFunc("/piDetalle/{idPi}", handlers.GetPiDetalle(db))
 	router.HandleFunc("/piDetalle", handlers.SavePiDetalle(db))
+	router.HandleFunc("/version", handlers.GetVersion())
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),

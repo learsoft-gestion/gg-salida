@@ -1,6 +1,7 @@
 {
     "cabecera": {
-        "formato": "fijo"
+        "formato": "fijo",
+        "finalDeLinea": "DOS"
     },
     "campo": [
         {

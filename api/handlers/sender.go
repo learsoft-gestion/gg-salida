@@ -127,12 +127,16 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			Procesos[0].Id_procesado = id_procesado
 
 			// Ejecutar nomina
-			respuesta_nomina := Nomina(db, sql, datos, Procesos[0])
+			respuesta_nomina := Nomina(db, sql, datos, Procesos[0], true)
 
 			// Ejecutar control
 			respuesta_control := Control(db, sql, datos, Procesos[0])
 
-			if respuesta_nomina.Archivos_nomina[0] == "No se han encontrado registros" {
+			if respuesta_nomina.Archivos_nomina == nil {
+				w.WriteHeader(http.StatusBadRequest)
+				jsonResp, _ := json.Marshal(respuesta_nomina)
+				w.Write(jsonResp)
+			} else if respuesta_nomina.Archivos_nomina[0] == "No se han encontrado registros" {
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				respuesta := modelos.Respuesta{
@@ -154,18 +158,31 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				}
 				jsonResp, _ := json.Marshal(respuesta)
 				w.Write(jsonResp)
-			} else if respuesta_nomina.Archivos_nomina == nil {
-				w.WriteHeader(http.StatusBadRequest)
-				jsonResp, _ := json.Marshal(respuesta_nomina)
-				w.Write(jsonResp)
 			} else {
 				w.WriteHeader(http.StatusBadRequest)
 				jsonResp, _ := json.Marshal(respuesta_control)
 				w.Write(jsonResp)
 			}
 
+		} else if r.Method == "PATCH" {
+			var bloqueado modelos.Bloqueado
+			err := json.NewDecoder(r.Body).Decode(&bloqueado)
+			if err != nil {
+				http.Error(w, "Error decodificando JSON: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			sqlRes, err := db.Exec("update extractor.ext_procesados set bloqueado = $1 where id_proceso = $2 ", bloqueado.Bloquear, bloqueado.Id_procesado)
+			if err != nil {
+				http.Error(w, "Error al ejecutar el query: "+err.Error(), http.StatusBadRequest)
+				return
+			} else if affected, _ := sqlRes.RowsAffected(); affected > 0 {
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(fmt.Sprintf("El modelo ahora tiene bloqueado = %t", bloqueado.Bloquear)))
+			}
+
 		} else {
-			http.Error(w, "Esta ruta solo admite una solicitud POST", http.StatusBadRequest)
+			http.Error(w, "Esta ruta solo admite una solicitud POST o PATCH", http.StatusBadRequest)
 			return
 		}
 	}
@@ -296,7 +313,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				datos.Version = version
 
 				// Ejecutar nomina
-				result_nomina := Nomina(db, sql, datos, proc)
+				result_nomina := Nomina(db, sql, datos, proc, true)
 
 				// Ejecutar control
 				result_control := Control(db, sql, datos, proc)
@@ -331,10 +348,11 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Proceso) modelos.Respuesta {
+func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Proceso, generarNomina bool) modelos.Respuesta {
 	fmt.Printf("## Nomina de %s ##\n", proceso.Nombre)
 	var resultado []string
-	result, errFormateado := src.ProcesadorNomina(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version)
+
+	result, errFormateado := src.ProcesadorNomina(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version, true)
 	if result != "" {
 		resultado = append(resultado, result)
 	}

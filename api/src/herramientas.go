@@ -4,6 +4,7 @@ import (
 	"Nueva/modelos"
 	"database/sql"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -153,4 +154,114 @@ func FormatoFecha(s string) string {
 	// MM/YYYY ------> YYYYMM
 	parts := strings.Split(s, "/")
 	return parts[1] + parts[0]
+}
+
+// Funcion para convertir datos de tipo byte en float
+func ConvertirBytesAFloat64(data map[string]interface{}) (map[string]interface{}, error) {
+	for key, value := range data {
+		switch v := value.(type) {
+		case int64:
+			// fmt.Printf("key: %s, value: %v, type: %s\n", key, v, "int64")
+			data[key] = v
+		case string:
+			// fmt.Printf("key: %s, value: %v, type: %s\n", key, v, "string")
+			data[key] = v
+		case []uint8:
+			// fmt.Printf("key: %s, value: %v, type: %s\n", key, v, "[]uint8")
+			valueStr := string(v)
+			valueFloat, err := strconv.ParseFloat(valueStr, 64)
+			if err != nil {
+				fmt.Println(err.Error())
+				return nil, err
+			} else {
+				data[key] = valueFloat
+			}
+		default:
+			fmt.Printf("key: %s, value: %v, type: %s\n", key, v, reflect.TypeOf(value))
+			data[key] = v
+		}
+	}
+	return data, nil
+}
+
+// Función para combinar las columnas
+func combinarColumnas(registros []modelos.Registro) []string {
+	elementsMap := make(map[string]bool)
+	var columnas_general []string
+
+	// Recorrer las columnas en el orden del último registro
+	for _, columna := range registros[len(registros)-1].Columnas {
+		// Agregar elementos al mapa si no existen ya
+		if !elementsMap[strings.ToUpper(columna)] {
+			elementsMap[strings.ToUpper(columna)] = true
+			columnas_general = append(columnas_general, columna)
+		}
+	}
+
+	// Recorrer los registros nuevamente para agregar los elementos en el orden correcto
+	for _, registro := range registros {
+		for i, col := range registro.Columnas {
+			// Agregar elementos al resultado
+			if !elementsMap[strings.ToUpper(col)] {
+				elementsMap[strings.ToUpper(col)] = true
+				columnas_general = insertarEnPosicion(columnas_general, col, i)
+			}
+		}
+	}
+
+	return columnas_general
+}
+
+// Función para insertar un elemento en una posición específica en un slice
+func insertarEnPosicion(slice []string, elemento string, pos int) []string {
+	if pos >= len(slice) {
+		return append(slice, elemento)
+	}
+	slice = append(slice[:pos+1], slice[pos:]...)
+	slice[pos] = elemento
+	return slice
+}
+
+func MultipleInsertSQL(postgresDb *sql.DB, registros [][]interface{}, query string) error {
+	// Comenzar una transacción
+	tx, err := postgresDb.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() error {
+		// Si hay un error, realizar rollback
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		// Si no hay errores, hacer commit al finalizar la transacción
+		err = tx.Commit()
+		if err != nil {
+			// Manejar error de commit si lo hay
+			return err
+		}
+		return nil
+	}()
+
+	// Preparar la sentencia de inserción masiva
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// Iterar sobre los registros y ejecutar la inserción masiva
+	for _, registro := range registros {
+		// for i, registro := range registros {
+		// fmt.Printf("Idx: %v Len(reg): %v", i, len(registro))
+		_, err := stmt.Exec(registro...)
+		if err != nil {
+
+			return err
+			// return fmt.Errorf(err.Error() + " " + registro.Ids)
+		}
+	}
+
+	return nil
+
 }

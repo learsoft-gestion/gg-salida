@@ -4,6 +4,7 @@ import (
 	"Nueva/conexiones"
 	"Nueva/modelos"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -62,7 +63,7 @@ func ProcesadorSalida(db *sql.DB, proceso modelos.Proceso, fecha string, fecha2 
 
 	var name string
 
-	if proceso.Archivo_modelo == "" {
+	if proceso.Archivo_modelo == "" || fecha != fecha2 {
 		// No genera salida
 
 		// Insertar nuevo proceso en ext_procesados
@@ -152,7 +153,7 @@ func ProcesadorSalida(db *sql.DB, proceso modelos.Proceso, fecha string, fecha2 
 			rutaArchivo := filepath.Join(rutaCarpeta, nombreSalida)
 			plantilla := "./templates/" + proceso.Archivo_modelo
 
-			name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "salida", "")
+			name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "salida", "", version)
 			if err != nil {
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 				return "", 0, modelos.ErrorFormateado{Mensaje: err.Error()}, nil
@@ -206,7 +207,7 @@ func ProcesadorSalida(db *sql.DB, proceso modelos.Proceso, fecha string, fecha2 
 	return name, proceso.Id_procesado, modelos.ErrorFormateado{Mensaje: ""}, sql
 }
 
-func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
+func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, version int, generarNomina bool) (string, modelos.ErrorFormateado) {
 
 	id_log, idLogDetalle, err := Logueo(db, proceso.Nombre)
 	if err != nil {
@@ -254,6 +255,94 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	} else {
 		fmt.Println("Cantidad de registros: ", len(registros))
 
+		if fecha == fecha2 {
+			// Construir la parte de las columnas y los placeholders para los valores
+			columnas_slice := []string{"id_modelo", "fecha", "num_version"}
+			placeholders := make([]string, len(registros[0].Columnas))
+			for i, col := range registros[0].Columnas {
+				columnas_slice = append(columnas_slice, strings.ToLower(col))
+				placeholders[i] = fmt.Sprintf("$%d", i+4)
+			}
+			columnas := strings.Join(columnas_slice, ", ")
+			placeholdersFinales := []string{"$1", "$2", "$3"}
+			placeholdersFinales = append(placeholdersFinales, placeholders...)
+			placeholdersStr := strings.Join(placeholdersFinales, ", ")
+
+			var registrosInsert [][]interface{}
+			for _, reg := range registros {
+				valoresFinales := []interface{}{proceso.Id_modelo, fecha, version}
+				for _, columna := range reg.Columnas {
+					valoresFinales = append(valoresFinales, reg.Valores[strings.ToUpper(columna)])
+				}
+				registrosInsert = append(registrosInsert, valoresFinales)
+			}
+
+			// fmt.Printf("Columnas: \n%s\nPlacehoders:\n%s", columnas, placeholdersStr)
+
+			// Construir la consulta SQL
+			query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", "extractor.ext_nomina_congelada", columnas, placeholdersStr)
+
+			// Ejecutar la consulta
+			err = MultipleInsertSQL(db, registrosInsert, query)
+			if err != nil {
+				fmt.Println("Error al obtener el directorio actual:", err)
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			// Obtener control congelado
+			filas_congelados, err := db.Query("select * from extractor.ext_nomina_congelada	where (fecha, id_modelo, num_version) in ( select fecha, id_modelo, max(num_version) as version	from extractor.ext_nomina_congelada where ((substring(fecha,1,4) = substring($1,1,4) and fecha < $1) or (substring($1,5,6) = '01' and substring(fecha,1,4) = cast(cast(substring($1,1,4) as int) - 1 as varchar) and substring(fecha,5,6) = '12' )) and id_modelo = $2 group by fecha, id_modelo) order by fecha;", fecha, proceso.Id_modelo)
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			columnas_congeladas, err := filas_congelados.Columns()
+			if err != nil {
+				fmt.Println("Error al hacer la query del extractor")
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			val_congelados := make([]interface{}, len(columnas_congeladas))
+			for i := range val_congelados {
+				val_congelados[i] = new(interface{})
+			}
+			var congelados_nomina []modelos.Registro
+			for filas_congelados.Next() {
+
+				if err := filas_congelados.Scan(val_congelados...); err != nil {
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
+
+				registroMapa := make(map[string]interface{})
+				for i, colNombre := range columnas_congeladas {
+					colName := strings.ToUpper(colNombre)
+					registroMapa[colName] = *(val_congelados[i].(*interface{}))
+				}
+
+				registro := modelos.Registro{
+					Columnas: columnas_congeladas,
+					Valores:  registroMapa,
+				}
+				congelados_nomina = append(congelados_nomina, registro)
+
+			}
+
+			nuevoSlice := make([]modelos.Registro, len(congelados_nomina)+len(registros))
+
+			// Copiar el slice a agregar al principio en el nuevo slice
+			copy(nuevoSlice, congelados_nomina)
+
+			// Copiar el slice original al final del nuevo slice
+			copy(nuevoSlice[len(congelados_nomina):], registros)
+
+			// Asignar el nuevo slice a la variable original
+			registros = nuevoSlice
+
+		}
+
 		// Fecha para el nombre de salida
 		var fechaControl string
 		if fecha == fecha2 {
@@ -296,7 +385,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 		rutaArchivo := filepath.Join(rutaCarpeta, nombreControl)
 		plantilla := "./templates/" + proceso.Archivo_nomina
 
-		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "nomina", "")
+		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, plantilla, "nomina", "", version)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -450,7 +539,81 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
-		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, "plantilla", "control", infoText)
+		if fecha == fecha2 {
+
+			// for key, value := range registros[0].Valores {
+			// 	fmt.Printf("Key: %s, Type: %s, Value: %v\n", key, reflect.TypeOf(value), value)
+			// }
+
+			// Convertir []uint8 en float64
+			valores, err := ConvertirBytesAFloat64(registros[0].Valores)
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			// Convertir registros en un json
+			jsonData, err := json.Marshal(modelos.Registro{Columnas: registros[0].Columnas, Valores: valores})
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			queryControlCongelado := "INSERT INTO extractor.ext_control_congelado (id_modelo, fecha, num_version, json_control) VALUES ($1,$2,$3,$4)"
+			_, err = db.Exec(queryControlCongelado, proceso.Id_modelo, fecha, version, jsonData)
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			// Obtener control congelado
+			filas_congelados, err := db.Query("select * from extractor.ext_control_congelado where (fecha, id_modelo, num_version) in ( select fecha, id_modelo, max(num_version) as version from extractor.ext_control_congelado where ((substring(fecha,1,4) = substring($1,1,4) and fecha < $1) or (substring($1,5,6) = '01' and substring(fecha,1,4) = cast(cast(substring($1,1,4) as int) - 1 as varchar) and substring(fecha,5,6) = '12' )) and id_modelo = $2 group by fecha, id_modelo) order by fecha;", fecha, proceso.Id_modelo)
+			if err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
+
+			var congelados []modelos.Control_congelado
+			for filas_congelados.Next() {
+				var congelado modelos.Control_congelado
+				err = filas_congelados.Scan(&congelado.Id_modelo, &congelado.Fecha, &congelado.Num_version, &congelado.Json_control)
+				if err != nil {
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
+				congelados = append(congelados, congelado)
+			}
+
+			var controles []modelos.Registro
+			for _, congelado := range congelados {
+				var reg modelos.Registro
+				// var control_congelado map[string]interface{}
+				if err = json.Unmarshal(congelado.Json_control, &reg); err != nil {
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
+				// for key := range control_congelado {
+				// 	reg.Columnas = append(reg.Columnas, key)
+				// }
+				// reg.Valores = control_congelado
+				reg.Valores["NUM_VERSION"] = congelado.Num_version
+				controles = append(controles, reg)
+			}
+
+			nuevoSlice := make([]modelos.Registro, len(controles)+len(registros))
+
+			// Copiar el slice a agregar al principio en el nuevo slice
+			copy(nuevoSlice, controles)
+
+			// Copiar el slice original al final del nuevo slice
+			copy(nuevoSlice[len(controles):], registros)
+
+			// Asignar el nuevo slice a la variable original
+			registros = nuevoSlice
+
+		}
+
+		name, err = CargarExcel(db, idLogDetalle, proceso, registros, rutaArchivo, "plantilla", "control", infoText, version)
 		if err != nil {
 			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}

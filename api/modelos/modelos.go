@@ -111,6 +111,7 @@ type DTOproceso struct {
 	Nombre_control   string
 	Nombre_nomina    string
 	Id_procesado     int
+	Bloqueado        bool
 }
 
 type DTOdatos struct {
@@ -283,4 +284,16 @@ type Estilos struct {
 	StyleVertical          int
 	StyleColumnaInfo       int
 	StyleValorInfo         int
+}
+
+type Control_congelado struct {
+	Id_modelo    int
+	Fecha        string
+	Num_version  int
+	Json_control []byte
+}
+
+type Bloqueado struct {
+	Id_procesado int
+	Bloquear     bool
 }

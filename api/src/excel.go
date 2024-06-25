@@ -13,7 +13,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string, tipo_ejecucion string, infoText string) (string, error) {
+func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []modelos.Registro, nombreSalida string, path string, tipo_ejecucion string, infoText string, version int) (string, error) {
 
 	var plantilla modelos.Plantilla
 
@@ -46,43 +46,55 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 		var saltos []int
 
+		columnas_combinadas := combinarColumnas(data)
+
+		// fmt.Println("\nColumnas combinadas: ", columnas_combinadas)
+
 		for i, registro := range data {
 			colLetter := ObtenerLetra(i + 3) // Almacena la columna para este registro
 			grupoPrevio := ""
+			grupoActual := ""
 			filaInicialGrupo := 3
 
-			fmt.Println(len(registro.Columnas))
-			for j, campo := range registro.Columnas {
+			// fmt.Println(len(registro.Columnas))
+			for j, campo := range columnas_combinadas {
 
-				grupoActual := ExtraerGrupo(campo)
+				if i == 0 {
+					grupoActual = ExtraerGrupo(campo)
 
-				// Eliminar marca en el nombre del campo
-				campo = EliminarPrefijo(campo, fmt.Sprintf("<%s>", grupoActual))
-				campo = EliminarPrefijo(campo, "*C")
-				campo = EliminarPrefijo(campo, "*")
+					// Eliminar marca en el nombre del campo
+					campo = EliminarPrefijo(campo, fmt.Sprintf("<%s>", grupoActual))
+					campo = EliminarPrefijo(campo, "*C")
+					campo = EliminarPrefijo(campo, "*")
 
-				if grupoPrevio != "" && grupoPrevio != grupoActual {
-					// El grupo cambia, fusiono las celdas de la columna "A"
-					// fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+1)
-					fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+1))
-					fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
-					fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
-					filaInicialGrupo = j + 2
-					saltos = append(saltos, j+2+len(saltos))
+					if grupoPrevio != "" && grupoPrevio != grupoActual {
+						// El grupo cambia, fusiono las celdas de la columna "A"
+						// fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+1)
+						fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+1))
+						fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
+						fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
+						filaInicialGrupo = j + 2
+						saltos = append(saltos, j+2+len(saltos))
+					}
+
+					// Escribir claves
+					cellKey := "B" + strconv.Itoa(j+2)
+					fileNuevo.SetCellValue(sheetName, cellKey, campo)
+					fileNuevo.SetCellStyle(sheetName, cellKey, cellKey, estilos.StyleEncabezadoControl) // Fondo gris para el campo
+					fileNuevo.SetRowHeight(sheetName, j+2, 25)                                          // Amplia alto de la fila
 				}
 
-				// Escribir claves
-				cellKey := "B" + strconv.Itoa(j+2)
-				fileNuevo.SetCellValue(sheetName, cellKey, campo)
-				fileNuevo.SetCellStyle(sheetName, cellKey, cellKey, estilos.StyleEncabezadoControl) // Fondo gris para el campo
-				fileNuevo.SetRowHeight(sheetName, j+2, 25)                                          // Amplia alto de la fila
-
 				// Escribir valores
-				value := registro.Valores[strings.ToUpper(registro.Columnas[j])]
+				value := registro.Valores[strings.ToUpper(columnas_combinadas[j])]
 				cellValue := colLetter + strconv.Itoa(j+2)
 
 				if strings.ToUpper(campo) == "PERIODOLIQ" {
-					value = formatearPeriodoLiq(value.(string))
+					if i == len(data)-1 {
+						value = formatearPeriodoLiq(value.(string)) + fmt.Sprintf(" (%d)", version)
+					} else {
+						value = formatearPeriodoLiq(value.(string)) + fmt.Sprintf(" (%d)", registro.Valores["NUM_VERSION"].(int))
+						delete(registro.Valores, "NUM_VERSION")
+					}
 					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleColumnaControl)
 				}
 
@@ -101,31 +113,45 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				case int64:
 					fileNuevo.SetCellValue(sheetName, cellValue, v)
 					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleAligned)
+				case float64:
+					if strings.Contains(strings.ToUpper(campo), "LEGAJO") {
+						fileNuevo.SetCellValue(sheetName, cellValue, v)
+						fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleAligned)
+					} else {
+						fileNuevo.SetCellValue(sheetName, cellValue, v)
+						fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleMoneda)
+					}
+				case nil:
+					fileNuevo.SetCellValue(sheetName, cellValue, "")
+					fileNuevo.SetCellStyle(sheetName, cellValue, cellValue, estilos.StyleAligned)
 				default:
 					fileNuevo.SetCellValue(sheetName, cellValue, "defValue")
 					fmt.Printf("Tipo de dato en %s: %T\n", campo, value)
 
 				}
 
-				grupoPrevio = grupoActual
-
-				if strings.Contains(registro.Columnas[j], "*C") {
+				if strings.Contains(columnas_combinadas[j], "*C") {
 					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleControlCeleste)             // Negrita y fondo gris para el total
 					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleControlCeleste) // Negrita y fondo gris para el total
-				} else if strings.Contains(registro.Columnas[j], "*") {
+				} else if strings.Contains(columnas_combinadas[j], "*") {
 					fileNuevo.SetCellStyle(sheetName, "B"+strconv.Itoa(j+2), "B"+strconv.Itoa(j+2), estilos.StyleTotalesControl)             // Negrita y fondo gris para el total
 					fileNuevo.SetCellStyle(sheetName, colLetter+strconv.Itoa(j+2), colLetter+strconv.Itoa(j+2), estilos.StyleTotalesControl) // Negrita y fondo gris para el total
 				}
 
-				if j == len(registro.Columnas)-1 {
-					// Fusionar celdas del ultimo grupo
-					if grupoPrevio != "" {
-						// fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+2)
-						fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+2))
-						fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
-						fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
+				if i == 0 {
+					grupoPrevio = grupoActual
+
+					if j == len(columnas_combinadas)-1 {
+						// Fusionar celdas del ultimo grupo
+						if grupoPrevio != "" {
+							// fmt.Printf("Inicio: %v, Fin: %v\n", filaInicialGrupo, j+2)
+							fileNuevo.MergeCell(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", j+2))
+							fileNuevo.SetCellValue(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), strings.ToUpper(grupoPrevio))
+							fileNuevo.SetCellStyle(sheetName, fmt.Sprintf("A%d", filaInicialGrupo), fmt.Sprintf("A%d", filaInicialGrupo), estilos.StyleVertical)
+						}
 					}
 				}
+
 			}
 
 			fileNuevo.SetCellStyle(sheetName, colLetter+"2", colLetter+"2", estilos.StyleColumnaControl) // Fondo negro en fila 2
@@ -157,6 +183,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 
 			fileNuevo.SetColWidth("INFO", "A", "A", 20)
 			fileNuevo.SetColWidth("INFO", "B", "B", 90)
+			fileNuevo.SetColWidth("INFO", "C", "C", 90)
 
 			// Extraer los segmentos del texto
 			segments, err := extractGroupsAndSegments(infoText)
@@ -172,8 +199,22 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				segmentCell := fmt.Sprintf("B%d", i+1)
 				fileNuevo.SetCellValue("INFO", groupNameCell, pair[0])
 				fileNuevo.SetCellStyle("INFO", groupNameCell, groupNameCell, estilos.StyleColumnaInfo)
-				fileNuevo.SetCellValue("INFO", segmentCell, pair[1])
-				fileNuevo.SetCellStyle("INFO", segmentCell, segmentCell, estilos.StyleValorInfo)
+				if strings.Contains(pair[1], "::") {
+					// Tiene traduccion
+					partes := strings.Split(pair[1], "::")
+					if len(partes) < 2 {
+						fmt.Println("INFO no tenia ::")
+						ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+						return "", err
+					}
+					fileNuevo.SetCellValue("INFO", segmentCell, partes[0])
+					fileNuevo.SetCellStyle("INFO", segmentCell, segmentCell, estilos.StyleValorInfo)
+					fileNuevo.SetCellValue("INFO", fmt.Sprintf("C%d", i+1), partes[1])
+					fileNuevo.SetCellStyle("INFO", fmt.Sprintf("C%d", i+1), fmt.Sprintf("C%d", i+1), estilos.StyleValorInfo)
+				} else {
+					fileNuevo.SetCellValue("INFO", segmentCell, pair[1])
+					fileNuevo.SetCellStyle("INFO", segmentCell, segmentCell, estilos.StyleValorInfo)
+				}
 
 				// Calcular y establecer el alto de la fila
 				rowHeight := calculateRowHeight(pair[1], charPerLine)
@@ -183,12 +224,6 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 					fileNuevo.SetRowHeight("INFO", i+1, rowHeight)
 				}
 			}
-
-			// Escribir el texto en la celda A1 de la hoja "INFO"
-			// fileNuevo.SetCellValue("INFO", "A1", infoText)
-
-			// Establecer la hoja activa por defecto
-			// fileNuevo.SetActiveSheet(index)
 
 		}
 
@@ -535,26 +570,6 @@ func extractGroupsAndSegments(text string) ([][2]string, error) {
 	}
 	return result, nil
 }
-
-// // Función para calcular el alto de la fila basado en el contenido de la celda
-// func calculateRowHeight(content string, cellWidth float64) float64 {
-// 	// Separar el contenido en líneas considerando los saltos de línea intencionales
-// 	lines := strings.Split(content, "\n")
-// 	totalLines := 0
-
-// 	charPerLine := cellWidth / 7.0 // Aproximación: 7 píxeles por carácter en promedio
-
-// 	for _, line := range lines {
-// 		// Contar el número de líneas necesarias para este fragmento de texto
-// 		lineLength := float64(len(line))
-// 		lineCount := int(lineLength/charPerLine) + 1
-// 		totalLines += lineCount
-// 	}
-
-// 	// Asumir 15 píxeles por línea, ajustar según tus necesidades
-// 	rowHeight := 15.0 * float64(totalLines)
-// 	return rowHeight
-// }
 
 // Función para calcular el alto de la fila basado en el contenido de la celda
 func calculateRowHeight(content string, charsPerLine int) float64 {
