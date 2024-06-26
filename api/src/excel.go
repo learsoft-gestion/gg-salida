@@ -89,7 +89,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				cellValue := colLetter + strconv.Itoa(j+2)
 
 				if strings.ToUpper(campo) == "PERIODOLIQ" {
-					if i == len(data)-1 {
+					if i == len(data)-1 && registro.Valores["NUM_VERSION"] == nil {
 						value = formatearPeriodoLiq(value.(string)) + fmt.Sprintf(" (%d)", version)
 					} else {
 						value = formatearPeriodoLiq(value.(string)) + fmt.Sprintf(" (%d)", registro.Valores["NUM_VERSION"].(int))

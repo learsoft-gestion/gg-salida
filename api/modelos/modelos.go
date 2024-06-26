@@ -55,6 +55,30 @@ type Proceso struct {
 	Select_salida           string
 }
 
+type ModeloProyeccion struct {
+	Id_modelo               int
+	Id_empresa              int
+	Nombre_empresa          string
+	Nombre_empresa_reducido string
+	Id_convenio             int
+	Nombre_convenio         string
+	Id_concepto             string
+	Id_tipo                 string
+	Nombre                  string
+	Filtro_convenio         sql.NullString
+	Filtro_personas         sql.NullString
+	Filtro_recibos          sql.NullString
+	Formato_salida          string
+	Query                   string
+	Archivo_modelo          string
+	Archivo_nomina          string
+	Id_procesado            int
+	Columna_estado          string
+	Id_query                int
+	Select_control          string
+	Select_salida           string
+}
+
 type Migrador struct {
 	ID             int
 	Procesado      bool

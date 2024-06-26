@@ -55,7 +55,7 @@ func main() {
 	router.HandleFunc("/jurisdicciones/{idConvenio}/{idEmpresa}", handlers.GetJurisdicciones(db))
 	router.HandleFunc("/procesos", handlers.GetProcesos(db))
 	router.HandleFunc("/procesos/{idProceso}", handlers.DeleteProceso(db))
-	router.HandleFunc("/send", handlers.Sender(db)).Methods("POST")
+	router.HandleFunc("/send", handlers.Sender(db))
 	router.HandleFunc("/multiple", handlers.MultipleSend(db)).Methods("POST")
 	router.HandleFunc("/restantes", handlers.ProcesosRestantes(db))
 	router.HandleFunc("/clientes", handlers.GetClientes(db))
@@ -76,6 +76,8 @@ func main() {
 	router.HandleFunc("/piDetalle/{idPi}", handlers.GetPiDetalle(db))
 	router.HandleFunc("/piDetalle", handlers.SavePiDetalle(db))
 	router.HandleFunc("/version", handlers.GetVersion())
+	router.HandleFunc("/consulta", handlers.ConsultaCongelados(db)).Methods("POST")
+	router.HandleFunc("/proyeccion", handlers.Proyeccion(db)).Methods("POST")
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),

@@ -225,13 +225,16 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	queryFinal = strings.Replace(query, "$SELECT$", queryReplace, 1)
 	proceso.Query = queryFinal
 
-	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "nomina")
-	if err != nil {
-		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
+	var registros []modelos.Registro
+	if generarNomina {
+		registros, err = Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "nomina")
+		if err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
 	}
 
-	if len(registros) == 0 {
+	if len(registros) == 0 && generarNomina {
 		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, "Sin datos"); err != nil {
 			fmt.Println(err.Error())
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -253,41 +256,45 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 		return "Sin datos", modelos.ErrorFormateado{Mensaje: ""}
 
 	} else {
-		fmt.Println("Cantidad de registros: ", len(registros))
+		if generarNomina {
+			fmt.Println("Cantidad de registros: ", len(registros))
+		}
 
 		if fecha == fecha2 {
-			// Construir la parte de las columnas y los placeholders para los valores
-			columnas_slice := []string{"id_modelo", "fecha", "num_version"}
-			placeholders := make([]string, len(registros[0].Columnas))
-			for i, col := range registros[0].Columnas {
-				columnas_slice = append(columnas_slice, strings.ToLower(col))
-				placeholders[i] = fmt.Sprintf("$%d", i+4)
-			}
-			columnas := strings.Join(columnas_slice, ", ")
-			placeholdersFinales := []string{"$1", "$2", "$3"}
-			placeholdersFinales = append(placeholdersFinales, placeholders...)
-			placeholdersStr := strings.Join(placeholdersFinales, ", ")
-
-			var registrosInsert [][]interface{}
-			for _, reg := range registros {
-				valoresFinales := []interface{}{proceso.Id_modelo, fecha, version}
-				for _, columna := range reg.Columnas {
-					valoresFinales = append(valoresFinales, reg.Valores[strings.ToUpper(columna)])
+			if generarNomina {
+				// Construir la parte de las columnas y los placeholders para los valores
+				columnas_slice := []string{"id_modelo", "fecha", "num_version"}
+				placeholders := make([]string, len(registros[0].Columnas))
+				for i, col := range registros[0].Columnas {
+					columnas_slice = append(columnas_slice, strings.ToLower(col))
+					placeholders[i] = fmt.Sprintf("$%d", i+4)
 				}
-				registrosInsert = append(registrosInsert, valoresFinales)
-			}
+				columnas := strings.Join(columnas_slice, ", ")
+				placeholdersFinales := []string{"$1", "$2", "$3"}
+				placeholdersFinales = append(placeholdersFinales, placeholders...)
+				placeholdersStr := strings.Join(placeholdersFinales, ", ")
 
-			// fmt.Printf("Columnas: \n%s\nPlacehoders:\n%s", columnas, placeholdersStr)
+				var registrosInsert [][]interface{}
+				for _, reg := range registros {
+					valoresFinales := []interface{}{proceso.Id_modelo, fecha, version}
+					for _, columna := range reg.Columnas {
+						valoresFinales = append(valoresFinales, reg.Valores[strings.ToUpper(columna)])
+					}
+					registrosInsert = append(registrosInsert, valoresFinales)
+				}
 
-			// Construir la consulta SQL
-			query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", "extractor.ext_nomina_congelada", columnas, placeholdersStr)
+				// fmt.Printf("Columnas: \n%s\nPlacehoders:\n%s", columnas, placeholdersStr)
 
-			// Ejecutar la consulta
-			err = MultipleInsertSQL(db, registrosInsert, query)
-			if err != nil {
-				fmt.Println("Error al obtener el directorio actual:", err)
-				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				// Construir la consulta SQL
+				query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", "extractor.ext_nomina_congelada", columnas, placeholdersStr)
+
+				// Ejecutar la consulta
+				err = MultipleInsertSQL(db, registrosInsert, query)
+				if err != nil {
+					fmt.Println("Error al obtener el directorio actual:", err)
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
 			}
 
 			// Obtener control congelado
@@ -359,9 +366,9 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
+		// Construir la ruta de la carpeta de salida
 		var nombreControl string
 		proceso_periodo := fecha + "-" + fecha2
-		// Construir la ruta de la carpeta de salida
 		procesoNombre := proceso.Nombre + "-Nomina"
 		rutaCarpeta := filepath.Join(directorioActual, ".", "salida", proceso.Nombre_empresa_reducido, proceso.Nombre_convenio, proceso_periodo, procesoNombre)
 
@@ -374,10 +381,14 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 			}
 		}
 
+		if !generarNomina {
+			nombreControl = "Consulta-"
+		}
+
 		if version > 1 {
-			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl, version)
+			nombreControl += fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl, version)
 		} else {
-			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl)
+			nombreControl += fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl)
 		}
 
 		// Ruta completa del archivo
@@ -391,10 +402,12 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
-		// Insertar o actualizar proceso en ext_procesados
-		if err = ProcesadosNomina(db, proceso.Id_procesado, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
-			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		if generarNomina {
+			// Insertar o actualizar proceso en ext_procesados
+			if err = ProcesadosNomina(db, proceso.Id_procesado, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
 		}
 
 		// Logueo
@@ -413,7 +426,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	return name, modelos.ErrorFormateado{Mensaje: ""}
 }
 
-func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, version int) (string, modelos.ErrorFormateado) {
+func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 string, version int, generarControl bool) (string, modelos.ErrorFormateado) {
 
 	id_log, idLogDetalle, err := Logueo(db, proceso.Nombre)
 	if err != nil {
@@ -460,13 +473,16 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 	}
 	proceso.Query = queryFinal
 
-	registros, err := Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "control")
-	if err != nil {
-		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-		return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
+	var registros []modelos.Registro
+	if generarControl {
+		registros, err = Extractor(db, sql, proceso, fecha, fecha2, idLogDetalle, "control")
+		if err != nil {
+			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			return err.Error(), modelos.ErrorFormateado{Mensaje: err.Error()}
+		}
 	}
 
-	if len(registros) == 0 {
+	if len(registros) == 0 && generarControl {
 		if err = ProcesadosControl(db, proceso.Id_procesado, "Sin datos"); err != nil {
 			fmt.Println(err.Error())
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -488,7 +504,9 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 		return "Sin datos", modelos.ErrorFormateado{Mensaje: ""}
 
 	} else {
-		fmt.Println("Cantidad de registros: ", len(registros))
+		if generarControl {
+			fmt.Println("Cantidad de registros: ", len(registros))
+		}
 
 		// Fecha para el nombre de salida
 		var fechaControl string
@@ -521,10 +539,14 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 			}
 		}
 
+		if !generarControl {
+			nombreControl = "Consulta-"
+		}
+
 		if version > 1 {
-			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl, version)
+			nombreControl += fmt.Sprintf("%s_%s_%s%s_%s_%s(%v)", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl, version)
 		} else {
-			nombreControl = fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl)
+			nombreControl += fmt.Sprintf("%s_%s_%s%s_%s_%s", proceso.Nombre_convenio, proceso.Nombre_empresa_reducido, proceso.Id_concepto, proceso.Id_tipo, procesoNombre, fechaControl)
 		}
 
 		// Ruta completa del archivo
@@ -540,30 +562,31 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 		}
 
 		if fecha == fecha2 {
+			if generarControl {
+				// for key, value := range registros[0].Valores {
+				// 	fmt.Printf("Key: %s, Type: %s, Value: %v\n", key, reflect.TypeOf(value), value)
+				// }
 
-			// for key, value := range registros[0].Valores {
-			// 	fmt.Printf("Key: %s, Type: %s, Value: %v\n", key, reflect.TypeOf(value), value)
-			// }
+				// Convertir []uint8 en float64
+				valores, err := ConvertirBytesAFloat64(registros[0].Valores)
+				if err != nil {
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
 
-			// Convertir []uint8 en float64
-			valores, err := ConvertirBytesAFloat64(registros[0].Valores)
-			if err != nil {
-				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-			}
+				// Convertir registros en un json
+				jsonData, err := json.Marshal(modelos.Registro{Columnas: registros[0].Columnas, Valores: valores})
+				if err != nil {
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
 
-			// Convertir registros en un json
-			jsonData, err := json.Marshal(modelos.Registro{Columnas: registros[0].Columnas, Valores: valores})
-			if err != nil {
-				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-			}
-
-			queryControlCongelado := "INSERT INTO extractor.ext_control_congelado (id_modelo, fecha, num_version, json_control) VALUES ($1,$2,$3,$4)"
-			_, err = db.Exec(queryControlCongelado, proceso.Id_modelo, fecha, version, jsonData)
-			if err != nil {
-				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				queryControlCongelado := "INSERT INTO extractor.ext_control_congelado (id_modelo, fecha, num_version, json_control) VALUES ($1,$2,$3,$4)"
+				_, err = db.Exec(queryControlCongelado, proceso.Id_modelo, fecha, version, jsonData)
+				if err != nil {
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+				}
 			}
 
 			// Obtener control congelado
@@ -619,10 +642,12 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
-		// Insertar o actualizar proceso en ext_procesados
-		if err = ProcesadosControl(db, proceso.Id_procesado, filepath.Join(rutaCarpeta, nombreControl)); err != nil {
-			ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+		if generarControl {
+			// Insertar o actualizar proceso en ext_procesados
+			if err = ProcesadosControl(db, proceso.Id_procesado, filepath.Join(rutaCarpeta, nombreControl)); err != nil {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			}
 		}
 
 		// Logueo

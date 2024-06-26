@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"Nueva/conexiones"
 	"Nueva/modelos"
 	"Nueva/src"
 	"database/sql"
@@ -9,10 +10,19 @@ import (
 	"net/http"
 )
 
-func ConsultaCongelados(db *sql.DB, sql *sql.DB) http.HandlerFunc {
+func ConsultaCongelados(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		// Conexion al origen de datos
+		sql, err := conexiones.ConectarBase("recibos", "prod", "sqlserver")
+		if err != nil {
+			fmt.Println("Error al intentar conectarse a la base de datos de sqlserver")
+			http.Error(w, "Error interno del servidor: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		var datos modelos.DTOdatos
-		err := json.NewDecoder(r.Body).Decode(&datos)
+		err = json.NewDecoder(r.Body).Decode(&datos)
 		if err != nil {
 			http.Error(w, "Error decodificando JSON: "+err.Error(), http.StatusBadRequest)
 			return
@@ -43,11 +53,15 @@ func ConsultaCongelados(db *sql.DB, sql *sql.DB) http.HandlerFunc {
 			proceso.Id_procesado = datos.Id_procesado
 		}
 
+		// Ejecutar nomina
 		respuesta_nomina := Nomina(db, sql, datos, proceso, false)
 
-		if respuesta_nomina.Archivos_nomina == nil {
+		// Ejecutar control
+		respuesta_control := Control(db, sql, datos, proceso, false)
+
+		if respuesta_nomina.Archivos_nomina == nil || respuesta_control.Archivos_control == nil {
 			w.WriteHeader(http.StatusBadRequest)
-			jsonResp, _ := json.Marshal(respuesta_nomina)
+			jsonResp, _ := json.Marshal(modelos.Respuesta{Archivos_salida: nil, Archivos_nomina: respuesta_nomina.Archivos_nomina, Archivos_control: respuesta_control.Archivos_control})
 			w.Write(jsonResp)
 		} else if respuesta_nomina.Archivos_nomina[0] == "No se han encontrado registros" {
 			w.WriteHeader(http.StatusOK)
@@ -58,12 +72,13 @@ func ConsultaCongelados(db *sql.DB, sql *sql.DB) http.HandlerFunc {
 			}
 			jsonResp, _ := json.Marshal(respuesta)
 			w.Write(jsonResp)
-		} else if respuesta_nomina.Archivos_nomina != nil {
+		} else if respuesta_nomina.Archivos_nomina != nil && respuesta_control.Archivos_control != nil {
 			w.WriteHeader(http.StatusOK)
 			w.Header().Set("Content-Type", "application/json")
 			respuesta := modelos.Respuesta{
-				Mensaje:         "Informe generado exitosamente",
-				Archivos_nomina: respuesta_nomina.Archivos_nomina,
+				Mensaje:          "Informe generado exitosamente",
+				Archivos_nomina:  respuesta_nomina.Archivos_nomina,
+				Archivos_control: respuesta_control.Archivos_control,
 			}
 			jsonResp, _ := json.Marshal(respuesta)
 			w.Write(jsonResp)

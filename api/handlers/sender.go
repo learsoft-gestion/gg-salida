@@ -130,7 +130,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 			respuesta_nomina := Nomina(db, sql, datos, Procesos[0], true)
 
 			// Ejecutar control
-			respuesta_control := Control(db, sql, datos, Procesos[0])
+			respuesta_control := Control(db, sql, datos, Procesos[0], true)
 
 			if respuesta_nomina.Archivos_nomina == nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -316,7 +316,7 @@ func MultipleSend(db *sql.DB) http.HandlerFunc {
 				result_nomina := Nomina(db, sql, datos, proc, true)
 
 				// Ejecutar control
-				result_control := Control(db, sql, datos, proc)
+				result_control := Control(db, sql, datos, proc, true)
 
 				if result_nomina.Archivos_nomina != nil {
 					resultado_nomina = append(resultado_nomina, result_nomina.Archivos_nomina[0])
@@ -352,7 +352,7 @@ func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Pro
 	fmt.Printf("## Nomina de %s ##\n", proceso.Nombre)
 	var resultado []string
 
-	result, errFormateado := src.ProcesadorNomina(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version, true)
+	result, errFormateado := src.ProcesadorNomina(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version, generarNomina)
 	if result != "" {
 		resultado = append(resultado, result)
 	}
@@ -385,11 +385,11 @@ func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Pro
 	return respuesta
 }
 
-func Control(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Proceso) modelos.Respuesta {
+func Control(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Proceso, generarControl bool) modelos.Respuesta {
 	fmt.Printf("## Control de %s ##\n", proceso.Nombre)
 
 	var resultado []string
-	result, errFormateado := src.ProcesadorControl(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version)
+	result, errFormateado := src.ProcesadorControl(db, sql, proceso, datos.Fecha, datos.Fecha2, datos.Version, generarControl)
 	if result != "" {
 		resultado = append(resultado, result)
 	}
