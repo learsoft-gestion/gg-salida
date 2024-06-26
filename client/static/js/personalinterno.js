@@ -3,6 +3,7 @@ var prefijoURL
 // Menú barra de navegación
 $('#menu').load('/static/menu.html', function () {
     $('#titulo').append('Personal Interno');
+    $('#navbarDropdown').addClass('active');
 });
 
 // Obtener url del backend
