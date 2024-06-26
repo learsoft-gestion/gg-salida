@@ -5,8 +5,10 @@ import (
 	"Nueva/modelos"
 	"Nueva/src"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -20,12 +22,39 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		mes := r.URL.Query().Get("mes")
+		mes := r.URL.Query().Get("fecha")
 		mes = src.FormatoFecha(mes)
+		id_convenio := r.URL.Query().Get("convenio")
+		id_empresa := r.URL.Query().Get("empresa")
+		id_concepto := r.URL.Query().Get("concepto")
+		id_tipo := r.URL.Query().Get("tipo")
+		jurisdiccion := r.URL.Query().Get("jurisdiccion")
+		id_modelo := r.URL.Query().Get("modelo")
 
-		rows, err := db.Query("select m.id_modelo from extractor.ext_modelos m left outer join extractor.ext_totales et on m.id_modelo = et.id_modelo and et.fecha = $1 where vigente and et.id_totales is null", mes)
+		query := fmt.Sprintf("select m.id_modelo from extractor.ext_modelos m left outer join extractor.ext_totales et on m.id_modelo = et.id_modelo and et.fecha = '%s' where vigente and et.id_totales is null", mes)
+
+		if len(id_modelo) > 0 {
+			query += fmt.Sprintf(" and m.id_modelo = %s", id_modelo)
+		}
+		if len(id_convenio) > 0 {
+			query += fmt.Sprintf(" and m.id_convenio = %s", id_convenio)
+		}
+		if len(id_empresa) > 0 {
+			query += fmt.Sprintf(" and m.id_empresa_adm = %s", id_empresa)
+		}
+		if len(id_concepto) > 0 {
+			query += fmt.Sprintf(" and m.id_concepto = '%s'", id_concepto)
+		}
+		if len(id_tipo) > 0 {
+			query += fmt.Sprintf(" and m.id_tipo = '%s'", id_tipo)
+		}
+		if len(jurisdiccion) > 0 {
+			query += " and UPPER(m.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
+		}
+
+		rows, err := db.Query(query)
 		if err != nil {
-			http.Error(w, "Error al ejecutar select en Proyeccion", http.StatusInternalServerError)
+			http.Error(w, "Error al ejecutar select en Proyeccion. "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -64,7 +93,10 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 		}
 		defer filas.Close()
 
-		var modelosSlice []modelos.ModeloProyeccion
+		// Objeto de respuesta
+		var DTOmodelos []modelos.ModeloDTO
+
+		// Itero sobre cada modelo para trabajarlo
 		for filas.Next() {
 			var modelo modelos.ModeloProyeccion
 
@@ -74,10 +106,6 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 				http.Error(w, "Error al escanear modelo: "+err.Error(), http.StatusBadRequest)
 				return
 			}
-			modelosSlice = append(modelosSlice, modelo)
-		}
-
-		for _, modelo := range modelosSlice {
 
 			id_log, idLogDetalle, err := src.Logueo(db, modelo.Nombre)
 			if err != nil {
@@ -104,6 +132,7 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			// Convierto el modelo.ModelosProyeccion en un modelos.Proceso
 			modeloFinal := modelos.Proceso{Id_modelo: modelo.Id_modelo, Query: modelo.Query, Columna_estado: modelo.Columna_estado, Filtro_convenio: modelo.Filtro_convenio.String, Filtro_personas: modelo.Filtro_personas.String, Filtro_recibos: modelo.Filtro_recibos.String, Nombre: modelo.Nombre, Id_convenio: modelo.Id_convenio, Id_empresa: modelo.Id_empresa}
 
+			// Ejecuto el control y obtengo los registros
 			var registros []modelos.Registro
 			registros, err = src.Extractor(db, sql, modeloFinal, mes, mes, idLogDetalle, "control")
 			if err != nil {
@@ -119,11 +148,21 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			}
 			value := registros[0].Valores[strings.ToUpper(columna)]
 
+			// Inserto el valor que buscaba en tabla ext_totales
 			_, err = db.Exec("INSERT INTO extractor.ext_totales (fecha, id_modelo, valor) VALUES($1, $2, $3);", mes, modeloFinal.Id_modelo, value)
 			if err != nil {
 				http.Error(w, "Error al insertar valor en ext_totales en Proyeccion. "+err.Error(), http.StatusInternalServerError)
 				return
 			}
+
+			valueStr := string(value.([]uint8))
+			valueFloat, err := strconv.ParseFloat(valueStr, 64)
+			if err != nil {
+				http.Error(w, "Error al convertir valor en float en Proyeccion. "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			// Guardo los datos que enviaré al front
+			DTOmodelos = append(DTOmodelos, modelos.ModeloDTO{Id_modelo: modelo.Id_modelo, Convenio: modelo.Nombre_convenio, Empresa: modelo.Nombre_empresa_reducido, Concepto: modelo.Id_concepto, Nombre: modelo.Nombre, Tipo: modelo.Id_tipo, Fecha: mes, Total: valueFloat})
 
 			// Logueo
 			_, err = db.Exec("CALL extractor.act_log_detalle($1, 'F', $2)", idLogDetalle, "Valor de proyeccion insertado en ext_totales")
@@ -136,6 +175,14 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 				http.Error(w, "Error en el logueo en Proyeccion. "+err.Error(), http.StatusInternalServerError)
 				return
 			}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if err := json.NewEncoder(w).Encode(DTOmodelos); err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 	}

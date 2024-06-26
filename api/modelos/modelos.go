@@ -79,6 +79,17 @@ type ModeloProyeccion struct {
 	Select_salida           string
 }
 
+type ModeloDTO struct {
+	Id_modelo int
+	Convenio  string
+	Empresa   string
+	Concepto  string
+	Nombre    string
+	Tipo      string
+	Fecha     string
+	Total     float64
+}
+
 type Migrador struct {
 	ID             int
 	Procesado      bool
