@@ -39,6 +39,8 @@ func main() {
 	protectedRoutes.HandleFunc("/a-personalinterno", aPersonalinternoHandler)
 	protectedRoutes.HandleFunc("/migrador", migradorHandler)
 	protectedRoutes.HandleFunc("/logout", logoutHandler)
+	protectedRoutes.HandleFunc("/consulta", consultaHandler)
+	protectedRoutes.HandleFunc("/proyeccion", proyeccionHandler)
 
 	// :: GG :: Public routes
 	router.HandleFunc("/", indexHandler)
@@ -235,6 +237,14 @@ func aPersonalinternoHandler(w http.ResponseWriter, r *http.Request) {
 
 func migradorHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "./templates/migrador.html", nil)
+}
+
+func consultaHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "./templates/consulta.html", nil)
+}
+
+func proyeccionHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "./templates/proyeccion.html", nil)
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {

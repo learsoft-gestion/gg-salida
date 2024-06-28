@@ -84,8 +84,9 @@ func GetProcesos(db *sql.DB) http.HandlerFunc {
 			var nombre_nomina sql.NullString
 			var nombre_control sql.NullString
 			var id_proceso sql.NullInt32
+			var bloqueado sql.NullBool
 
-			if err := rows.Scan(&DTOproceso.Id_modelo, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &fecha_desde, &fecha_hasta, &version, &nombre_salida, &ult_ejecucion, &boton, &nombre_nomina, &nombre_control, &id_proceso, &DTOproceso.Bloqueado); err != nil {
+			if err := rows.Scan(&DTOproceso.Id_modelo, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &fecha_desde, &fecha_hasta, &version, &nombre_salida, &ult_ejecucion, &boton, &nombre_nomina, &nombre_control, &id_proceso, &bloqueado); err != nil {
 				println("Fallo el scan", err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -122,6 +123,9 @@ func GetProcesos(db *sql.DB) http.HandlerFunc {
 			}
 			if id_proceso.Valid {
 				DTOproceso.Id_procesado = int(id_proceso.Int32)
+			}
+			if bloqueado.Valid {
+				DTOproceso.Bloqueado = bloqueado.Bool
 			}
 			DTOprocesos = append(DTOprocesos, DTOproceso)
 

@@ -6,6 +6,7 @@ $(document).ready(function () {
 
     $('#menu').load('/static/menu.html', function () {
         $('#titulo').append('Archivos');
+        $('a[href="migrador"]').addClass('active');
     });
 
     // Inicializo calendario de Procesado D y H

@@ -3,6 +3,7 @@ var prefijoURL
 
 $('#menu').load('/static/menu.html', function () {
     $('#titulo').append('Modelos');
+    $('#navbarDropdown').addClass('active');
 });
 
 // Chequear los checkbox

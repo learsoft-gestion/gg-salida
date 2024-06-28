@@ -2,6 +2,7 @@ var prefijoURL
 
 $('#menu').load('/static/menu.html', function () {
     $('#titulo').append('Alícuotas');
+    $('#navbarDropdown').addClass('active');
 });
 
 fetch("/backend-url")

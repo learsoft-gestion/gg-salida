@@ -64,17 +64,26 @@ $('[type=checkbox]').prop('checked', true);
 
 // Llenar fecha hasta = fecha desde
 $(document).ready(function () {
-    $('#menuContainer').load('/static/menu.html', function () {
-        $('#titulo').append('Procesador');
-        $('#home').addClass('active');
+    $('#menu').load('/static/menu.html', function () {
+        $('#titulo').append('Proyección');
+        $('a[href="proyeccion"]').addClass('active');
     });
-    // Filtro de fecha
-    $("#filtroFechaInicio").datepicker({
+    // Filtro de fecha/período
+    $('#filtroFechaInicio').on('change', function () {
+        if ($("#filtroFechaFin").val() === '') {
+            $("#filtroFechaFin").val($(this).val());
+        }
+    });
+
+    $("#filtroFechaInicio, #filtroFechaFin").datepicker({
         autoclose: true,
         minViewMode: 1,
         format: 'mm/yyyy',
         language: "es"
     });
+
+
+
 });
 
 var filtros = $("#filtros");
@@ -231,17 +240,9 @@ $("#btnBuscar").click(function () {
         fecha1: fechaDesde,
         fecha2: fechaHasta
     }
-    var procesadoTrue = $('#procesadoTrue').is(':checked');
-    var procesadoFalse = $('#procesadoFalse').is(':checked');
-
-    if (!(procesadoTrue && procesadoFalse)) {
-        if (procesadoTrue || procesadoFalse) {
-            json.procesado = procesadoTrue ? true : false;
-        }
-    }
     // Validaciones de campos obligatorios y fechas
     if (!fechaDesde) {
-        alert("Los campos Desde y Hasta son obligatorios");
+        alert("El campo Fecha es obligatorio");
         return;
     }
     // Muestro mensaje de archivos por generar
@@ -314,22 +315,8 @@ var llenarTabla = function (rawData) {
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
                 row.append('<td>' + proceso.Nombre + '</td>');
-                if (item.length > 1) {
-                    row.append(`<td>${proceso.Version}<button class="btn btn-default btn-sm openOculto" data-target=".${proceso.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`)
-                } else {
-                    row.append('<td>' + proceso.Version + '</td>')
-                }
-                proceso.Nombre_control != "-" ?
-                    row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
-                    : row.append('<td>' + proceso.Nombre_control + '</td>');
-                proceso.Nombre_nomina != "-" ?
-                    row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
-                    : row.append('<td>' + proceso.Nombre_nomina + '</td>');
-                proceso.Nombre_salida != "-" ?
-                    row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
-                    : row.append('<td>' + proceso.Nombre_salida + '</td>');
-                row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida", proceso.Bloqueado) + botonDelete(proceso.Boton, proceso.Id_procesado, proceso.Bloqueado) + botonBloquear(proceso.Boton, proceso.Id_procesado, proceso.Bloqueado) + '</td>');
+                row.append('<td>TOTAL</td>');
+                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + botonDelete(proceso.Boton, proceso.Id_procesado) + '</td>');
 
                 tbody.append(row);
             } else {
@@ -339,31 +326,12 @@ var llenarTabla = function (rawData) {
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
-                subRow.append('<td>' + proceso.Version + '</td>');
-                proceso.Nombre_control != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
-                    : subRow.append('<td>' + proceso.Nombre_control + '</td>');
-                proceso.Nombre_nomina != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
-                    : subRow.append('<td>' + proceso.Nombre_nomina + '</td>');
-                proceso.Nombre_salida != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
-                    : subRow.append('<td>' + proceso.Nombre_salida + '</td>');
-                subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
+                subRow.append('<td>TOTAL</td>');
                 subRow.append('<td>' + botonDelete(null, proceso.Id_procesado) + '</td>');
 
                 tbody.append(subRow);
             }
         });
-    });
-
-    $('table th:nth-child(7), table td:nth-child(7)').css({
-        'border-left': '1px solid black',
-        'border-right': '1px solid black'
-    });
-    $('table th:nth-child(9), table td:nth-child(9)').css({
-        'border-left': '1px solid black',
-        'border-right': '1px solid black'
     });
 
     $("tr.accordion-toggle .openOculto").on('click', function () {
@@ -414,9 +382,6 @@ var llenarTabla = function (rawData) {
 
     // Botón Eliminar
     eventoBotonDelete();
-
-    // Botón Bloquear
-    eventoBotonBloquear();
 }
 
 var reordenarData = function (rawData) {
@@ -450,19 +415,15 @@ var obtenerLink = function (nombre) {
     return "";
 }
 
-var generarBoton = function (boton, id, idProcesado, tipo, bloqueado) {
+var generarBoton = function (boton, id, idProcesado, tipo) {
     if (boton === "lanzar") {
         return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
     }
-    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" title="Relanzar" ${bloqueado ? "disabled" : ""}><i class="material-icons">refresh</i></button>`;
+    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
 }
 
-var botonDelete = function (boton, id, bloqueado) {
-    return boton === "lanzar" ? "" : `<button type="button" class="btn btn-danger btn-sm eliminar" value="${id}" title="Eliminar" ${bloqueado ? "disabled" : ""}><i class="material-icons">delete</i></button>`;
-}
-
-var botonBloquear = function (boton, id, bloqueado) {
-    return boton === "lanzar" ? "" : `<button type="button" class="btn btn-warning btn-sm bloquear" value="${id}" title="${bloqueado ? 'Desbloquear' : 'Bloquear'}"><i class="material-icons">lock</i></button>`;
+var botonDelete = function (boton, id) {
+    return boton === "lanzar" ? "" : `<button type="button" class="btn btn-danger btn-sm eliminar" value="${id}" title="Eliminar"><i class="material-icons">delete</i></button>`;
 }
 
 var eventoBotonDelete = function () {
@@ -509,36 +470,6 @@ var eventoBotonDelete = function () {
     });
 }
 
-var eventoBotonBloquear = function () {
-    $('.bloquear').click(function () {
-        var idProceso = $(this).val();
-        var json = {
-            "Id_procesado": Number(idProceso),
-            "Bloquear": $(this).attr('title') === 'Bloquear'
-        }
-        $.ajax({
-            url: prefijoURL + '/send',
-            method: 'PATCH',
-            //dataType: 'json',
-            data: JSON.stringify(json),
-            success: function (data) {
-                console.log("Success", data);
-                if (data) {
-                    $("#btnBuscar").trigger("click");
-                }
-            },
-            error: function (error) {
-                console.log("Error: ", error);
-                Swal.fire({
-                    title: "Ocurrió un error",
-                    text: error.responseText,
-                    icon: "error"
-                });
-            }
-        });
-    })
-}
-
 // Botón Generar documentos
 $("#btnGenerar").click(function () {
     $('#loadingOverlay').show();
@@ -571,3 +502,123 @@ $("#btnGenerar").click(function () {
         }
     });
 });
+
+function abrirModal() {
+    Swal.fire({
+        title: 'Clientes',
+        html: `
+            <div id="clientesAgregados"></div>
+            <input id="cuit" class="swal2-input" placeholder="CUIT">
+            <input id="razonSocial" class="swal2-input" placeholder="Razón Social">
+            <button type="button" class="btn btn-outline-dark" id="btnBuscarClientes">
+              <i class="material-symbols-outlined">search</i>
+            </button>
+            <div id="resultado"></div>
+        `,
+        customClass: {
+            denyButton: "btn btn-success"
+        },
+        buttonsStyling: false,
+        showConfirmButton: false,
+        showDenyButton: true,
+        denyButtonText: 'Agregar',
+        width: 1000,
+        didOpen: () => {
+            $('.swal2-deny').hide();
+            const denyButton = Swal.getDenyButton();
+            $('#btnBuscarClientes').click(function () { buscarCientes(); });
+            denyButton.onclick = function () { agregarClientes(); };
+        }
+    });
+}
+
+function buscarCientes() {
+    const cuit = $('#cuit').val();
+    const razonSocial = $('#razonSocial').val();
+
+    $.ajax({
+        url: prefijoURL + '/clientes',
+        method: 'GET',
+        dataType: 'json',
+        data: {
+            cuit: cuit,
+            cliente: razonSocial
+        },
+        success: function (data) {
+            if (data && data.length > 0) {
+                mostrarResultados(data);
+            } else {
+                $('#resultado').html('<p>No se encontraron resultados</p>');
+            }
+        },
+        error: function (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    });
+}
+
+let clientesAgregados = [];
+
+function agregarClientes() {
+    $('.seleccionar-cliente:checked').each(function () {
+        const fila = $(this).closest('tr');
+        const cuit = fila.find('td:nth-child(2)').text();
+        const razonSocial = fila.find('td:nth-child(3)').text();
+        const cliente = { cuit: cuit, razonSocial: razonSocial };
+        if (!clientesAgregados.some(c => c.cuit === cliente.cuit && c.razonSocial === cliente.razonSocial)) {
+            clientesAgregados.push(cliente);
+        }
+    });
+    mostrarClientesAgregados();
+}
+
+function mostrarClientesAgregados() {
+    let html = '';
+    clientesAgregados.forEach(cliente => {
+        html += `
+            <div class="cliente-agregado">
+                <span>${cliente.cuit} / ${cliente.razonSocial}</span>
+                <button class="btn btn-danger btn-sm" onclick="quitarCliente('` + cliente.cuit + `')">X</button>
+            </div>
+        `;
+    });
+    $('#clientesAgregados').html(html);
+}
+
+function quitarCliente(cuit) {
+    clientesAgregados = clientesAgregados.filter(cliente => cliente.cuit !== cuit);
+    mostrarClientesAgregados();
+}
+
+function mostrarResultados(clientes) {
+    $('.swal2-deny').show();
+    let html = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="seleccionarTodo"></th>
+                    <th>CUIT</th>
+                    <th>Razón Social</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    clientes.forEach(cliente => {
+        html += `
+            <tr>
+                <td><input type="checkbox" class="seleccionar-cliente" value="${cliente.id}"></td>
+                <td>${cliente.cuit}</td>
+                <td>${cliente.nombre}</td>
+            </tr>
+        `;
+    });
+    html += `
+            </tbody>
+        </table>
+    `;
+    $('#resultado').html(html);
+
+    $('#seleccionarTodo').change(function () {
+        $('.seleccionar-cliente').prop('checked', $(this).prop('checked'));
+    });
+}

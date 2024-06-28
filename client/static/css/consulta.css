@@ -1,0 +1,164 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+  }
+  
+  /* estilos para munú */
+  #logo {
+    width: 125px;
+  }
+  
+  .title-right {
+    margin-left: auto;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 50px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  /* hsta aquí */
+  
+  #home {
+    overflow-x: hidden;
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  th {
+    text-align: center;
+  }
+  
+  tbody td {
+    text-align: center;
+  }
+  
+  .table td {
+    padding: 0;
+    vertical-align: middle;
+  }
+  
+  .table th {
+    vertical-align: middle;
+  }
+  
+  .btn-buscar {
+    display: flex;
+    align-items: flex-end;
+  }
+  
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 9999;
+    display: none;
+  }
+  
+  .loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+  
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  #mensajeFaltantes {
+    /* position: relative;
+    top: 80px; */
+    padding: 5px;
+  }
+  
+  .filtros {
+    z-index: 10;
+    width: 100%;
+  }
+  
+  #mensajeFaltantes {
+    display: none;
+    z-index: 0;
+  }
+  
+  #mensaje {
+    margin-bottom: 0;
+    font-size: 14px;
+    display: inline-block;
+  }
+  
+  #btnGenerar {
+    display: none;
+    padding: 3px;
+    font-size: 14px;
+  }
+  
+  .hiddenRow {
+    padding: 0 !important;
+  }
+  
+  .swal2-input {
+    font-size: 16px; /* Tamaño de fuente más pequeño */
+    width: 170px; /* Ancho más estrecho */
+    display: inline-block; /* Mostrar en una sola línea */
+    margin-right: 10px; /* Margen a la derecha para separar los filtros */
+    margin-left: 10px; /* Margen a la derecha para separar los filtros */
+  }
+  
+  #resultado {
+    margin-top: 10px;
+  }
+  
+  #btnBuscarClientes {
+    margin-left: 10px;
+  }
+  
+  .cliente-agregado {
+    display: inline-block;
+    border: solid 2px;
+  }
+  
+  /* #colConfig {
+    background-color: antiquewhite;
+  }
+  
+  #colPago {
+    background-color: aquamarine;
+  } */
+  
+  
+  /* :: GG :: Login page styles */
+  
+  .formulario{
+    background: #89f4c2;
+  }
+  
+  button {
+      background-color:#89f4c2;
+      border-color: white;
+      border-style: groove;
+  }
+  
+  a {
+      text-decoration: none !important;
+  }
