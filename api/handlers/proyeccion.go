@@ -12,6 +12,11 @@ import (
 	"strings"
 )
 
+type IDs struct {
+	id_modelo  int
+	id_totales int
+}
+
 func Proyeccion(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -39,7 +44,7 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Regenerar debe ser true o false", http.StatusBadRequest)
 		}
 
-		query := fmt.Sprintf("select m.id_modelo from extractor.ext_modelos m left outer join extractor.ext_totales et on m.id_modelo = et.id_modelo and et.fecha = '%s' where vigente", mes)
+		query := fmt.Sprintf("select m.id_modelo, et.id_totales from extractor.ext_modelos m left outer join extractor.ext_totales et on m.id_modelo = et.id_modelo and et.fecha = '%s' where vigente and et.id_totales is null", mes)
 
 		if len(id_modelo) > 0 {
 			query += fmt.Sprintf(" and m.id_modelo = %s", id_modelo)
@@ -56,9 +61,6 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 		if len(id_tipo) > 0 {
 			query += fmt.Sprintf(" and m.id_tipo = '%s'", id_tipo)
 		}
-		if regenerar != "true" {
-			query += " and et.id_totales is null"
-		}
 		if len(jurisdiccion) > 0 {
 			query += " and UPPER(m.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
 		}
@@ -69,19 +71,21 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		var ids []int
+		var ids []IDs
 		for rows.Next() {
-			var id int
-			if err = rows.Scan(&id); err != nil {
+			var indices IDs
+			if err = rows.Scan(&indices.id_modelo, &indices.id_totales); err != nil {
 				http.Error(w, "Error al escanear datos en Proyeccion", http.StatusInternalServerError)
 				return
 			}
-			ids = append(ids, id)
+			ids = append(ids, indices)
 		}
+
+		fmt.Println(ids)
 
 		if len(ids) == 0 {
 
-			fmt.Println("No hay ids")
+			// Estan cargadas las proyecciones y no quiero regenerar
 
 			queryTotales := "SELECT em.id_modelo, ea.reducido as nombre_empresa_reducido, c.nombre as nombre_convenio, em.id_concepto, em.id_tipo, em.nombre, et.valor FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_totales et on em.id_modelo = et.id_modelo where vigente and et.fecha = $1"
 
@@ -133,6 +137,8 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			}
 		} else {
 
+			// Si
+
 			var placeholders []string
 			for i := range ids {
 				placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
@@ -148,7 +154,7 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			defer stmt.Close()
 			var args []interface{}
 			for _, arg := range ids {
-				args = append(args, arg)
+				args = append(args, arg.id_modelo)
 			}
 
 			filas, err := stmt.Query(args...)

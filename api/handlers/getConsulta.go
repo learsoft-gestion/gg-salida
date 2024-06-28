@@ -52,7 +52,7 @@ func GetConsulta(db *sql.DB) http.HandlerFunc {
 			query += fmt.Sprintf(" and em.id_tipo = '%s'", id_tipo)
 		}
 		if len(consultadoStr) > 0 {
-			query += fmt.Sprintf(" and coalesce(archivo_nomina is not null, false) = %v", consultado)
+			query += fmt.Sprintf(" and coalesce(ep.archivo_nomina is not null, false) = %v", consultado)
 		}
 		if len(jurisdiccion) > 0 {
 			query += " and UPPER(em.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
