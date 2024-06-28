@@ -23,30 +23,30 @@
         },
         {
             "titulo": "Apellido",
-            "nombre": "apellidos",
+            "nombre": "",
             "columna": "D",
-            "tipo": "string",
+            "tipo": "fijo",
             "formato": ""
         },
         {
             "titulo": "Nacionalidad",
             "nombre": "",
             "columna": "E",
-            "tipo": "string",
+            "tipo": "fijo",
             "formato": ""
         },
         {
             "titulo": "Sexo",
-            "nombre": "sexo",
+            "nombre": "",
             "columna": "F",
-            "tipo": "string",
+            "tipo": "fijo",
             "formato": ""
         },
         {
             "titulo": "Fecha Nac",
-            "nombre": "fechanacimiento",
+            "nombre": "",
             "columna": "G",
-            "tipo": "string",
+            "tipo": "fijo",
             "formato": ""
         },
         {
@@ -58,9 +58,9 @@
         },
         {
             "titulo": "CP",
-            "nombre": "laboral_cp",
+            "nombre": "",
             "columna": "I",
-            "tipo": "string",
+            "tipo": "fijo",
             "formato": ""
         },
         {
@@ -102,8 +102,8 @@
             "titulo": "CUIL",
             "nombre": "cuil",
             "columna": "O",
-            "tipo": "fijo",
-            "formato": "NO INFORMADO"
+            "tipo": "string",
+            "formato": "cuil sin guiones"
         },
         {
             "titulo": "Tipo Afiliado",

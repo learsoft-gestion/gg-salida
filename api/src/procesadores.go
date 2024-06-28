@@ -260,7 +260,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 			fmt.Println("Cantidad de registros: ", len(registros))
 		}
 
-		if fecha == fecha2 {
+		if !generarNomina || (fecha == fecha2 && generarNomina) {
 			if generarNomina {
 				// Construir la parte de las columnas y los placeholders para los valores
 				columnas_slice := []string{"id_modelo", "fecha", "num_version"}
@@ -297,8 +297,18 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 				}
 			}
 
+			// // Validar si el modelo tiene datos congelados
+			// var ok bool
+			// err := db.QueryRow("CALL extractor.tiene_datos_congelados($1,$2,$3)", proceso.Id_modelo, fecha, fecha2).Scan(&ok)
+			// if err != nil {
+			// 	fmt.Println("Error al ejecutar funcion tiene_datos_congelados: "+err.Error(), err)
+			// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+			// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+			// }
+
+			// if ok {
 			// Obtener control congelado
-			filas_congelados, err := db.Query("select * from extractor.ext_nomina_congelada	where (fecha, id_modelo, num_version) in ( select fecha, id_modelo, max(num_version) as version	from extractor.ext_nomina_congelada where ((substring(fecha,1,4) = substring($1,1,4) and fecha < $1) or (substring($1,5,6) = '01' and substring(fecha,1,4) = cast(cast(substring($1,1,4) as int) - 1 as varchar) and substring(fecha,5,6) = '12' )) and id_modelo = $2 group by fecha, id_modelo) order by fecha;", fecha, proceso.Id_modelo)
+			filas_congelados, err := db.Query("SELECT *	FROM extractor.ext_nomina_congelada WHERE (fecha, id_modelo, num_version) IN (SELECT fecha, id_modelo, MAX(num_version) AS version FROM extractor.ext_nomina_congelada WHERE ((substring(fecha, 1, 8) >= substring($1, 1, 8) AND substring(fecha, 1, 8) <= substring($2, 1, 8))	OR (substring($1, 5, 6) = '01' AND substring(fecha, 1, 4) = CAST(CAST(substring($1, 1, 4) AS INT) - 1 AS VARCHAR) AND substring(fecha, 5, 6) = '12')) AND id_modelo = $3 GROUP BY fecha, id_modelo) ORDER BY fecha;", fecha, fecha2, proceso.Id_modelo)
 			if err != nil {
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
@@ -345,8 +355,14 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 			// Copiar el slice original al final del nuevo slice
 			copy(nuevoSlice[len(congelados_nomina):], registros)
 
+			fmt.Println("Cantidad de congelados: ", len(nuevoSlice))
+
 			// Asignar el nuevo slice a la variable original
 			registros = nuevoSlice
+			// } else {
+			// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, fmt.Errorf("modelo no tiene datos congelados"))
+			// 	return "", modelos.ErrorFormateado{Mensaje: "Este modelo no tiene datos congelados"}
+			// }
 
 		}
 
@@ -561,7 +577,7 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
 
-		if fecha == fecha2 {
+		if !generarControl || (generarControl && fecha == fecha2) {
 			if generarControl {
 				// for key, value := range registros[0].Valores {
 				// 	fmt.Printf("Key: %s, Type: %s, Value: %v\n", key, reflect.TypeOf(value), value)
@@ -630,6 +646,8 @@ func ProcesadorControl(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha s
 
 			// Copiar el slice original al final del nuevo slice
 			copy(nuevoSlice[len(controles):], registros)
+
+			fmt.Println("Cantidad de congelados: ", len(nuevoSlice))
 
 			// Asignar el nuevo slice a la variable original
 			registros = nuevoSlice
