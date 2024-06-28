@@ -78,6 +78,7 @@ func main() {
 	router.HandleFunc("/version", handlers.GetVersion())
 	router.HandleFunc("/consulta", handlers.ConsultaCongelados(db)).Methods("POST")
 	router.HandleFunc("/proyeccion", handlers.Proyeccion(db)).Methods("POST")
+	router.HandleFunc("/consultados", handlers.GetConsulta(db))
 
 	srv := &http.Server{
 		Addr:    os.Getenv("SV_ADDR"),

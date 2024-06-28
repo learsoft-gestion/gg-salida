@@ -147,6 +147,7 @@ type DTOproceso struct {
 	Nombre_control   string
 	Nombre_nomina    string
 	Id_procesado     int
+	Id_consultado    int
 	Bloqueado        bool
 }
 
