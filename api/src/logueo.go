@@ -103,3 +103,53 @@ func ProcesadosControl(db *sql.DB, id_proceso int, nombre_control string) error 
 
 	return nil
 }
+
+func ConsultadosNomina(db *sql.DB, id_modelo int, fecha1 string, fecha2 string, nombre_nomina string) (int, error) {
+
+	var fecha_completa time.Time
+
+	location, err := time.LoadLocation("America/Argentina/Buenos_Aires")
+	if err != nil {
+		fmt.Println("Error al encontrar el timezone")
+		fecha_completa = time.Now()
+	} else {
+		fecha_completa = time.Now().In(location)
+	}
+	fecha_actual := fecha_completa.Format("2006-01-02 15:04:05")
+
+	var id_consulta int
+	err = db.QueryRow("insert into extractor.ext_consultados (id_modelo, fecha_desde, fecha_hasta, archivo_nomina, fecha_ejecucion) values ($1,$2,$3,$4,$5) returning id_consulta", id_modelo, fecha1, fecha2, nombre_nomina, fecha_actual).Scan(&id_consulta)
+	if err != nil {
+		return 0, err
+	}
+
+	if nombre_nomina == "Error" {
+		_, err = db.Exec("insert into extractor.ext_consultados (id_modelo, fecha_desde, fecha_hasta, archivo_nomina, fecha_ejecucion) values ($1,$2,$3,$4,$5) returning id_consulta", id_modelo, fecha1, fecha2, "Error", fecha_actual)
+		if err != nil {
+			return 0, err
+		}
+		err = ConsultadosControl(db, id_consulta, "Error")
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return id_consulta, nil
+}
+
+func ConsultadosControl(db *sql.DB, id_consulta int, nombre_control string) error {
+
+	_, err := db.Exec("update extractor.ext_consultados ep set archivo_control = $1 where ep.id_consulta = $2", nombre_control, id_consulta)
+	if err != nil {
+		return err
+	}
+
+	if nombre_control == "Error" {
+		_, err = db.Exec("update extractor.ext_procesados ep set archivo_nomina = $1 where ep.id_consulta = $3", "Error", id_consulta)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

@@ -49,6 +49,7 @@ type Proceso struct {
 	Archivo_modelo          string
 	Archivo_nomina          string
 	Id_procesado            int
+	Id_consultado           int
 	Columna_estado          string
 	Id_query                int
 	Select_control          string

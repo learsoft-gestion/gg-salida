@@ -56,8 +56,42 @@ func ConsultaCongelados(db *sql.DB) http.HandlerFunc {
 		// Ejecutar nomina
 		respuesta_nomina := Nomina(db, sql, datos, proceso, false)
 
+		if len(respuesta_nomina.Archivos_nomina) > 0 {
+			// Insertar o actualizar proceso en ext_consultados
+			if idCons, err := src.ConsultadosNomina(db, proceso.Id_modelo, datos.Fecha, datos.Fecha2, respuesta_nomina.Archivos_nomina[0]); err != nil {
+				fmt.Println(err.Error())
+				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
+				return
+			} else if idCons > 0 {
+				proceso.Id_consultado = idCons
+			}
+		} else {
+			// Insertar o actualizar proceso en ext_consultados
+			if _, err = src.ConsultadosNomina(db, proceso.Id_modelo, datos.Fecha, datos.Fecha2, "Error"); err != nil {
+				fmt.Println(err.Error())
+				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+
 		// Ejecutar control
 		respuesta_control := Control(db, sql, datos, proceso, false)
+
+		if len(respuesta_control.Archivos_control) > 0 {
+			fmt.Println("Id consultado: ", proceso.Id_consultado)
+			// Insertar o actualizar proceso en ext_consultados
+			if err = src.ConsultadosControl(db, proceso.Id_consultado, respuesta_control.Archivos_control[0]); err != nil {
+				fmt.Println(err.Error())
+				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+		} else {
+			if err = src.ConsultadosControl(db, proceso.Id_consultado, "Error"); err != nil {
+				fmt.Println(err.Error())
+				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
 
 		if respuesta_nomina.Archivos_nomina == nil || respuesta_control.Archivos_control == nil {
 			w.WriteHeader(http.StatusBadRequest)

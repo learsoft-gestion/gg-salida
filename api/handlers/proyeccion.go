@@ -52,6 +52,8 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			query += " and UPPER(m.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
 		}
 
+		fmt.Printf("Query de modelos: \n%s\n", query)
+
 		rows, err := db.Query(query)
 		if err != nil {
 			http.Error(w, "Error al ejecutar select en Proyeccion. "+err.Error(), http.StatusInternalServerError)
@@ -68,12 +70,18 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 			ids = append(ids, id)
 		}
 
+		// if len(ids) == 0 {
+
+		// }
+
 		var placeholders []string
 		for i := range ids {
 			placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
 		}
 
 		queryModelos := fmt.Sprintf("SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.id_concepto, em.id_tipo, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control, em.select_salida FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo in (%s)", strings.Join(placeholders, ","))
+
+		fmt.Println(queryModelos)
 
 		stmt, err := db.Prepare(queryModelos)
 		if err != nil {
