@@ -71,7 +71,7 @@
             <input id="filtroFechaFin" class="form-control" placeholder="Selecciona hasta" data-input>
           </div>
           <div class="col-md-3 form-group">
-            <label>Procesado</label><br>
+            <label>Consultado</label><br>
             <input type="checkbox" id="procesadoTrue"> Sí
             <input type="checkbox" id="procesadoFalse"> No
           </div>
@@ -86,12 +86,6 @@
         <div class="loading-spinner"></div>
       </div>
     </div>
-    <div class="alert-dark align-middle row" id="mensajeFaltantes">
-      <div class="ms-2 pt-1">
-        <p id="mensaje" class="mr-5"></p>
-        <button type="button" class="btn btn-danger ms-3" id="btnGenerar">Generar</button>
-      </div>
-    </div>
 
     <div class="table-responsive">
       <table class="table table-condensed table-striped" style="display: none;" id="tablaDatos">
@@ -102,7 +96,6 @@
             <th>Concepto</th>
             <th>Tipo</th>
             <th>Jurisdicción</th>
-            <th>Versión</th>
             <th style="background-color: azure;">Archivo de Control</th>
             <th style="background-color: antiquewhite;">Archivo de Nómina</th>
             <th>Última ejecución</th>

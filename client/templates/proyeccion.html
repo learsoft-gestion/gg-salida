@@ -69,24 +69,26 @@
         <div id="loadingOverlay" class="loading-overlay">
             <div class="loading-spinner"></div>
         </div>
-        <div class="alert-dark align-middle row" id="mensajeFaltantes">
-            <div class="ms-2 pt-1">
-                <p id="mensaje" class="mr-5"></p>
+
+        <div id="topTabla" class="row">
+            <div class="col">
                 <button type="button" class="btn btn-danger ms-3" id="btnGenerar">Generar</button>
             </div>
+            <div class="col">
+                <h3 id="total">Total a Pagar: $total</h3>
+            </div>
         </div>
-
         <div class="table-responsive">
             <table class="table table-condensed table-striped" style="display: none;" id="tablaDatos">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
                         <th>Sindicato</th>
                         <th>Empresa</th>
                         <th>Concepto</th>
                         <th>Tipo</th>
                         <th>Jurisdicción</th>
-                        <th style="background-color: azure;">Total</th>
-                        <th>Acciones</th>
+                        <th style="background-color: azure;">Valor a Pagar</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
