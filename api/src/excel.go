@@ -317,8 +317,8 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						for _, variable := range plantilla.Variables {
 							if strings.ToUpper(variable.Nombre) == campo.Nombre {
 								for _, element := range variable.Datos {
-									if element.Id == v[4:] {
-										value += fmt.Sprintf("%s-%v", element.Nombre, v[2:4])
+									if element.Id == v {
+										value += element.Nombre
 									}
 								}
 							}

@@ -1,0 +1,67 @@
+{
+    "campo": [
+        {
+            "titulo": "SECCIONAL",
+            "nombre": "seccional",
+            "columna": "A",
+            "tipo": "string",
+            "formato": ""
+        },
+        {
+            "titulo": "LEGAJOS",
+            "nombre": "legajos",
+            "columna": "B",
+            "tipo": "int",
+            "formato": ""
+        },
+        {
+            "titulo": "BRUTO TOTAL",
+            "nombre": "bruto total",
+            "columna": "C",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "LEGAJOS OK",
+            "nombre": "legajos ok",
+            "columna": "D",
+            "tipo": "int",
+            "formato": ""
+        },
+        {
+            "titulo": "BRUTO OK",
+            "nombre": "bruto ok",
+            "columna": "E",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "CUOTA",
+            "nombre": "870 - Cuota",
+            "columna": "F",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "APORTE",
+            "nombre": "871 - Aporte",
+            "columna": "G",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "SEGURO",
+            "nombre": "900 - Seguro de Vida",
+            "columna": "H",
+            "tipo": "moneda",
+            "formato": ""
+        },
+        {
+            "titulo": "CONTRIBUCION PATRONAL",
+            "nombre": "1200 - ContribPatronal",
+            "columna": "I",
+            "tipo": "moneda",
+            "formato": ""
+        }
+    ]
+}

@@ -85,7 +85,7 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 
 		if len(ids) == 0 {
 
-			// Estan cargadas las proyecciones y no quiero regenerar
+			// Estan cargadas las proyecciones
 
 			queryTotales := "SELECT em.id_modelo, ea.reducido as nombre_empresa_reducido, c.nombre as nombre_convenio, em.id_concepto, em.id_tipo, em.nombre, et.valor FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_totales et on em.id_modelo = et.id_modelo where vigente and et.fecha = $1"
 
@@ -136,8 +136,6 @@ func Proyeccion(db *sql.DB) http.HandlerFunc {
 				return
 			}
 		} else {
-
-			// Si
 
 			var placeholders []string
 			for i := range ids {

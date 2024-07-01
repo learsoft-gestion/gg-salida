@@ -74,8 +74,8 @@
             "titulo": "Categoria",
             "nombre": "",
             "columna": "K",
-            "tipo": "fijo",
-            "formato": "NO INFORMADO"
+            "tipo": "lookup",
+            "formato": ""
         },
         {
             "titulo": "Es jubilado",
@@ -126,5 +126,41 @@
             "tipo": "fijo",
             "formato": ""
         }
+    ],
+    "variables": [
+        {
+            "nombre": "categoria",
+            "datos": [
+                {"id": "ADMINISTRATIVA --", "nombre": "Tecnico de 1a."},
+                {"id": "Administrativo 1era.", "nombre": "Tecnico de 1a."},
+                {"id": "Administrativo 1º Cat", "nombre": "Tecnico de 1a."},
+                {"id": "Administrativo 2° Cat.", "nombre": "Tecnico de 2a."},
+                {"id": "Administrativo 3° Cat.", "nombre": "Tecnico de 3a."},
+                {"id": "Administrativo 4º Cat.", "nombre": "Tecnico de 4a."},
+                {"id": "Auxiliar 1º", "nombre": "Auxiliares y Maestranza de 1a."},
+                {"id": "Auxiliar 2º", "nombre": "Auxiliares y Maestranza de 2a."},
+                {"id": "Cat. Técnico de 4°", "nombre": "Tecnico de 4a."},
+                {"id": "Cat. Técnico de 5°", "nombre": "Tecnico de 5a."},
+                {"id": "Cat. Técnico de 6°", "nombre": "Tecnico de 6a."},
+                {"id": "Chofer c/ Registro Profesional", "nombre": "Chofer c/registro Profesional"},
+                {"id": "Chofer c/Registro Carga", "nombre": "Chofer c/registro de Carga"},
+                {"id": "Ingresante", "nombre": "Ayudante"},
+                {"id": "Mant. Oficial 1", "nombre": "Medio Oficial"},
+                {"id": "Medio Oficial", "nombre": "Medio Oficial"},
+                {"id": "Oficial", "nombre": "Oficial"},
+                {"id": "Oficial Múltiple", "nombre": "Oficial Multiple"},
+                {"id": "Oficial Múltiple Superior", "nombre": "Oficial Multiple"},
+                {"id": "Oficial Superior", "nombre": "Oficial Multiple"},
+                {"id": "Op. Esp. Múltiple", "nombre": "Operario Especializado Multiple"},
+                {"id": "Op. Especializado", "nombre": "Operario Especializado"},
+                {"id": "Operador Calificado", "nombre": "Operador Calificado"},
+                {"id": "Operario (i)", "nombre": "Operario"},
+                {"id": "Operario Calificado", "nombre": "Operario Calificado"},
+                {"id": "Operario Calificado (INS 633)", "nombre": "Operario Calificado"},
+                {"id": "Operario Especializado", "nombre": "Operario Especializado"},
+                {"id": "Operario Especializado Múltiple", "nombre": "Operario Especializado Multiple"},
+                {"id": "Técnico 3º", "nombre": "Tecnico de 6a."}
+            ]
+        } 
     ]
 }

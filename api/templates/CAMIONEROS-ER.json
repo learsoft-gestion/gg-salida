@@ -34,6 +34,13 @@
             "columna": "E",
             "tipo": "moneda",
             "formato": ""
+        },
+        {
+            "titulo": "VALOR 1200",
+            "nombre": "valor_1200",
+            "columna": "E",
+            "tipo": "moneda",
+            "formato": ""
         }
     ]
 }

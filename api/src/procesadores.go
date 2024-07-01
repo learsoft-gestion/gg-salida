@@ -297,72 +297,72 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 				}
 			}
 
-			// // Validar si el modelo tiene datos congelados
-			// var ok bool
-			// err := db.QueryRow("CALL extractor.tiene_datos_congelados($1,$2,$3)", proceso.Id_modelo, fecha, fecha2).Scan(&ok)
-			// if err != nil {
-			// 	fmt.Println("Error al ejecutar funcion tiene_datos_congelados: "+err.Error(), err)
-			// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-			// 	return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-			// }
-
-			// if ok {
-			// Obtener control congelado
-			filas_congelados, err := db.Query("SELECT *	FROM extractor.ext_nomina_congelada WHERE (fecha, id_modelo, num_version) IN (SELECT fecha, id_modelo, MAX(num_version) AS version FROM extractor.ext_nomina_congelada WHERE ((substring(fecha, 1, 8) >= substring($1, 1, 8) AND substring(fecha, 1, 8) <= substring($2, 1, 8))	OR (substring($1, 5, 6) = '01' AND substring(fecha, 1, 4) = CAST(CAST(substring($1, 1, 4) AS INT) - 1 AS VARCHAR) AND substring(fecha, 5, 6) = '12')) AND id_modelo = $3 GROUP BY fecha, id_modelo) ORDER BY fecha;", fecha, fecha2, proceso.Id_modelo)
+			// Validar si el modelo tiene datos congelados
+			var ok bool
+			err := db.QueryRow("SELECT extractor.tiene_datos_congelados($1,$2,$3)", proceso.Id_modelo, fecha, fecha2).Scan(&ok)
 			if err != nil {
+				fmt.Println("Error al ejecutar funcion tiene_datos_congelados: "+err.Error(), err)
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 			}
 
-			columnas_congeladas, err := filas_congelados.Columns()
-			if err != nil {
-				fmt.Println("Error al hacer la query del extractor")
-				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
-				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
-			}
-
-			val_congelados := make([]interface{}, len(columnas_congeladas))
-			for i := range val_congelados {
-				val_congelados[i] = new(interface{})
-			}
-			var congelados_nomina []modelos.Registro
-			for filas_congelados.Next() {
-
-				if err := filas_congelados.Scan(val_congelados...); err != nil {
+			if ok {
+				// Obtener control congelado
+				filas_congelados, err := db.Query("SELECT *	FROM extractor.ext_nomina_congelada WHERE (fecha, id_modelo, num_version) IN (SELECT fecha, id_modelo, MAX(num_version) AS version FROM extractor.ext_nomina_congelada WHERE ((substring(fecha, 1, 8) >= substring($1, 1, 8) AND substring(fecha, 1, 8) <= substring($2, 1, 8))	OR (substring($1, 5, 6) = '01' AND substring(fecha, 1, 4) = CAST(CAST(substring($1, 1, 4) AS INT) - 1 AS VARCHAR) AND substring(fecha, 5, 6) = '12')) AND id_modelo = $3 GROUP BY fecha, id_modelo) ORDER BY fecha;", fecha, fecha2, proceso.Id_modelo)
+				if err != nil {
 					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 				}
 
-				registroMapa := make(map[string]interface{})
-				for i, colNombre := range columnas_congeladas {
-					colName := strings.ToUpper(colNombre)
-					registroMapa[colName] = *(val_congelados[i].(*interface{}))
+				columnas_congeladas, err := filas_congelados.Columns()
+				if err != nil {
+					fmt.Println("Error al hacer la query del extractor")
+					ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+					return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 				}
 
-				registro := modelos.Registro{
-					Columnas: columnas_congeladas,
-					Valores:  registroMapa,
+				val_congelados := make([]interface{}, len(columnas_congeladas))
+				for i := range val_congelados {
+					val_congelados[i] = new(interface{})
 				}
-				congelados_nomina = append(congelados_nomina, registro)
+				var congelados_nomina []modelos.Registro
+				for filas_congelados.Next() {
 
+					if err := filas_congelados.Scan(val_congelados...); err != nil {
+						ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+						return "", modelos.ErrorFormateado{Mensaje: err.Error()}
+					}
+
+					registroMapa := make(map[string]interface{})
+					for i, colNombre := range columnas_congeladas {
+						colName := strings.ToUpper(colNombre)
+						registroMapa[colName] = *(val_congelados[i].(*interface{}))
+					}
+
+					registro := modelos.Registro{
+						Columnas: columnas_congeladas,
+						Valores:  registroMapa,
+					}
+					congelados_nomina = append(congelados_nomina, registro)
+
+				}
+
+				nuevoSlice := make([]modelos.Registro, len(congelados_nomina)+len(registros))
+
+				// Copiar el slice a agregar al principio en el nuevo slice
+				copy(nuevoSlice, congelados_nomina)
+
+				// Copiar el slice original al final del nuevo slice
+				copy(nuevoSlice[len(congelados_nomina):], registros)
+
+				fmt.Println("Cantidad de congelados: ", len(nuevoSlice))
+
+				// Asignar el nuevo slice a la variable original
+				registros = nuevoSlice
+			} else {
+				ManejoErrores(db, idLogDetalle, proceso.Nombre, fmt.Errorf("modelo no tiene datos congelados"))
+				return "", modelos.ErrorFormateado{Mensaje: "Este modelo no tiene datos congelados"}
 			}
-
-			nuevoSlice := make([]modelos.Registro, len(congelados_nomina)+len(registros))
-
-			// Copiar el slice a agregar al principio en el nuevo slice
-			copy(nuevoSlice, congelados_nomina)
-
-			// Copiar el slice original al final del nuevo slice
-			copy(nuevoSlice[len(congelados_nomina):], registros)
-
-			fmt.Println("Cantidad de congelados: ", len(nuevoSlice))
-
-			// Asignar el nuevo slice a la variable original
-			registros = nuevoSlice
-			// } else {
-			// 	ManejoErrores(db, idLogDetalle, proceso.Nombre, fmt.Errorf("modelo no tiene datos congelados"))
-			// 	return "", modelos.ErrorFormateado{Mensaje: "Este modelo no tiene datos congelados"}
-			// }
 
 		}
 
