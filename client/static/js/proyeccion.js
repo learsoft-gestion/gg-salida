@@ -59,9 +59,6 @@ fetch("/backend-url")
         console.error("Error al obtener la URL del backend: ", error)
     })
 
-// Chequear los checkbox
-$('[type=checkbox]').prop('checked', true);
-
 // Llenar fecha hasta = fecha desde
 $(document).ready(function () {
     $('#menu').load('/static/menu.html', function () {
@@ -81,21 +78,10 @@ $(document).ready(function () {
         format: 'mm/yyyy',
         language: "es"
     });
-
-
-
 });
 
 var filtros = $("#filtros");
 var navbarHeight = $(".navbar").outerHeight(); // Altura de la barra de navegación
-
-$(window).scroll(function () {
-    if ($(this).scrollTop() > navbarHeight) {
-        filtros.addClass("fixed-top");
-    } else {
-        filtros.removeClass("fixed-top");
-    }
-});
 
 // Select de empresas para convenio
 $("#conv").change(function () {
@@ -303,6 +289,7 @@ var mostrarMensaje = function (json) {
 // Función para llenar la tabla
 var llenarTabla = function (rawData) {
     var data = reordenarData(rawData);
+    $('#total').show();
     $("#tablaDatos").show();
     var tbody = $('table tbody');
     tbody.empty();
@@ -310,33 +297,21 @@ var llenarTabla = function (rawData) {
         $.each(item, function (i, proceso) {
             if (i === 0) {
                 var row = $(`<tr class="accordion-toggle">`);
+                row.append('<td><input type="checkbox" class="rowCheckbox"></td>');
                 row.append('<td>' + proceso.Convenio + '</td>');
                 row.append('<td>' + proceso.Empresa + '</td>');
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
                 row.append('<td>' + proceso.Nombre + '</td>');
                 row.append('<td>TOTAL</td>');
-                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + botonDelete(proceso.Boton, proceso.Id_procesado) + '</td>');
 
                 tbody.append(row);
-            } else {
-                var subRow = $(`<tr class="collapse ${proceso.Id_modelo}">`);
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td>TOTAL</td>');
-                subRow.append('<td>' + botonDelete(null, proceso.Id_procesado) + '</td>');
-
-                tbody.append(subRow);
             }
         });
     });
 
-    $("tr.accordion-toggle .openOculto").on('click', function () {
-        var id = $(this).attr("data-target");
-        $(id).toggleClass("collapse");
+    $('#selectAll').click(function() {
+        $('.rowCheckbox').prop('checked', this.checked);
     });
 
     // Botones de lanzar y relanzar

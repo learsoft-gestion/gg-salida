@@ -245,7 +245,7 @@ $("#btnBuscar").click(function () {
 
     if (!(procesadoTrue && procesadoFalse)) {
         if (procesadoTrue || procesadoFalse) {
-            json.procesado = procesadoTrue ? true : false;
+            json.consultado = procesadoTrue ? true : false;
         }
     }
     // Validaciones de campos obligatorios y fechas
@@ -256,11 +256,9 @@ $("#btnBuscar").click(function () {
         alert("La fecha Hasta no puede ser menor a la fecha de inicio");
         return;
     }
-    // Muestro mensaje de archivos por generar
-    mostrarMensaje(json);
     // Llamada al servidor para mostrar tabla
     $.ajax({
-        url: prefijoURL + `/procesos`,
+        url: prefijoURL + `/consultados`,
         method: 'GET',
         dataType: 'json',
         data: json,
@@ -269,7 +267,6 @@ $("#btnBuscar").click(function () {
                 llenarTabla(data);
             } else {
                 $("#tablaDatos").hide();
-                $("#mensajeFaltantes").hide();
                 Swal.fire("No hubo resultados para su búsqueda");
                 console.log('No se recibieron datos del servidor.');
             }
@@ -284,32 +281,6 @@ $("#btnBuscar").click(function () {
         }
     });
 });
-
-var mostrarMensaje = function (json) {
-    $.ajax({
-        url: prefijoURL + '/restantes',
-        method: 'GET',
-        dataType: 'json',
-        data: json,
-        success: function (data) {
-            if (data) {
-                $("#mensajeFaltantes").show();
-                $("#mensaje").text(data.mensaje);
-                if (data.boton) {
-                    $("#btnGenerar").show();
-                    // $("#btnGenerar").hide(); // Se deja oculto botón para que no se vea en prod hasta nuevo fix
-                } else {
-                    $("#btnGenerar").hide();
-                }
-            } else {
-                console.log('No se recibieron datos del servidor.');
-            }
-        },
-        error: function (error) {
-            console.error('Error en la búsqueda:', error);
-        }
-    });
-}
 
 // Función para llenar la tabla
 var llenarTabla = function (rawData) {
@@ -326,48 +297,25 @@ var llenarTabla = function (rawData) {
                 row.append('<td>' + proceso.Concepto + '</td>');
                 row.append('<td>' + proceso.Tipo + '</td>');
                 row.append('<td>' + proceso.Nombre + '</td>');
-                if (item.length > 1) {
-                    row.append(`<td>${proceso.Version}<button class="btn btn-default btn-sm openOculto" data-target=".${proceso.Id_modelo}"><span class="material-symbols-outlined">arrow_drop_down</span></button></td>`)
-                } else {
-                    row.append('<td>' + proceso.Version + '</td>')
-                }
-                proceso.Nombre_control != "-" ?
-                    row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
+                proceso.Nombre_control != "-" && proceso.Nombre_control ?
+                    row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}"><span class="material-symbols-outlined">description</span></a></td>`)
                     : row.append('<td>' + proceso.Nombre_control + '</td>');
-                proceso.Nombre_nomina != "-" ?
-                    row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
+                proceso.Nombre_nomina != "-" && proceso.Nombre_nomina ?
+                    row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}"><span class="material-symbols-outlined" style="color: darkorange;">description</span></a></td>`)
                     : row.append('<td>' + proceso.Nombre_nomina + '</td>');
                 row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + botonDelete(proceso.Boton, proceso.Id_procesado) + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida") + '</td>');
 
                 tbody.append(row);
-            } else {
-                var subRow = $(`<tr class="collapse ${proceso.Id_modelo}">`);
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td></td>');
-                subRow.append('<td>' + proceso.Version + '</td>');
-                proceso.Nombre_control != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
-                    : subRow.append('<td>' + proceso.Nombre_control + '</td>');
-                proceso.Nombre_nomina != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
-                    : subRow.append('<td>' + proceso.Nombre_nomina + '</td>');
-                subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                subRow.append('<td>' + botonDelete(null, proceso.Id_procesado) + '</td>');
-
-                tbody.append(subRow);
             }
         });
     });
 
-    $('table th:nth-child(7), table td:nth-child(7)').css({
+    $('table th:nth-child(6), table td:nth-child(6)').css({
         'border-left': '1px solid black',
         'border-right': '1px solid black'
     });
-    $('table th:nth-child(9), table td:nth-child(9)').css({
+    $('table th:nth-child(8), table td:nth-child(8)').css({
         'border-left': '1px solid black'
     });
 
@@ -387,7 +335,7 @@ var llenarTabla = function (rawData) {
         };
 
         $.ajax({
-            url: prefijoURL + '/send',
+            url: prefijoURL + '/consulta',
             method: 'POST',
             dataType: 'json',
             data: JSON.stringify(json),
@@ -454,9 +402,9 @@ var obtenerLink = function (nombre) {
 
 var generarBoton = function (boton, id, idProcesado, tipo) {
     if (boton === "lanzar") {
-        return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" title="Lanzar"><i class="material-icons">play_arrow</i></button>`;
+        return `<button type="button" class="btn btn-success btn-sm ${tipo}" value="${id}" title="Consultar"><i class="material-icons">play_arrow</i></button>`;
     }
-    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" title="Relanzar"><i class="material-icons">refresh</i></button>`;
+    return `<button type="button" class="btn btn-primary btn-sm ${tipo}" value="${id}" title="Reconsultar"><i class="material-icons">refresh</i></button>`;
 }
 
 var botonDelete = function (boton, id) {

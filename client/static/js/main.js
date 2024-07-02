@@ -319,17 +319,18 @@ var llenarTabla = function (rawData) {
                 } else {
                     row.append('<td>' + proceso.Version + '</td>')
                 }
-                proceso.Nombre_control != "-" ?
-                    row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
+                proceso.Nombre_control != "-" && proceso.Nombre_control != "" ?
+                    row.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}"><span class="material-symbols-outlined">description</span></a></td>`)
                     : row.append('<td>' + proceso.Nombre_control + '</td>');
-                proceso.Nombre_nomina != "-" ?
-                    row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
+                proceso.Nombre_nomina != "-" && proceso.Nombre_nomina != "" ?
+                    row.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}"><span class="material-symbols-outlined" style="color: darkorange;">description</span></a></td>`)
                     : row.append('<td>' + proceso.Nombre_nomina + '</td>');
-                proceso.Nombre_salida != "-" ?
-                    row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
+                proceso.Nombre_salida != "-" && proceso.Nombre_salida != "" ?
+                    row.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}"><span class="material-symbols-outlined" style="color: green;">description</span></a></td>`)
                     : row.append('<td>' + proceso.Nombre_salida + '</td>');
                 row.append('<td>' + proceso.Ultima_ejecucion + '</td>');
-                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida", proceso.Bloqueado) + botonDelete(proceso.Boton, proceso.Id_procesado, proceso.Bloqueado) + botonBloquear(proceso.Boton, proceso.Id_procesado, proceso.Bloqueado) + '</td>');
+                row.append('<td>' + generarBoton(proceso.Boton, proceso.Id_modelo, proceso.Id_procesado, "salida", proceso.Bloqueado) + botonDelete(proceso.Boton, proceso.Id_procesado, proceso.Bloqueado) + '</td>');
+                row.append('<td>' + botonBloquear(proceso.Boton, proceso.Id_procesado, proceso.Bloqueado) + '</td>');
 
                 tbody.append(row);
             } else {
@@ -340,17 +341,18 @@ var llenarTabla = function (rawData) {
                 subRow.append('<td></td>');
                 subRow.append('<td></td>');
                 subRow.append('<td>' + proceso.Version + '</td>');
-                proceso.Nombre_control != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}">${obtenerNombreArchivo(proceso.Nombre_control)}</a></td>`)
+                proceso.Nombre_control != "-" && proceso.Nombre_control != "" ?
+                    subRow.append(`<td title="${proceso.Nombre_control}"><a href="${obtenerLink(proceso.Nombre_control)}"><span class="material-symbols-outlined">description</span></a></td>`)
                     : subRow.append('<td>' + proceso.Nombre_control + '</td>');
-                proceso.Nombre_nomina != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}">${obtenerNombreArchivo(proceso.Nombre_nomina)}</a></td>`)
+                proceso.Nombre_nomina != "-" && proceso.Nombre_nomina != "" ?
+                    subRow.append(`<td title="${proceso.Nombre_nomina}"><a href="${obtenerLink(proceso.Nombre_nomina)}"><span class="material-symbols-outlined" style="color: darkorange;">description</span></a></td>`)
                     : subRow.append('<td>' + proceso.Nombre_nomina + '</td>');
-                proceso.Nombre_salida != "-" ?
-                    subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}">${obtenerNombreArchivo(proceso.Nombre_salida)}</a></td>`)
+                proceso.Nombre_salida != "-" && proceso.Nombre_salida != "" ?
+                    subRow.append(`<td title="${proceso.Nombre_salida}"><a href="${obtenerLink(proceso.Nombre_salida)}"><span class="material-symbols-outlined" style="color: green;">description</span></a></td>`)
                     : subRow.append('<td>' + proceso.Nombre_salida + '</td>');
                 subRow.append('<td>' + proceso.Ultima_ejecucion + '</td>');
                 subRow.append('<td>' + botonDelete(null, proceso.Id_procesado) + '</td>');
+                subRow.append('<td></td>');
 
                 tbody.append(subRow);
             }
@@ -362,6 +364,10 @@ var llenarTabla = function (rawData) {
         'border-right': '1px solid black'
     });
     $('table th:nth-child(9), table td:nth-child(9)').css({
+        'border-left': '1px solid black',
+        'border-right': '1px solid black'
+    });
+    $('table th:nth-child(11), table td:nth-child(11)').css({
         'border-left': '1px solid black',
         'border-right': '1px solid black'
     });
@@ -462,7 +468,7 @@ var botonDelete = function (boton, id, bloqueado) {
 }
 
 var botonBloquear = function (boton, id, bloqueado) {
-    return boton === "lanzar" ? "" : `<button type="button" class="btn btn-warning btn-sm bloquear" value="${id}" title="${bloqueado ? 'Desbloquear' : 'Bloquear'}"><i class="material-icons">lock</i></button>`;
+    return boton === "lanzar" ? "" : `<button type="button" class="btn btn-warning btn-sm bloquear" value="${id}" title="${bloqueado ? 'Desbloquear' : 'Bloquear'}"><i class="material-icons">${bloqueado ? 'lock_open' : 'lock'}</i></button>`;
 }
 
 var eventoBotonDelete = function () {
@@ -519,7 +525,6 @@ var eventoBotonBloquear = function () {
         $.ajax({
             url: prefijoURL + '/send',
             method: 'PATCH',
-            //dataType: 'json',
             data: JSON.stringify(json),
             success: function (data) {
                 console.log("Success", data);
