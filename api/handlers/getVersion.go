@@ -8,7 +8,7 @@ import (
 func GetVersion() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		version := "Version 1.3"
+		version := "1.3"
 
 		w.Header().Set("Content-Type", "application/json")
 

@@ -54,7 +54,9 @@ func Extractor(db, sql *sql.DB, proceso modelos.Proceso, fecha string, fecha2 st
 		queryFinal = strings.Replace(queryFinal, "$QUERY_PI$", personal_interno, -1)
 	}
 
-	// fmt.Println("Query: \n", queryFinal)
+	// if tipo_ejecucion == "salida" {
+	// 	fmt.Println("Query: \n", queryFinal)
+	// }
 
 	// Ejecucion de query y lectura de resultados
 	rows, err := sql.Query(queryFinal)

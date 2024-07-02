@@ -207,8 +207,9 @@ type Campo struct {
 }
 
 type Variable struct {
-	Nombre string
-	Datos  []LookupJson
+	Nombre  string
+	Datos   []LookupJson
+	Valores []string
 }
 
 type Plantilla struct {

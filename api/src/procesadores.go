@@ -235,7 +235,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 	}
 
 	if len(registros) == 0 && generarNomina {
-		if err = ProcesadosNomina(db, proceso.Id_procesado, 0, "Sin datos"); err != nil {
+		if _, err = ProcesadosNomina(db, proceso.Id_procesado, 0, "Sin datos", 0, "", ""); err != nil {
 			fmt.Println(err.Error())
 			return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 		}
@@ -261,6 +261,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 		}
 
 		if !generarNomina || (fecha == fecha2 && generarNomina) {
+
 			if generarNomina {
 				// Construir la parte de las columnas y los placeholders para los valores
 				columnas_slice := []string{"id_modelo", "fecha", "num_version"}
@@ -359,7 +360,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 
 				// Asignar el nuevo slice a la variable original
 				registros = nuevoSlice
-			} else {
+			} else if !generarNomina {
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, fmt.Errorf("modelo no tiene datos congelados"))
 				return "", modelos.ErrorFormateado{Mensaje: "Este modelo no tiene datos congelados"}
 			}
@@ -420,7 +421,7 @@ func ProcesadorNomina(db *sql.DB, sql *sql.DB, proceso modelos.Proceso, fecha st
 
 		if generarNomina {
 			// Insertar o actualizar proceso en ext_procesados
-			if err = ProcesadosNomina(db, proceso.Id_procesado, len(registros), filepath.Join(rutaCarpeta, nombreControl)); err != nil {
+			if _, err = ProcesadosNomina(db, proceso.Id_procesado, len(registros), filepath.Join(rutaCarpeta, nombreControl), 0, "", ""); err != nil {
 				ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 				return "", modelos.ErrorFormateado{Mensaje: err.Error()}
 			}

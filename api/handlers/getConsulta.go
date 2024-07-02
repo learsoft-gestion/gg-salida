@@ -37,7 +37,7 @@ func GetConsulta(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := fmt.Sprintf("select em.id_modelo, c.nombre as nombre_convenio, ea.reducido as nombre_empresa_adm, ec.nombre as nombre_concepto, em.nombre, et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.fecha_ejecucion, case when fecha_ejecucion is null then 'lanzar' when fecha_ejecucion = max(ep.fecha_ejecucion) over(partition by em.id_modelo) then 'relanzar' end boton, ep.archivo_nomina, ep.archivo_control, ep.id_consulta from extractor.ext_modelos em left join extractor.ext_consultados ep on em.id_modelo = ep.id_modelo and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' join extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c ON em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.vigente", fechaFormateada, fechaFormateada2)
+		query := fmt.Sprintf("with ep as (select * from extractor.ext_procesados ep where (ep.id_modelo, ep.num_version) in (select id_modelo, max(num_version) max_version from extractor.ext_procesados ep where ep.fecha_desde = '%s' and ep.fecha_hasta = '%s' group by id_modelo)) select em.id_modelo, c.nombre as nombre_convenio, ea.reducido as nombre_empresa_adm, ec.nombre as nombre_concepto,	 em.nombre,	 et.nombre as nombre_tipo, ep.fecha_desde, ep.fecha_hasta, ep.fecha_ejecucion, case when fecha_ejecucion is null then 'lanzar' when fecha_ejecucion = max(ep.fecha_ejecucion) over(partition by em.id_modelo) then 'relanzar' end boton, ep.archivo_nomina, ep.archivo_control, ep.num_version from extractor.ext_modelos em left join ep on em.id_modelo = ep.id_modelo join extractor.ext_empresas_adm ea on em.id_empresa_adm = ea.id_empresa_adm join extractor.ext_convenios c on em.id_convenio = c.id_convenio join extractor.ext_conceptos ec on em.id_concepto = ec.id_concepto join extractor.ext_tipos et on em.id_tipo = et.id_tipo where em.vigente and ep.fecha_desde = '%s' and ep.fecha_hasta = '%s'", fechaFormateada, fechaFormateada2, fechaFormateada, fechaFormateada2)
 
 		if len(id_convenio) > 0 {
 			query += fmt.Sprintf(" and em.id_convenio = %v", id_convenio)
@@ -57,7 +57,11 @@ func GetConsulta(db *sql.DB) http.HandlerFunc {
 		if len(jurisdiccion) > 0 {
 			query += " and UPPER(em.nombre) like '%" + strings.ToUpper(jurisdiccion) + "%'"
 		}
-		query += " ORDER BY nombre_empresa_adm, nombre_concepto, nombre, nombre_tipo desc;"
+		query += fmt.Sprintf(" and (SELECT extractor.tiene_datos_congelados(em.id_modelo,'%s','%s'))", fechaFormateada, fechaFormateada2)
+		query += " ORDER BY nombre_empresa_adm, nombre_concepto, nombre, nombre_tipo, ep.num_version desc;"
+
+		// fmt.Printf("Query: \n%s\n", query)
+
 		rows, err := db.Query(query)
 		if err != nil {
 			fmt.Println("Fallo el query: ", err.Error())
@@ -78,9 +82,8 @@ func GetConsulta(db *sql.DB) http.HandlerFunc {
 			var boton sql.NullString
 			var nombre_nomina sql.NullString
 			var nombre_control sql.NullString
-			var id_consultado sql.NullInt32
 
-			if err := rows.Scan(&DTOproceso.Id_modelo, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &fecha_desde, &fecha_hasta, &ult_ejecucion, &boton, &nombre_nomina, &nombre_control, &id_consultado); err != nil {
+			if err := rows.Scan(&DTOproceso.Id_modelo, &DTOproceso.Convenio, &DTOproceso.Empresa, &DTOproceso.Concepto, &DTOproceso.Nombre, &DTOproceso.Tipo, &fecha_desde, &fecha_hasta, &ult_ejecucion, &boton, &nombre_nomina, &nombre_control, &DTOproceso.Version); err != nil {
 				println("Fallo el scan", err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -114,9 +117,6 @@ func GetConsulta(db *sql.DB) http.HandlerFunc {
 			}
 			if boton.Valid {
 				DTOproceso.Boton = boton.String
-			}
-			if id_consultado.Valid {
-				DTOproceso.Id_consultado = int(id_consultado.Int32)
 			}
 			DTOconsultados = append(DTOconsultados, DTOproceso)
 

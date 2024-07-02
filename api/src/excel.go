@@ -317,7 +317,7 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 						for _, variable := range plantilla.Variables {
 							if strings.ToUpper(variable.Nombre) == campo.Nombre {
 								for _, element := range variable.Datos {
-									if element.Id == v {
+									if strings.TrimSpace(element.Id) == strings.TrimSpace(v) {
 										value += element.Nombre
 									}
 								}
@@ -445,10 +445,36 @@ func CargarExcel(db *sql.DB, idLogDetalle int, proceso modelos.Proceso, data []m
 				}
 			}
 		}
+		// Para el ultimo campo
+		// if i == len(data)-1 {
+		// 	if len(options) > 0 {
+		// 		fmt.Println("Se creo la lista con rango: ", fmt.Sprintf("K2:K%v", i+2))
+		// 		// dv.SetSqref(fmt.Sprintf("K2:K%v", i+2))
+		// 		fileNuevo.AddDataValidation(sheetName, dv)
+		// 	}
+		// }
+	}
+
+	var options []string
+	for _, va := range plantilla.Variables {
+		if va.Nombre == "lista desplegable" {
+			options = va.Valores
+		}
+	}
+	// validationString := "\"" + strings.Join(options, ";") + "\""
+	dv := excelize.NewDataValidation(true)
+	dv.Type = "list"
+	dv.Sqref = "K2:K82"
+	dv.SetDropList(options)
+	dv.ShowDropDown = true
+	err := fileNuevo.AddDataValidation(sheetName, dv)
+	if err != nil {
+		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
+		return "", err
 	}
 
 	// Guardar archivo
-	if err := fileNuevo.SaveAs(nombreSalida); err != nil {
+	if err = fileNuevo.SaveAs(nombreSalida); err != nil {
 		ManejoErrores(db, idLogDetalle, proceso.Nombre, err)
 		return "", err
 	}

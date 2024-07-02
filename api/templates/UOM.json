@@ -23,9 +23,9 @@
         },
         {
             "titulo": "Apellido",
-            "nombre": "",
+            "nombre": "apellidos",
             "columna": "D",
-            "tipo": "fijo",
+            "tipo": "string",
             "formato": ""
         },
         {
@@ -72,7 +72,7 @@
         },
         {
             "titulo": "Categoria",
-            "nombre": "",
+            "nombre": "categoria",
             "columna": "K",
             "tipo": "lookup",
             "formato": ""
@@ -161,6 +161,10 @@
                 {"id": "Operario Especializado Múltiple", "nombre": "Operario Especializado Multiple"},
                 {"id": "Técnico 3º", "nombre": "Tecnico de 6a."}
             ]
-        } 
+        },
+        {
+            "nombre": "lista desplegable",
+            "valores": ["Operario","Operario Calificado","Operario Especializado","Operario Especializado Multiple","Ayudante","Medio Oficial","Oficial","Oficial Multiple","Tecnico de 1a.","Tecnico de 2a.","Tecnico de 3a.","Tecnico de 4a.","Tecnico de 5a.","Tecnico de 6a.","Auxiliares y Maestranza de 1a.","Auxiliares y Maestranza de 2a.","Auxiliares y Maestranza de 3a.","Foguista de 1a.","Foguista de 2a.","Foguista de 3a.","Chofer c/registro de Carga","Chofer c/registro Profesional","Chofer c/registro de DNV"]
+        }
     ]
 }

@@ -5,7 +5,8 @@
             "nombre": "seccional",
             "columna": "A",
             "tipo": "string",
-            "formato": ""
+            "formato": "",
+            "ancho": 25
         },
         {
             "titulo": "LEGAJOS",
@@ -57,11 +58,12 @@
             "formato": ""
         },
         {
-            "titulo": "CONTRIBUCION PATRONAL",
+            "titulo": "CONTRIBUCION",
             "nombre": "1200 - ContribPatronal",
             "columna": "I",
             "tipo": "moneda",
-            "formato": ""
+            "formato": "",
+            "ancho": 25
         }
     ]
 }

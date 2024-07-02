@@ -22,6 +22,7 @@ func ConsultaCongelados(db *sql.DB) http.HandlerFunc {
 		}
 
 		var datos modelos.DTOdatos
+		// De aca utilizamos SIEMPRE id_modelo, fecha y fecha2
 		err = json.NewDecoder(r.Body).Decode(&datos)
 		if err != nil {
 			http.Error(w, "Error decodificando JSON: "+err.Error(), http.StatusBadRequest)
@@ -57,8 +58,8 @@ func ConsultaCongelados(db *sql.DB) http.HandlerFunc {
 		respuesta_nomina := Nomina(db, sql, datos, proceso, false)
 
 		if len(respuesta_nomina.Archivos_nomina) > 0 {
-			// Insertar o actualizar proceso en ext_consultados
-			if idCons, err := src.ConsultadosNomina(db, proceso.Id_modelo, datos.Fecha, datos.Fecha2, respuesta_nomina.Archivos_nomina[0]); err != nil {
+			// Insertar proceso en ext_procesados
+			if idCons, err := src.ProcesadosNomina(db, 0, 0, respuesta_nomina.Archivos_nomina[0], datos.Id_modelo, datos.Fecha, datos.Fecha2); err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
 				return
@@ -66,8 +67,8 @@ func ConsultaCongelados(db *sql.DB) http.HandlerFunc {
 				proceso.Id_consultado = idCons
 			}
 		} else {
-			// Insertar o actualizar proceso en ext_consultados
-			if _, err = src.ConsultadosNomina(db, proceso.Id_modelo, datos.Fecha, datos.Fecha2, "Error"); err != nil {
+			// Insertar proceso en ext_procesados
+			if _, err = src.ProcesadosNomina(db, 0, 0, "Error", datos.Id_modelo, datos.Fecha, datos.Fecha2); err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
 				return
@@ -78,15 +79,15 @@ func ConsultaCongelados(db *sql.DB) http.HandlerFunc {
 		respuesta_control := Control(db, sql, datos, proceso, false)
 
 		if len(respuesta_control.Archivos_control) > 0 {
-			fmt.Println("Id consultado: ", proceso.Id_consultado)
-			// Insertar o actualizar proceso en ext_consultados
-			if err = src.ConsultadosControl(db, proceso.Id_consultado, respuesta_control.Archivos_control[0]); err != nil {
+
+			// Actualizar proceso en ext_procesados
+			if err = src.ProcesadosControl(db, proceso.Id_consultado, respuesta_control.Archivos_control[0]); err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 		} else {
-			if err = src.ConsultadosControl(db, proceso.Id_consultado, "Error"); err != nil {
+			if err = src.ProcesadosControl(db, proceso.Id_consultado, "Error"); err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Error al loguear en tabla de consultados: "+err.Error(), http.StatusBadRequest)
 				return

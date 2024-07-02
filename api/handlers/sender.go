@@ -22,7 +22,7 @@ func Sender(db *sql.DB) http.HandlerFunc {
 				return
 			}
 			datos.Fecha = src.FormatoFecha(datos.Fecha)
-			datos.Fecha2 = src.FormatoFecha(datos.Fecha2)
+			datos.Fecha2 = datos.Fecha
 			fmt.Println("MODELO: ", datos.Id_modelo)
 			queryModelos := "SELECT em.id_modelo, em.id_empresa_adm, ea.razon_social as nombre_empresa, ea.reducido as nombre_empresa_reducido, c.id_convenio as id_convenio, c.nombre as nombre_convenio, em.id_concepto, em.id_tipo, em.nombre, c.filtro as filtro_convenio, em.filtro_personas, em.filtro_recibos, em.formato_salida, em.archivo_modelo, em.archivo_nomina, em.columna_estado, em.id_query, em.select_control, em.select_salida FROM extractor.ext_modelos em JOIN extractor.ext_empresas_adm ea ON em.id_empresa_adm = ea.id_empresa_adm JOIN extractor.ext_convenios c ON em.id_convenio = c.id_convenio where vigente and em.id_modelo = $1"
 			// fmt.Println("Query modelos: ", queryModelos)
@@ -357,7 +357,7 @@ func Nomina(db *sql.DB, sql *sql.DB, datos modelos.DTOdatos, proceso modelos.Pro
 		resultado = append(resultado, result)
 	}
 	if errFormateado.Mensaje != "" {
-		if err := src.ProcesadosNomina(db, proceso.Id_procesado, 0, "Error"); err != nil {
+		if _, err := src.ProcesadosNomina(db, proceso.Id_procesado, 0, "Error", 0, "", ""); err != nil {
 			errString := "Error al loguear en procesados: " + errFormateado.Mensaje
 
 			respuesta := modelos.Respuesta{
